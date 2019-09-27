@@ -141,7 +141,8 @@ def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_number
     y_random_reader = np.loadtxt(y_random_path, dtype=np.str, delimiter=",")
     y_random = y_random_reader[:, :].astype(np.float)
 
-    save_path = main_path + method + "\\" + data_name + "\\yita(" + str(yita) + ")method_k(" + str(method_k) + ")numbers("+str(max_eigen_numbers) + ")proportion(" + str(threshold)+")"
+    save_path = main_path + method + "\\" + data_name + "\\yita(" + str(yita) + ")nbrs_k(" + str(nbrs_k)
+    save_path = save_path + ")method_k(" + str(method_k) + ")numbers("+str(max_eigen_numbers) + ")"
     save_path = save_path + "_" + draw_kind
     if weighted:
         save_path = save_path + "_weighted"
@@ -171,6 +172,7 @@ def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_number
     local_pca_path = local_pca_path + "\\"
 
     has_local_pca = local_pca_calculated(local_pca_path)
+    print('计算 local PCA 部分尚未进行优化')
     if has_local_pca:
         # 已经计算过 local PCA 了，可以直接从文件中读取
         pass
@@ -530,7 +532,7 @@ if __name__ == "__main__":
     start_time = time()
     main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
     main_path_without_straighten = "F:\\result2019\\result0425without_straighten\\"
-    main_path = "F:\\result2019\\result0917temp\\"
+    main_path = "F:\\result2019\\result0927\\"
 
     data_name = "Wine"
     method = "PCA"
@@ -562,9 +564,10 @@ if __name__ == "__main__":
         weighted=weighted)
 
     # json_start = time()
-    # group_num = 10
     # # main_path2 = main_path + method + "\\" + data_name + "\\"
-    # polygon_json190917.merge_json(main_path, data_name, method, yita, method_k, max_k, eigen_numbers, threshold, adapt_threshold, group_num, draw_kind, MAX_EIGEN_NUMBER=eigen_numbers, weighted=weighted, MAX_NK=MAX_NK)
+    # polygon_json190917.merge_json(main_path, data_name, method, yita, method_k, max_k, eigen_numbers, threshold,
+    #                               adapt_threshold, group_num, draw_kind, MAX_EIGEN_NUMBER=eigen_numbers,
+    #                               weighted=weighted, MAX_NK=MAX_NK)
     # json_end = time()
     # print("合成json文件的时间为\t", json_end-json_start)
 

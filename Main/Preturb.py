@@ -128,6 +128,10 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
         y_list_add.append(y_add_v)
         y_list_sub.append(y_sub_v)
 
+    if weighted:
+        mean_first_weight = np.mean(eigen_weights[:, 0])
+        print('第一个特征值平均占比为： ', mean_first_weight)
+
     return y, y_list_add, y_list_sub
 
 
