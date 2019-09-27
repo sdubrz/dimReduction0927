@@ -473,9 +473,6 @@ def local_pca_calculated(path):
 
     :return:
     """
-    # path = main_path+"localPCA\\"+data_name+"\\"+"max_k("+str(max_k)+") number("+str(eigen_number)+") proportionThreshold("+str(proportion_threshold)+") adaptThreshold("+str(adapt_threshold)+")\\"
-    # path = path + "prefect_k.csv"
-
     exist = os.path.exists(path + "prefect_k.csv")
 
     return exist
