@@ -173,6 +173,7 @@ def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_number
 
     has_local_pca = local_pca_calculated(local_pca_path)
     print('计算 local PCA 部分尚未进行优化')
+    print(local_pca_path)
     if has_local_pca:
         # 已经计算过 local PCA 了，可以直接从文件中读取
         pass

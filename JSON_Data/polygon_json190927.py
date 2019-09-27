@@ -184,7 +184,18 @@ def linearity_change(linear1, linear0):
     return change
 
 
-def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_threshold, group_num, draw_kind=None, MAX_EIGEN_NUMBER=4, weighted=True):
+def points_proportion(read_path, eigen_number):
+    """
+    计算每个点使用的特征值占其特征值之和的比值
+    :param read_path: 数据读写目录
+    :param eigen_number: 所用的特征值的个数
+    :return:
+    """
+    
+
+
+def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_threshold, group_num, draw_kind=None,
+               MAX_EIGEN_NUMBER=4, weighted=True):
     """
 
     :param main_path:
@@ -202,7 +213,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
 
     # print('[merge_json]'+str(max_eigen_numbers))
     # print("【main_path】", main_path)
-    read_path = main_path + method_name + "\\" + data_name + "\\" + "yita("+str(yita)+")method_k("+str(method_k)+")max_k("+str(max_k)+")numbers("+str(max_eigen_numbers) + ")proportion(" + str(proportion_threshold) +")adapt_threshold("+str(adapt_threshold)+")"
+    read_path = main_path + method_name + "\\" + data_name + "\\" + "yita("+str(yita) + ")nbrs_k(" + str(nbrs_k)
+    read_path = read_path+")method_k("+str(method_k)++")numbers("+str(MAX_EIGEN_NUMBER) + ")"
     # print("【read_path】", read_path)
     read_path = read_path + "_" + draw_kind
     if weighted:
@@ -210,13 +222,17 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     else:
         read_path = read_path + "_withoutweight"
     read_path = read_path + "\\"
-    local_pca_path = main_path + "localPCA\\" + data_name + "\\" "number(" + str(MAX_EIGEN_NUMBER) + ")"
-    local_pca_path = local_pca_path + "\\"
 
-    print(read_path)    print(local_pca_path)
+    # 暂时先不把 local PCA 单独存放，故注释之
+    # local_pca_path = main_path + "localPCA\\" + data_name + "\\" "number(" + str(MAX_EIGEN_NUMBER) + ")"
+    # local_pca_path = local_pca_path + "\\"
+    #
+    # print(read_path)
+    # print(local_pca_path)
 
     y_reader = np.loadtxt(read_path+"y.csv", dtype=np.str, delimiter=",")  # 原始数据的降维结果
     y = y_reader[:, :].astype(np.float)
+    (n, temp_dim) = y.shape
 
     y_add1_reader = np.loadtxt(read_path+"y1+.csv", dtype=np.str, delimiter=",")  # 添加第一特征向量作为扰动的投影结果
     y_add1 = y_add1_reader[:, :].astype(np.float)
@@ -282,10 +298,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     scale_file.write("{"+"\"min_x\":"+str(x_low)+", \"max_x\":"+str(x_up)+", \"min_y\":"+str(y_low)+", \"max_y\":"+str(y_up)+"}")
     scale_file.close()
 
-    k_reader = np.loadtxt(local_pca_path+"prefect_k.csv", dtype=np.str, delimiter=",")  # 计算localPCA时所使用的k值
-    k = k_reader.astype(np.int)
-
-    # eigenvalues_reader = np.loadtxt(read_path+weight_str+"eigenvalues.csv", dtype=np.str, delimiter=",")  # 特征值
+    k = nbrs_k * np.ones((n, 1))
 
     angles_reader = np.loadtxt(read_path+"angles_v1_v2_projected.csv", dtype=np.str, delimiter=",")  # 第一特征向量与第二特征向量投影之后的角度
     angles = angles_reader.astype(np.float)
@@ -298,21 +311,14 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
                                           delimiter=",")
     eigen1_div_eigen2_project = eigen1_div_eigen2_project_reader.astype(np.float)  # 第一特征向量与第二特征向量投影之后的长度比值
 
-    # 每个点所使用的特征向量个数
-    eigen_numbers_reader = np.loadtxt(local_pca_path+"eigen_numbers.csv", dtype=np.str, delimiter=",")
-    eigen_numbers = eigen_numbers_reader.astype(np.int)
+    # 每个点所使用的特征向量个数，这个也得加一下
+    # eigen_numbers_reader = np.loadtxt(local_pca_path+"eigen_numbers.csv", dtype=np.str, delimiter=",")
+    # eigen_numbers = eigen_numbers_reader.astype(np.int)
 
-    # 每个点的proportion
-    proportions_reader = np.loadtxt(local_pca_path+"eigens_counts.csv", dtype=np.str, delimiter=",")
-    proportions = proportions_reader.astype(np.float)
+    # 每个点的proportion，这个还得想一下加一下
+    # proportions_reader = np.loadtxt(local_pca_path+"eigens_counts.csv", dtype=np.str, delimiter=",")
+    # proportions = proportions_reader.astype(np.float)
 
-    # 法向扰动，目前只对三维数据有效 鸿武七年三月四日
-    # y_add_normal_reader = np.loadtxt(read_path+"y_add_normalvector.csv", dtype=np.str, delimiter=",")
-    # y_sub_normal_reader = np.loadtxt(read_path+"y_sub_normalvector.csv", dtype=np.str, delimiter=",")
-    # y_add_normal = y_add_normal_reader[:, :].astype(np.float)
-    # y_sub_normal = y_sub_normal_reader[:, :].astype(np.float)
-
-    # linearityChange = dot_divide(eigen1_div_eigen2_project, eigen1_div_eigen2)
     linearityChange = linearity_change(eigen1_div_eigen2_project, eigen1_div_eigen2)
     np.savetxt(read_path+"linearityChange.csv", linearityChange, fmt="%f", delimiter=",")
 
@@ -324,7 +330,6 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     y_add_list = []  # 正向扰动投影结果
     y_sub_list = []  # 负向扰动投影结果
 
-    MAX_EIGEN_NUMBER = max_eigen_numbers
     for i in range(0, MAX_EIGEN_NUMBER):
         y_add_i_reader = np.loadtxt(read_path+"y_add_"+str(i+1)+".csv", dtype=np.str, delimiter=",")
         y_sub_i_reader = np.loadtxt(read_path+"y_sub_"+str(i+1)+".csv", dtype=np.str, delimiter=",")
