@@ -10,6 +10,7 @@ from Convex_hull import GrahamScan
 from BSpline import b_spline
 from time import time
 from Main import Preturb
+from Main import CleanData
 
 
 # 以下为临时引用
@@ -88,7 +89,7 @@ def local_pca_calculated(path):
     return exist
 
 
-def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
+def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
         weighted=True):
     """"
@@ -127,6 +128,7 @@ def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_number
     data_shape = data.shape
     n = data_shape[0]
     dim = data_shape[1]
+    print(data_shape)
 
     label = np.zeros((n, 1))
     if hasLabel:
@@ -165,21 +167,6 @@ def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_number
     if max_eigen_numbers > dim:
         max_eigen_numbers = dim
         print("所要求的的特征值数目过多")
-
-    # 检查localPCA是否已经计算过
-    # has_local_pca = local_pca_calculated(main_path, data_name, MAX_K, max_eigen_numbers, threshold, adapt_threshold)
-    local_pca_path = main_path+"localPCA\\"+data_name+"\\number("+str(max_eigen_numbers)+") proportionThreshold("+str(threshold)+")"
-    local_pca_path = local_pca_path + "\\"
-
-    has_local_pca = local_pca_calculated(local_pca_path)
-    print('计算 local PCA 部分尚未进行优化')
-    print(local_pca_path)
-    if has_local_pca:
-        # 已经计算过 local PCA 了，可以直接从文件中读取
-        pass
-    else:
-        # 尚未计算过local PCA，需要重新计算
-        pass
 
     perturb_start = time()
     if method == "newMDS":  # 采用合并的降维方式
@@ -440,6 +427,8 @@ def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_number
     OutShape.angle_p_n_weighted(save_path=save_path, vector_num=max_eigen_numbers)
     OutShape.angle_p_n_1(save_path=save_path)
 
+    return save_path
+
 
 def perturbation_adjust(y, y_add_v, y_sub_v):
     """
@@ -516,41 +505,42 @@ def star_polygons(y, y_list_add, y_list_sub, max_eigen_numbers):
     return star_shape_list
 
 
-if __name__ == "__main__":
+def run_test(data_name0=None):
     """"
-    画图方法：
-        convex_hull
-        line
-        star_shape
-        b-spline
-    数据集：
-        Iris
-        Wine
-        bostonHouse
-        CCPP
-        wdbc
-        digits5_8
-    """
+        画图方法：
+            convex_hull
+            line
+            star_shape
+            b-spline
+        数据集：
+            Iris
+            Wine
+            bostonHouse
+            CCPP
+            wdbc
+            digits5_8
+        """
     start_time = time()
     main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
     main_path_without_straighten = "F:\\result2019\\result0425without_straighten\\"
     # main_path = "F:\\result2019\\result0927\\"  # HP
     main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "Wine"
+    data_name = "olive"
+    if data_name0 is None:
+        pass
+    else:
+        data_name = data_name0
+
     method = "PCA"
     yita = 0.5
-    adapt_threshold = 1.0
     nbrs_k = 30
-    max_k = 70
-    method_k = max_k
+    method_k = 70
     eigen_numbers = 4
     draw_kind = "b-spline"
-    threshold = 1.0
     normalize = True
     straighten = True  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
-    MAX_NK = (1.5, 1.5)  # 用于控制adaptive k-value选择的数值
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     if not normalize:
@@ -562,16 +552,38 @@ if __name__ == "__main__":
     if (not normalize) and (not straighten):
         print("暂不支持，该组合形式")
 
-    run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
+    last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
         method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted)
 
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
-    polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, nbrs_k, draw_kind, MAX_EIGEN_NUMBER=eigen_numbers,
+    polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, nbrs_k, draw_kind,
+                                  MAX_EIGEN_NUMBER=eigen_numbers,
                                   weighted=weighted)
     json_end = time()
-    print("合成json文件的时间为\t", json_end-json_start)
+    print("合成json文件的时间为\t", json_end - json_start)
 
     end_time = time()
-    print("程序的总运行时间为\t", end_time-start_time)
+    print("程序的总运行时间为\t", end_time - start_time)
+
+    return last_path, data_name, main_path
+
+
+if __name__ == "__main__":
+    last_path, data_name, main_path = run_test()
+
+    do_remove = True  # 是否要做删除outlier操作
+    attri_name = 'sin_1_2.csv'
+    threshold = 0.2
+    compare = 'less'  # 'bigger' or 'less'
+
+    if do_remove:
+        if compare == 'less':
+            CleanData.clean_small_value(data_name, main_path=main_path, last_path=last_path, attri_file=attri_name,
+                                        threshold=threshold)
+            run_test(data_name0=data_name+"Clean")
+        elif compare == 'bigger':
+            CleanData.clean_big_value(data_name, main_path=main_path, last_path=last_path, attri_file=attri_name,
+                                        threshold=threshold)
+            run_test(data_name0=data_name + "Clean")
