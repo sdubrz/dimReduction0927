@@ -104,3 +104,17 @@ def angle_p_n_weighted(save_path='', vector_num=2, weighted=True):
     np.savetxt(save_file, sum_list, fmt='%f', delimiter=',')
 
     return sum_list
+
+
+def angle_p_n_1(save_path=''):
+    """
+    计算第一个特征向量正向和负向的夹角的余弦值，并映射到 [0, 1] 的区间上
+    :param save_path:
+    :return:
+    """
+    value_list = angle_p_n(save_path=save_path, vector_num=1)
+    values = value_list[0]
+
+    np.savetxt(save_path+'angle_p_n_basecos.csv', values, fmt='%f', delimiter=',')
+
+    return values

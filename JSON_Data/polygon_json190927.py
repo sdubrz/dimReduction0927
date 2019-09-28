@@ -184,20 +184,65 @@ def linearity_change(linear1, linear0):
     return change
 
 
-def points_proportion(read_path, eigen_number):
+def points_proportion(read_path, eigen_number, weighted=True):
     """
     计算每个点使用的特征值占其特征值之和的比值
     :param read_path: 数据读写目录
     :param eigen_number: 所用的特征值的个数
+    :param weighted: 在添加扰动的时候是否曾根据特征值的大小分配权重
     :return:
     """
-    
+    file_name = "【weighted】eigenvalues.csv"
+    if not weighted:
+        file_name = "eigenvalues.csv"
+    eigenvalues_reader = np.loadtxt(read_path+file_name, dtype=np.str, delimiter=',')
+    eigenvalues = eigenvalues_reader[:, :].astype(np.float)
+
+    (n, dim) = eigenvalues.shape
+    proportion = np.zeros((n, 1))
+    for i in range(0, n):
+        proportion[i] = np.sum(eigenvalues[i, 0:eigen_number]) / np.sum(eigenvalues[i, :])
+
+    np.savetxt(read_path+"proportion.csv", proportion, fmt='%f', delimiter=',')
+
+    return proportion
+
+
+def how_many_eigens(read_path, proportion=0.8, weighted=True):
+    """
+    计算每个点需要多少个特征值才能达到要求的比重
+    :param read_path: 数据读写目录
+    :param proportion: 要求的比重
+    :param weighted: 在计算扰动的时候是否分配了权重
+    :return:
+    """
+    file_name = "【weighted】eigenvalues.csv"
+    if not weighted:
+        file_name = "eigenvalues.csv"
+
+    eigenvalues_reader = np.loadtxt(read_path+file_name, dtype=np.str, delimiter=',')
+    eigenvalues = eigenvalues_reader[:, :].astype(np.float)
+    (n, dim) = eigenvalues.shape
+
+    enough_number = np.zeros((n, 1))
+    for i in range(0, n):
+        temp_sum = 0
+        total_sum = np.sum(eigenvalues[i, :])
+        for j in range(0, dim):
+            temp_sum = temp_sum + eigenvalues[i, j]
+            if temp_sum >= total_sum * proportion:
+                enough_number[i] = j+1
+                break
+
+    np.savetxt(read_path+'eigen_numbers.csv', enough_number, fmt='%f', delimiter=',')
+
+    return enough_number
 
 
 def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_threshold, group_num, draw_kind=None,
                MAX_EIGEN_NUMBER=4, weighted=True):
     """
-
+    构建json文件
     :param main_path:
     :param yita:
     :param method_k:
@@ -211,10 +256,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     if weighted:
         weight_str = "【weighted】"
 
-    # print('[merge_json]'+str(max_eigen_numbers))
-    # print("【main_path】", main_path)
     read_path = main_path + method_name + "\\" + data_name + "\\" + "yita("+str(yita) + ")nbrs_k(" + str(nbrs_k)
-    read_path = read_path+")method_k("+str(method_k)++")numbers("+str(MAX_EIGEN_NUMBER) + ")"
+    read_path = read_path+")method_k("+str(method_k)+''+")numbers("+str(MAX_EIGEN_NUMBER) + ")"
     # print("【read_path】", read_path)
     read_path = read_path + "_" + draw_kind
     if weighted:
@@ -222,13 +265,6 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     else:
         read_path = read_path + "_withoutweight"
     read_path = read_path + "\\"
-
-    # 暂时先不把 local PCA 单独存放，故注释之
-    # local_pca_path = main_path + "localPCA\\" + data_name + "\\" "number(" + str(MAX_EIGEN_NUMBER) + ")"
-    # local_pca_path = local_pca_path + "\\"
-    #
-    # print(read_path)
-    # print(local_pca_path)
 
     y_reader = np.loadtxt(read_path+"y.csv", dtype=np.str, delimiter=",")  # 原始数据的降维结果
     y = y_reader[:, :].astype(np.float)
@@ -311,13 +347,13 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
                                           delimiter=",")
     eigen1_div_eigen2_project = eigen1_div_eigen2_project_reader.astype(np.float)  # 第一特征向量与第二特征向量投影之后的长度比值
 
-    # 每个点所使用的特征向量个数，这个也得加一下
-    # eigen_numbers_reader = np.loadtxt(local_pca_path+"eigen_numbers.csv", dtype=np.str, delimiter=",")
-    # eigen_numbers = eigen_numbers_reader.astype(np.int)
+    # 每个点所使用的特征向量个数
+    eigen_numbers_reader = np.loadtxt(read_path+"eigen_numbers.csv", dtype=np.str, delimiter=",")
+    eigen_numbers = eigen_numbers_reader.astype(np.int)
 
-    # 每个点的proportion，这个还得想一下加一下
-    # proportions_reader = np.loadtxt(local_pca_path+"eigens_counts.csv", dtype=np.str, delimiter=",")
-    # proportions = proportions_reader.astype(np.float)
+    # 每个点的proportion
+    proportions_reader = np.loadtxt(read_path+"eigens_counts.csv", dtype=np.str, delimiter=",")
+    proportions = proportions_reader.astype(np.float)
 
     linearityChange = linearity_change(eigen1_div_eigen2_project, eigen1_div_eigen2)
     np.savetxt(read_path+"linearityChange.csv", linearityChange, fmt="%f", delimiter=",")
@@ -387,6 +423,13 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     plt.savefig(read_path + "linearityChange.png")
     plt.close()
 
+    angleAddSub_basedcos_reader = np.loadtxt(read_path+'angle_p_n_basecos.csv', dtype=np.str, delimiter=',')
+    angleAddSub_basedcos = angleAddSub_basedcos_reader.astype(np.float)
+    angleAddSub_cosweighted_reader = np.loadtxt(read_path+'angle_+-sumweighted.csv', dtyoe=np.str, delimiter=',')
+    angleAddSub_cosweighted = angleAddSub_cosweighted_reader.astype(np.float)
+    angle12Sin_reader = np.loadtxt(read_path+'sin_1_2.csv', dtype=np.str, delimiter=',')
+    angle12Sin = angle12Sin_reader.astype(np.float)
+
     jsonfile = open(read_path+"temp_total.json", 'w')
     data_shape = x.shape
     n = data_shape[0]
@@ -396,7 +439,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     for i in range(0, n-1):
         line = "{"
         line = line + "\"x\": "+str(y[i, 0]) + ",\"y\": "+str(y[i, 1]) + ","
-        line = line + "\"cluster\": " + str(label[i]) + ","
+        line = line + "\"class\": " + str(label[i]) + ","
         line = line + "\"dNum\": " + str(m) + ",\"hdata\": ["
 
         for j in range(0, m-1):
@@ -430,13 +473,13 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
         line = line + "\"angleAddSub\": " + str(temp_num) + ", "
 
         # 几个分组的信息，配色的时候用
-        line = line + "\"kGroup\": " + str(int(k_group[i, 0])) + ", "
-        line = line + "\"angleGroup\": " + str(int(angles_group[i, 0])) + ", "
-        line = line + "\"linearityGroup\": " + str(int(linear_group[i, 0])) + ", "
-        line = line + "\"linearProjectGroup\": " + str(int(linear_project_group[i, 0])) + ", "
-        line = line + "\"linearChangeGroup\": " + str(int(linear_change_group[i, 0])) + ", "
-        line = line + "\"proportionGroup\": " + str(int(proportion_group[i, 0])) + ", "
-        line = line + "\"angleAddSubGroup\": " + str(int(angles_add_sub_group[i, 0])) + ", "
+        # line = line + "\"kGroup\": " + str(int(k_group[i, 0])) + ", "
+        # line = line + "\"angleGroup\": " + str(int(angles_group[i, 0])) + ", "
+        # line = line + "\"linearityGroup\": " + str(int(linear_group[i, 0])) + ", "
+        # line = line + "\"linearProjectGroup\": " + str(int(linear_project_group[i, 0])) + ", "
+        # line = line + "\"linearChangeGroup\": " + str(int(linear_change_group[i, 0])) + ", "
+        # line = line + "\"proportionGroup\": " + str(int(proportion_group[i, 0])) + ", "
+        # line = line + "\"angleAddSubGroup\": " + str(int(angles_add_sub_group[i, 0])) + ", "
 
         line = line + "\"polygonSize\": " + str(polygon_areas[i]) + ", "  # 多边形的面积大小
         temp_num = star_polygon_areas[i, 0] + 0.0
@@ -457,8 +500,9 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
         y_sub_jj = y_sub_list[MAX_EIGEN_NUMBER - 1]
         line = line + "[" + str(y_sub_jj[i, 0]) + ", " + str(y_sub_jj[i, 1]) + "]] "
 
-        # line = line + "\"yAddNormalVector\": [" + str(y_add_normal[i, 0]) + ", " + str(y_add_normal[i, 1]) + "], "
-        # line = line + "\"ySubNormalVector\": [" + str(y_sub_normal[i, 0]) + ", " + str(y_sub_normal[i, 1]) + "]"
+        line = line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[i]) + ","
+        line = line + "\"angleAddSub_basedcos\": " + str(angleAddSub_cosweighted[i]) + ","
+        line = line + "\"angle12Sin\": " + str(angle12Sin[i])
 
         line = line + "},\n"
         jsonfile.write(line)
@@ -497,13 +541,13 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
     final_temp_num = angles_add_sub[n-1, 0] + 0.0
     final_line = final_line + "\"angleAddSub\": " + str(final_temp_num) + ", "
 
-    final_line = final_line + "\"kGroup\": " + str(int(k_group[n-1, 0])) + ", "
-    final_line = final_line + "\"angleGroup\": " + str(int(angles_group[n-1, 0])) + ", "
-    final_line = final_line + "\"linearityGroup\": " + str(int(linear_group[n-1, 0])) + ", "
-    final_line = final_line + "\"linearProjectGroup\": " + str(int(linear_project_group[n-1, 0])) + ", "
-    final_line = final_line + "\"linearChangeGroup\": " + str(int(linear_change_group[n-1, 0])) + ", "
-    final_line = final_line + "\"proportionGroup\": " + str(int(proportion_group[n-1, 0])) + ", "
-    final_line = final_line + "\"angleAddSubGroup\": " + str(int(angles_add_sub_group[n-1, 0])) + ", "
+    # final_line = final_line + "\"kGroup\": " + str(int(k_group[n-1, 0])) + ", "
+    # final_line = final_line + "\"angleGroup\": " + str(int(angles_group[n-1, 0])) + ", "
+    # final_line = final_line + "\"linearityGroup\": " + str(int(linear_group[n-1, 0])) + ", "
+    # final_line = final_line + "\"linearProjectGroup\": " + str(int(linear_project_group[n-1, 0])) + ", "
+    # final_line = final_line + "\"linearChangeGroup\": " + str(int(linear_change_group[n-1, 0])) + ", "
+    # final_line = final_line + "\"proportionGroup\": " + str(int(proportion_group[n-1, 0])) + ", "
+    # final_line = final_line + "\"angleAddSubGroup\": " + str(int(angles_add_sub_group[n-1, 0])) + ", "
 
     final_line = final_line + "\"polygonSize\": " + str(polygon_areas[n-1]) + ", "
     final_temp_num = star_polygon_areas[n-1, 0] + 0.0
@@ -523,6 +567,10 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, adapt_
         final_line = final_line + "[" + str(final_y_sub_j[i, 0]) + ", " + str(final_y_sub_j[i, 1]) + "], "
     final_y_sub_jj = y_sub_list[MAX_EIGEN_NUMBER - 1]
     final_line = final_line + "[" + str(final_y_sub_jj[i, 0]) + ", " + str(final_y_sub_jj[i, 1]) + "]] "
+
+    final_line = final_line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[n-1]) + ","
+    final_line = final_line + "\"angleAddSub_basedcos\": " + str(angleAddSub_cosweighted[n-1]) + ","
+    final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1])
 
     final_line = final_line + "}"
     final_line = final_line + "]"

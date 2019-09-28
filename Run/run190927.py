@@ -14,7 +14,7 @@ from Main import Preturb
 
 # 以下为临时引用
 from Tools import MySort
-from JSON_Data import polygon_json190917
+from JSON_Data import polygon_json190927
 
 """"
 本程序是基于run190422.py修改的
@@ -437,7 +437,8 @@ def run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_number
 
     # 计算形变信息，鸿武七年九月十七日
     OutShape.angle1_2(save_path)
-    OutShape.angle_p_n_weighted(save_path=save_path)
+    OutShape.angle_p_n_weighted(save_path=save_path, vector_num=max_eigen_numbers)
+    OutShape.angle_p_n_1(save_path=save_path)
 
 
 def perturbation_adjust(y, y_add_v, y_sub_v):
@@ -533,7 +534,8 @@ if __name__ == "__main__":
     start_time = time()
     main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
     main_path_without_straighten = "F:\\result2019\\result0425without_straighten\\"
-    main_path = "F:\\result2019\\result0927\\"
+    # main_path = "F:\\result2019\\result0927\\"  # HP
+    main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
     data_name = "Wine"
     method = "PCA"
@@ -566,7 +568,7 @@ if __name__ == "__main__":
 
     # json_start = time()
     # # main_path2 = main_path + method + "\\" + data_name + "\\"
-    # polygon_json190917.merge_json(main_path, data_name, method, yita, method_k, max_k, eigen_numbers, threshold,
+    # polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, max_k, eigen_numbers, threshold,
     #                               adapt_threshold, group_num, draw_kind, MAX_EIGEN_NUMBER=eigen_numbers,
     #                               weighted=weighted, MAX_NK=MAX_NK)
     # json_end = time()
