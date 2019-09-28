@@ -563,16 +563,15 @@ if __name__ == "__main__":
         print("暂不支持，该组合形式")
 
     run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
-        method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize, do_straight=straighten,
-        weighted=weighted)
+        method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
+        do_straight=straighten, weighted=weighted)
 
-    # json_start = time()
-    # # main_path2 = main_path + method + "\\" + data_name + "\\"
-    # polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, max_k, eigen_numbers, threshold,
-    #                               adapt_threshold, group_num, draw_kind, MAX_EIGEN_NUMBER=eigen_numbers,
-    #                               weighted=weighted, MAX_NK=MAX_NK)
-    # json_end = time()
-    # print("合成json文件的时间为\t", json_end-json_start)
+    json_start = time()
+    # main_path2 = main_path + method + "\\" + data_name + "\\"
+    polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, nbrs_k, draw_kind, MAX_EIGEN_NUMBER=eigen_numbers,
+                                  weighted=weighted)
+    json_end = time()
+    print("合成json文件的时间为\t", json_end-json_start)
 
     end_time = time()
     print("程序的总运行时间为\t", end_time-start_time)
