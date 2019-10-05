@@ -1,5 +1,6 @@
 # 计算变形指标
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def angle1_2(save_path=''):
@@ -30,6 +31,11 @@ def angle1_2(save_path=''):
         sin_list[i] = np.sqrt(1-cos_list[i]*cos_list[i])
 
     np.savetxt(save_path+'sin_1_2.csv', sin_list, fmt='%f', delimiter=',')
+
+    plt.hist(sin_list)
+    plt.title('angle12Sin')
+    plt.savefig(save_path+'sin_1_2.png')
+    plt.close()
 
     return sin_list
 
@@ -103,6 +109,11 @@ def angle_p_n_weighted(save_path='', vector_num=2, weighted=True):
 
     np.savetxt(save_file, sum_list, fmt='%f', delimiter=',')
 
+    plt.hist(sum_list)
+    plt.title('angleAddSub_cosweighted')
+    plt.savefig(save_path+'angle_+-sum weighted.png')
+    plt.close()
+
     return sum_list
 
 
@@ -116,5 +127,9 @@ def angle_p_n_1(save_path=''):
     values = value_list[0]
 
     np.savetxt(save_path+'angle_p_n_basecos.csv', values, fmt='%f', delimiter=',')
+    plt.hist(values)
+    plt.title('angleAddSub_basedcos')
+    plt.savefig(save_path+'angleAddSub_basedcos.png')
+    plt.close()
 
     return values

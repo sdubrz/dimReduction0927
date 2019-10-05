@@ -573,7 +573,7 @@ def run_test(data_name0=None):
 if __name__ == "__main__":
     last_path, data_name, main_path = run_test()
 
-    do_remove = True  # 是否要做删除outlier操作
+    do_remove = False  # 是否要做删除outlier操作
     attri_name = 'sin_1_2.csv'
     threshold = 0.2
     compare = 'less'  # 'bigger' or 'less'
