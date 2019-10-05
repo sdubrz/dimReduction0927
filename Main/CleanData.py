@@ -35,8 +35,11 @@ def clean_by_index(data_name, main_path, remove_index=[]):
             clean_label[count] = oriangl_label[i]
             count += 1
 
+    y_random = np.random.random((n-n_remove, 2))
+
     np.savetxt(save_path+"data.csv", clean_data, fmt='%f', delimiter=',')
     np.savetxt(save_path+"label.csv", clean_label, fmt='%d', delimiter=',')
+    np.savetxt(save_path+'y_random.csv', y_random, fmt='%f', delimiter=',')
     print('数据清洗完成')
 
 
