@@ -524,17 +524,17 @@ def run_test(data_name0=None):
     main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
     main_path_without_straighten = "F:\\result2019\\result0425without_straighten\\"
     # main_path = "F:\\result2019\\result0927\\"  # HP
-    # main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
-    main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
+    main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
+    # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "Wine"
+    data_name = "olive"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "MDS"
-    yita = 0.5
+    yita = 0.3
     nbrs_k = 30
     method_k = 70
     eigen_numbers = 4
@@ -574,9 +574,9 @@ def run_test(data_name0=None):
 if __name__ == "__main__":
     last_path, data_name, main_path = run_test()
 
-    do_remove = True  # 是否要做删除outlier操作
+    do_remove = False  # 是否要做删除outlier操作
     attri_name = 'sin_1_2.csv'
-    threshold = 0.2
+    threshold = 0.8
     compare = 'less'  # 'bigger' or 'less'
 
     if do_remove:

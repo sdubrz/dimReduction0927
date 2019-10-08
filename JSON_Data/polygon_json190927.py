@@ -472,7 +472,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     # 最后一行
     final_line = "{"
     final_line = final_line + "\"x\": " + str(y[n-1, 0]) + ",\"y\": " + str(y[n-1, 1]) + ","
-    final_line = final_line + "\"cluster\": " + str(label[n-1]) + ","
+    final_line = final_line + "\"class\": " + str(label[n-1]) + ","
     final_line = final_line + "\"dNum\": " + str(m) + ",\"hdata\": ["
 
     for j in range(0, m - 1):
