@@ -527,7 +527,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "olive"
+    data_name = "pendigits"
     if data_name0 is None:
         pass
     else:
@@ -568,23 +568,23 @@ def run_test(data_name0=None):
     end_time = time()
     print("程序的总运行时间为\t", end_time - start_time)
 
-    return last_path, data_name, main_path
+    return last_path, data_name, main_path, method
 
 
 if __name__ == "__main__":
-    last_path, data_name, main_path = run_test()
+    last_path, data_name, main_path, method = run_test()
 
-    do_remove = False  # 是否要做删除outlier操作
-    attri_name = 'sin_1_2.csv'
-    threshold = 0.8
+    do_remove = True  # 是否要做删除outlier操作
+    attri_name = "angle_+-sumweighted.csv"  # "angle_+-sumweighted.csv"  'sin_1_2.csv'
+    threshold = 0.2
     compare = 'less'  # 'bigger' or 'less'
 
     if do_remove:
         if compare == 'less':
             CleanData.clean_small_value(data_name, main_path=main_path, last_path=last_path, attri_file=attri_name,
-                                        threshold=threshold)
-            run_test(data_name0=data_name+"Clean")
+                                        threshold=threshold, method=method)
+            run_test(data_name0=data_name+"Clean " + method + " " + attri_name + " " + compare + " " + str(threshold))
         elif compare == 'bigger':
             CleanData.clean_big_value(data_name, main_path=main_path, last_path=last_path, attri_file=attri_name,
-                                        threshold=threshold)
-            run_test(data_name0=data_name + "Clean")
+                                        threshold=threshold, method=method)
+            run_test(data_name0=data_name + "Clean " + method + " " + attri_name + " " + compare + " " + str(threshold))

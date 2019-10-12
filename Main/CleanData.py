@@ -3,7 +3,7 @@ import numpy as np
 from Main import Preprocess
 
 
-def clean_by_index(data_name, main_path, remove_index=[]):
+def clean_by_index(data_name, main_path, remove_index=[], append_path=None):
     """
     根据索引号删除不好的数据
     :param data_name: 原数据集名称
@@ -13,7 +13,10 @@ def clean_by_index(data_name, main_path, remove_index=[]):
     """
     print('通过噪声索引清洗数据')
     read_path = main_path + "datasets\\" + data_name + "\\"
-    save_path = main_path + "datasets\\" + data_name + "Clean" + "\\"
+    save_path = main_path + "datasets\\" + data_name + "Clean"
+    if not(append_path is None):
+        save_path = save_path + append_path
+    save_path = save_path + "\\"
     Preprocess.check_filepath(save_path)
 
     oriangl_data_reader = np.loadtxt(read_path+"data.csv", dtype=np.str, delimiter=',')
@@ -40,10 +43,11 @@ def clean_by_index(data_name, main_path, remove_index=[]):
     np.savetxt(save_path+"data.csv", clean_data, fmt='%f', delimiter=',')
     np.savetxt(save_path+"label.csv", clean_label, fmt='%d', delimiter=',')
     np.savetxt(save_path+'y_random.csv', y_random, fmt='%f', delimiter=',')
+    np.savetxt(save_path+'remove_index.csv', remove_index, fmt='%f', delimiter=',')
     print('数据清洗完成')
 
 
-def clean_small_value(data_name, main_path, last_path, attri_file, threshold):
+def clean_small_value(data_name, main_path, last_path, attri_file, threshold, method):
     """
     删除某个属性值过小的数据
     :param data_name: 原数据集的名字
@@ -63,10 +67,12 @@ def clean_small_value(data_name, main_path, last_path, attri_file, threshold):
         if values[i] < threshold:
             remove_index.append(i)
 
-    clean_by_index(data_name, main_path, remove_index)
+    append_path = " " + method + " " + attri_file + " " + "less" + " " + str(threshold)
+
+    clean_by_index(data_name, main_path, remove_index, append_path=append_path)
 
 
-def clean_big_value(data_name, main_path, last_path, attri_file, threshold):
+def clean_big_value(data_name, main_path, last_path, attri_file, threshold, method):
     """
     删除某个属性值过大的数据
     :param data_name: 原数据集的名字
@@ -86,4 +92,6 @@ def clean_big_value(data_name, main_path, last_path, attri_file, threshold):
         if values[i] > threshold:
             remove_index.append(i)
 
-    clean_by_index(data_name, main_path, remove_index)
+    append_path = " " + method + " " + attri_file + " " + "bigger" + " " + str(threshold)
+
+    clean_by_index(data_name, main_path, remove_index, append_path=append_path)
