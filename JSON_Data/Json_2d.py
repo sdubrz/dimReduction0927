@@ -93,13 +93,13 @@ def create_json(path='', k=10, line_length=0.1, draw_spline=False):
             if j != i_n-1:
                 line = line + ","
         line = line + "], "
-        line = line + "\"angles\": 90.0, \"eigenNumber\": 2, \"proportion\": 1.0,"
+        line = line + "\"angles\": 90.0, \"eigenNumber\": 3, \"proportion\": 1.0,"
         line = line + "\"linearity\": 2.0, \"linearityEqualized\": 2.0,"  # 这个暂时是不准确的
         line = line + "\"linearProject\": 2.0, "  # 这个暂时也是不准确的
         line = line + "\"linearChange\": 0.0, \"angleAddSub\": 180.0,"
         line = line + "\"polygonSize\": 0.003, \"starPolygonSize\": 0.003, "  # 暂时不准确
-        line = line + "\"y_add_points\": [[0.0, 0.0], [0.0, 0.0]], "  # 暂时不准确
-        line = line + "\"y_sub_points\": [[0.0, 0.0], [0.0, 0.0]], "  # 暂时不准确
+        line = line + "\"y_add_points\": [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]], "  # 暂时不准确
+        line = line + "\"y_sub_points\": [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]], "  # 暂时不准确
         line = line + "\"angleAddSub_basedcos\": 1.0, \"angleAddSub_cosweighted\": 1.0, \"angle12Sin\":1.0"
         line = line + "}"
         if i != n-1:

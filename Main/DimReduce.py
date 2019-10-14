@@ -37,7 +37,7 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None):
 
     if method == 'tsne' or method == 't-SNE':
         print("[DimReduce]\t当前使用 t-SNE 降维方法")
-        tsne = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=y_random)
+        tsne = TSNE(n_components=2, n_iter=1000, perplexity=method_k / 3, init=y_random)
         y = tsne.fit_transform(data)
 
     elif method == 'MDS' or method == 'mds':
