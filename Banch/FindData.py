@@ -7,7 +7,13 @@ from Main import DimReduce
 from Main import Preprocess
 
 
-def look_data(path):
+def look_data(path, iso_k=30):
+    """
+    查看数据集使用基本的降维方法的效果
+    :param path: 数据的存放目录
+    :param iso_k: 计算测地线距离的k值
+    :return:
+    """
     data_reader = np.loadtxt(path+"data.csv", dtype=np.str, delimiter=',')
     data = data_reader[:, :].astype(np.float)
     label_reader = np.loadtxt(path + "label.csv", dtype=np.str, delimiter=',')
@@ -19,7 +25,7 @@ def look_data(path):
     pca_y = DimReduce.dim_reduce(X, method='PCA')
     mds_y = DimReduce.dim_reduce(X, method='MDS')
     tsne_y = DimReduce.dim_reduce(X, method='t-SNE', method_k=90)
-    iso_y = DimReduce.dim_reduce(X, method='Isomap', method_k=30)
+    iso_y = DimReduce.dim_reduce(X, method='Isomap', method_k=iso_k)
     print('降维结束')
 
     plt.subplot(221)
@@ -40,9 +46,9 @@ def look_data(path):
 
 def run():
     main_path = "E:\\Project\\result2019\\result0927\\"
-    data_name = 'spacespace'
+    data_name = 'swissroll2rolls'
     path = main_path + "datasets\\" + data_name + "\\"
-    look_data(path)
+    look_data(path, iso_k=15)
 
 
 if __name__ == '__main__':
