@@ -61,9 +61,9 @@ def fengkang_data(path):
 
 def run():
     main_path = "E:\\Project\\result2019\\result0927\\"
-    data_name = 'world_9d'
+    data_name = 'ecoli'
     path = main_path + "datasets\\" + data_name + "\\"
-    fengkang_data(path)
+    # fengkang_data(path)
     look_data(path, iso_k=15)
 
 
