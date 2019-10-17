@@ -527,17 +527,17 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "pendigits"
+    data_name = "isabel5attrs375"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "MDS"
-    yita = 0.3
-    nbrs_k = 30
+    yita = 0.15
+    nbrs_k = 20
     method_k = 70
-    eigen_numbers = 4
+    eigen_numbers = 3
     draw_kind = "b-spline"
     normalize = True
     straighten = True  # 是否进行校直操作
@@ -574,7 +574,7 @@ def run_test(data_name0=None):
 if __name__ == "__main__":
     last_path, data_name, main_path, method = run_test()
 
-    do_remove = True  # 是否要做删除outlier操作
+    do_remove = False  # 是否要做删除outlier操作
     attri_name = "angle_+-sumweighted.csv"  # "angle_+-sumweighted.csv"  'sin_1_2.csv'
     threshold = 0.2
     compare = 'less'  # 'bigger' or 'less'
