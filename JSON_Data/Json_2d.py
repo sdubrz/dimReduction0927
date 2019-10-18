@@ -79,7 +79,7 @@ def create_json(path='', k=10, line_length=0.1, draw_spline=False):
     b_spline_list = draw_b_spline(path=path, k=k, line_length=line_length, draw=draw_spline)
 
     # 生成json数据
-    jsonfile = open(path + "bad2d_data.json", 'w')
+    jsonfile = open(path + "2d_data.json", 'w')
     jsonfile.write('[')
 
     for i in range(0, n):
