@@ -33,6 +33,48 @@ def random_index(low, up, n):
     return index_list
 
 
+def change_norm(Y0, Y2):
+    """
+    计算两个降维结果的改变量
+    :param Y0: 第一次降维结果
+    :param Y2: 第二次降维结果
+    :return:
+    """
+    (n, m) = Y0.shape
+    change = np.zeros((n, 1))
+    for i in range(0, n):
+        change[i] = np.linalg.norm(Y0[i, :] - Y2[i, :])
+
+    return change
+
+
+def draw_change_hist(Y0, Y2, stable_list):
+    """
+    分别画出扰动的点和未扰动的点，降维结果改变量的直方图
+    :param Y0: 第一次降维结果
+    :param Y2: 第二次降维结果
+    :param stable_list: 没有进行扰动的点的索引集合
+    :return:
+    """
+    (n, m) = Y0.shape
+    change = change_norm(Y0, Y2)
+    preturb_change = []
+    stable_change = []
+    for i in range(0, n):
+        if i in stable_list:
+            stable_change.append(change[i, 0])
+        else:
+            preturb_change.append(change[i, 0])
+
+    plt.subplot(121)
+    plt.hist(preturb_change, bins=20)
+    plt.title('preturb points\' change')
+    plt.subplot(122)
+    plt.hist(stable_change, bins=20)
+    plt.title('stable points\' change')
+    plt.show()
+
+
 def preturb_whole(X, vectors):
     """
     一次性对所有的样本添加扰动。
@@ -47,11 +89,11 @@ def preturb_whole(X, vectors):
     print(y_random)
 
     eta = 0.1
-    method = 'MDS'
+    # method = 'MDS'
 
     Y = DimReduce.dim_reduce(X, method='MDS', y_random=y_random)
     # 随机地挑选10个点不动
-    stable = 177
+    stable = 10
     stable_list = random_index(0, n, stable)
     X2 = X + eta*vectors
     for index in stable_list:
@@ -69,7 +111,11 @@ def preturb_whole(X, vectors):
         plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c=line_color, linewidth=0.6)
 
     plt.title('eta = ' + str(eta) + ", stable = " + str(stable))
+    ax = plt.gca()
+    ax.set_aspect(1)
     plt.show()
+
+    draw_change_hist(Y, Y2, stable_list)
 
 
 def run():
