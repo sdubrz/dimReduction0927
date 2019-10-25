@@ -91,7 +91,8 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
         tsne = TSNE(n_components=2, perplexity=method_k / 3, init=y_init)
         y = tsne.fit_transform(data)
     else:
-        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)
+        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
+        # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)
 
     # 开始执行扰动计算
     for loop_index in range(0, MAX_EIGEN_COUNT):

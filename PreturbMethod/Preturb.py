@@ -91,7 +91,7 @@ def preturb_whole(X, vectors):
     eta = 0.1
     # method = 'MDS'
 
-    Y = DimReduce.dim_reduce(X, method='MDS', y_random=y_random)
+    Y = DimReduce.dim_reduce(X, method='MDS')
     # 随机地挑选10个点不动
     stable = 10
     stable_list = random_index(0, n, stable)
