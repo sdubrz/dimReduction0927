@@ -264,6 +264,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         read_path = read_path + "_weighted"
     else:
         read_path = read_path + "_withoutweight"
+
     read_path = read_path + "\\"
 
     y_reader = np.loadtxt(read_path+"y.csv", dtype=np.str, delimiter=",")  # 原始数据的降维结果

@@ -151,6 +151,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         save_path = save_path + "_weighted"
     else:
         save_path = save_path + "_withoutweight"
+
     save_path = save_path + "\\"
 
     Preprocess.check_filepath(save_path)
@@ -523,7 +524,7 @@ def run_test(data_name0=None):
         """
     start_time = time()
     main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
-    main_path_without_straighten = "F:\\result2019\\result0425without_straighten\\"
+    main_path_without_straighten = "F:\\result2019\\result1026without_straighten\\"
     # main_path = "F:\\result2019\\result0927\\"  # HP
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
@@ -541,7 +542,7 @@ def run_test(data_name0=None):
     eigen_numbers = 4
     draw_kind = "b-spline"
     normalize = True
-    straighten = True  # 是否进行校直操作
+    straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
