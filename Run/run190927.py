@@ -16,6 +16,7 @@ from Tools import MySort
 from JSON_Data import polygon_json190927
 from JSON_Data import Json_2d
 from JSON_Data import CircleScatter
+from Main import MainDirector
 
 """"
 本程序是基于run190422.py修改的
@@ -527,14 +528,14 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "Wine"
+    data_name = "seeds"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "MDS"
-    yita = 0.3
+    yita = 0.1
     nbrs_k = 30
     method_k = 70
     eigen_numbers = 4
@@ -573,6 +574,8 @@ def run_test(data_name0=None):
 
     CircleScatter.circle_json(last_path, r=0.05)
     print('生成散点json完成')
+
+    MainDirector.draw_main_director(last_path)
 
     return last_path, data_name, main_path, method
 
