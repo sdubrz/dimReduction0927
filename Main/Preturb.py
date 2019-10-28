@@ -11,7 +11,7 @@ from Tools import SymbolAdjust
 
 
 def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
-                 yita=0.1, save_path="", weighted=True):
+                 yita=0.1, save_path="", weighted=True, P_matrix=None):
     """
     一次性对所有的点添加扰动，是之前使用过的方法
     这里各个特征向量的扰动按照特征值的比重添加权重
@@ -25,6 +25,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     :param yita: 扰动所乘的系数
     :param save_path: 存储中间结果的路径
     :param weighted: 特征向量作为扰动时是否按照其所对应的特征值分配权重
+    :param P_matrix: 一个 dim × 2 的矩阵，直接观测数据中的两个维度，可以看做是一种线性降维方法
     :return:
     """
     data_shape = data.shape
@@ -86,6 +87,10 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
         P = np.transpose(P_)
         y = np.matmul(data, P)
         np.savetxt(save_path+"P.csv", P, fmt="%f", delimiter=",")
+    elif method_name == "P_matrix" and not (P_matrix is None):
+        print("当前使用普通的线性降维方法")
+        y = np.matmul(data, P_matrix)
+        np.savetxt(save_path + "P_matrix.csv", P_matrix, fmt="%f", delimiter=",")
     elif method_name == "tsne2" or method_name == "t-SNE2":
         print('当前使用比较稳定的t-SNE方法')
         tsne = TSNE(n_components=2, perplexity=method_k / 3, init=y_init)
@@ -113,6 +118,10 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
             print('当前使用PCA方法')
             y_add_v = np.matmul(x_add_v, P)
             y_sub_v = np.matmul(x_sub_v, P)
+        elif method_name == "P_matrix" and not (P_matrix is None):
+            print("当前使用普通的线性降维方法")
+            y_add_v = np.matmul(x_add_v, P_matrix)
+            y_sub_v = np.matmul(x_sub_v, P_matrix)
         elif method_name == "tsne2" or method_name == "t-SNE2":
             print('当前使用比较稳定的t-SNE方法')
             tsne = TSNE(n_components=2, n_iter=1, perplexity=method_k / 3, init=y)
@@ -123,7 +132,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
             # y_sub_v = 2*y-y_add_v  # 胡乱加的，要改回去
             y_sub_v = DimReduce.dim_reduce(x_sub_v, method=method_name, method_k=method_k, y_random=y)
 
-        y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)
+        y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)  # 这个是防止翻转的那种情况发生的。
         y_sub_v = SymbolAdjust.symbol_adjust(y, y_sub_v)
 
         y_list_add.append(y_add_v)

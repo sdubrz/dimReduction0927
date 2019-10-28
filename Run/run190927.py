@@ -92,7 +92,7 @@ def local_pca_calculated(path):
 
 def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
-        weighted=True):
+        weighted=True, P_matrix=None):
     """"
 
     :param main_path: 主文件目录
@@ -116,6 +116,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     :param weighted: 在使用特征向量作为扰动的时候是否需要根据其特征值分配权重
     :param MAX_NK: 是一个元组，并且这个元组中的两个数都是0~1之间的值。第一个值控制k值差别大小，第二个值控制超过差别阈值的邻居个数
                     如果一个点的dim+1邻域中有超过(dim+1)*MAX_NK[1]个点与这个点的k值差别超过了(MAX_K-dim-1)*MAX_NK[0]，则我们需要考虑采取措施
+    :param P_matrix: 普通的线性降维方法的投影矩阵
 
     @author subbrz
     2018年12月20日
@@ -184,7 +185,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                           method_k=method_k,
                                                           MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
                                                           yita=yita,
-                                                          save_path=save_path, weighted=weighted)
+                                                          save_path=save_path, weighted=weighted, P_matrix=P_matrix)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
 
@@ -507,6 +508,17 @@ def star_polygons(y, y_list_add, y_list_sub, max_eigen_numbers):
     return star_shape_list
 
 
+def data_shape(main_path, data_name):
+    """
+    获取数据的维度数和样本数
+    :param main_path: 主文件目录
+    :param data_name: 数据集名称
+    :return:
+    """
+    data = np.loadtxt(main_path+"datasets\\"+data_name+"\\data.csv", dtype=np.float, delimiter=",")
+    return data.shape
+
+
 def run_test(data_name0=None):
     """"
         画图方法：
@@ -524,26 +536,27 @@ def run_test(data_name0=None):
         """
     start_time = time()
     main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
-    main_path_without_straighten = "F:\\result2019\\result1026without_straighten\\"
+    main_path_without_straighten = "E:\\project\\result2019\\result1026without_straighten\\"  # 华硕
     # main_path = "F:\\result2019\\result0927\\"  # HP
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "seeds"
+    data_name = "Wine"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"
+    method = "P_matrix"  # "PCA" "MDS" "P_matrix"
     yita = 0.1
-    nbrs_k = 30
-    method_k = 70
+    nbrs_k = 15
+    method_k = 30
     eigen_numbers = 4
     draw_kind = "b-spline"
     normalize = True
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
+    P_matrix = None  # 普通的线性降维方法的投影矩阵
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     if not normalize:
@@ -555,9 +568,18 @@ def run_test(data_name0=None):
     if (not normalize) and (not straighten):
         print("暂不支持，该组合形式")
 
+    # 继续设置普通的线性降维方法的参数
+    (n, m) = data_shape(main_path, data_name)
+    if method == "P_matrix":
+        P_matrix = np.zeros((m, 2))
+        x_index = 12  # 第一个维度
+        y_index = 9  # 第二个维度
+        P_matrix[x_index, 0] = 1
+        P_matrix[y_index, 1] = 1
+
     last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
-        method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
-        do_straight=straighten, weighted=weighted)
+        method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
+        do_straight=straighten, weighted=weighted, P_matrix=P_matrix)
 
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
