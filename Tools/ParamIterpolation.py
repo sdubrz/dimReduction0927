@@ -38,5 +38,31 @@ def test2():
     plt.show()
 
 
+def cubic_spline_test():
+    x = np.arange(0, 2 * np.pi + np.pi / 4, 2 * np.pi / 8)
+    y = np.sin(x)
+    tck = interpolate.splrep(x, y, s=0)
+    xnew = np.arange(0, 2 * np.pi, np.pi / 50)
+    ynew = interpolate.splev(xnew, tck, der=0)
+
+    plt.figure()
+    plt.plot(x, y, 'x', xnew, ynew, xnew, np.sin(xnew), x, y, 'b')
+    plt.legend(['Linear', 'Cubic Spline', 'True'])
+    plt.axis([-0.05, 6.33, -1.05, 1.05])
+    plt.title('Cubic-spline interpolation')
+    plt.show()
+
+
+def test3():
+    x = [51, 188, 322, 306, 68]
+    y = [51, 69, 95, 392, 185]
+    for i in range(0, len(y)):
+        y[i] = y[i] * -1
+
+    plt.scatter(x, y, marker='o')
+    x_min = 
+
+
 if __name__ == '__main__':
-    test2()
+    # test2()
+    cubic_spline_test()
