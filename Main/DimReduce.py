@@ -2,7 +2,8 @@ import numpy as np
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 from sklearn.manifold import MDS
-from sklearn.manifold import Isomap
+# from sklearn.manifold import Isomap
+from Main.MyIsomap import Isomap
 from sklearn.manifold import LocallyLinearEmbedding
 
 
@@ -50,7 +51,7 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None):
 
     elif method == 'isomap' or method == 'Isomap':
         print("[DimReduce]\t当前使用 Isomap 降维方法")
-        iso_map = Isomap(n_neighbors=method_k, n_components=2, eigen_solver='dense')
+        iso_map = Isomap(n_neighbors=method_k, n_components=2, init=y_random)
         y = iso_map.fit_transform(data)
 
     elif method == 'LLE' or method == 'lle':
