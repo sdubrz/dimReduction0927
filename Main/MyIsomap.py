@@ -41,11 +41,12 @@ class Isomap:
 
 
 def test():
-    path = "E:\\Project\\result2019\\result0927\\Isomap\\test\\"
+    path = "E:\\Project\\result2019\\result0927\\Isomap\\test\\swiss2roll\\"
     X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=',')
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
     print((n, m))
-    k = 15
+    k = 5
 
     # 用 sklearn 库中的 Isomap 做实验
     iso_map0 = Isomap0(n_neighbors=k, n_components=2, eigen_solver='dense')
@@ -55,11 +56,12 @@ def test():
     iso_map = Isomap(n_neighbors=k)
     y = iso_map.fit_transform(X)
 
+    colors = ['r', 'g', 'b', 'm', 'c', 'y']
     plt.subplot(121)
-    plt.scatter(y[:, 0], y[:, 1], marker='o')
+    plt.scatter(y[:, 0], y[:, 1], marker='o', c=label)
     plt.title("My Isomap ")
     plt.subplot(122)
-    plt.scatter(y0[:, 0], y0[:, 1], marker='o')
+    plt.scatter(y0[:, 0], y0[:, 1], marker='o', c=label)
     plt.title("sklearn Isomap")
     plt.show()
 
