@@ -60,7 +60,6 @@ def test3():
         y[i] = y[i] * -1
 
     plt.scatter(x, y, marker='o')
-    x_min = 
 
 
 if __name__ == '__main__':
