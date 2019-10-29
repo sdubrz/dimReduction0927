@@ -356,7 +356,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                 temp_convex = np.array(temp_convex0)
 
             # 计算B样条
-            if len(temp_convex) > 3:
+            if len(temp_convex) >= 3:
                 splines = b_spline.bspline(temp_convex, n=100, degree=3, periodic=True)
                 spline_x, spline_y = splines.T
             else:
@@ -366,7 +366,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                     spline_x.append(temp_convex[j, 0])
                     spline_y.append(temp_convex[j, 1])
 
-            if len(temp_convex) < 4:
+            if len(temp_convex) < 3:
                 print('bad')
             plt.plot(spline_x, spline_y, linewidth=0.6, c='deepskyblue', alpha=0.7)
 
@@ -541,16 +541,16 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "seeds"
+    data_name = "olive"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "Isomap"  # "PCA" "MDS" "P_matrix"
-    yita = 0.1
-    nbrs_k = 15
-    method_k = 30
+    method = "Isomap"  # "PCA" "MDS" "P_matrix" "Isomap"
+    yita = 0.01
+    nbrs_k = 20
+    method_k = 20
     eigen_numbers = 4
     draw_kind = "b-spline"
     normalize = True
