@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from BSpline import b_spline
 from Dim2LocalPCA import LocalPCA_2dim
+import json
 
 
 def draw_b_spline(path='', k=10, line_length=0.1, draw=False):
@@ -108,6 +109,53 @@ def create_json(path='', k=10, line_length=0.1, draw_spline=False):
     jsonfile.write(']')
     jsonfile.close()
     print('已成功生成二维的json文件')
+
+
+def create_json2(path='', k=10, line_length=0.1, draw_spline=False):
+    """
+    生成可供系统使用的json文件，除了B-Spline图形之外，其余属性全部与 polygon_json190927.py 版本一致
+    :param path: 文件操作的目录
+    :param k: 近邻数
+    :param line_length: 控制图形的大小，一般取0.1比较合适
+    :parm draw_spline: 是否画出B-spline
+    :return:
+    """
+    y_reader = np.loadtxt(path + "y.csv", dtype=np.str, delimiter=',')
+    Y = y_reader[:, :].astype(np.float)
+    (n, dim) = Y.shape
+    label_reader = np.loadtxt(path + "label.csv", dtype=np.str, delimiter=',')
+    label = label_reader.astype(np.int)
+
+    b_spline_list = draw_b_spline(path=path, k=k, line_length=line_length, draw=draw_spline)
+
+    f = open(path + "temp_total.json", encoding='utf-8')
+    data = json.load(f)
+    index = 0
+    for item in data:
+        spline = b_spline_list[index]
+        item['pointsNum'] = spline.shape[0]
+        item['polygon'] = spline.tolist()
+        index += 1
+
+    out_file = open(path + "2d_data.json", "w")
+    out_file.write('[')
+    index = 0
+    for item in data:
+        line1 = str(item)
+        line2 = ''
+        for a_c in line1:
+            if a_c == '\'':
+                line2 = line2 + '\"'
+            else:
+                line2 = line2 + a_c
+        out_file.write(line2)
+        index += 1
+        if index == n:
+            out_file.write(']')
+        else:
+            out_file.write(',\n')
+    out_file.close()
+    print("已成功生成二维local PCA的json文件")
 
 
 def test():

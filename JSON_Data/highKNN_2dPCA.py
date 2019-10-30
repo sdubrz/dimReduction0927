@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from BSpline import b_spline
 from Dim2LocalPCA import LocalPCA_2dim
 
+import json
+
 
 def draw_b_spline(path="", line_length=0.1, draw=False):
     """
@@ -65,7 +67,6 @@ def create_json(path='', line_length=0.1, draw_spline=False):
     """
     生成可供系统使用的json文件，除了散点的坐标点以及B-spline图形之外的属性不保证准确
     :param path: 文件操作的目录
-    :param k: 近邻数
     :param line_length: 控制图形的大小，一般取0.1比较合适
     :parm draw_spline: 是否画出B-spline
     :return:
@@ -109,6 +110,55 @@ def create_json(path='', line_length=0.1, draw_spline=False):
         jsonfile.write(line)
     jsonfile.write(']')
     jsonfile.close()
+    print('已成功生成高维邻域二维数据的json文件')
+
+
+def create_json2(path='', line_length=0.1, draw_spline=False):
+    """
+    生成可供使用的json文件，除了B-Spline图形的数据之外，其余属性的值全部复制自对local PCA降维的版本的值
+    :param path: 文件操作的主目录
+    :param line_length: 控制图形的大小，一般取0.1
+    :param draw_spline: 在计算完成之后，是否画出图形
+    :return:
+    """
+
+    y_reader = np.loadtxt(path + "y.csv", dtype=np.str, delimiter=',')
+    Y = y_reader[:, :].astype(np.float)
+    (n, dim) = Y.shape
+    label_reader = np.loadtxt(path + "label.csv", dtype=np.str, delimiter=',')
+    label = label_reader.astype(np.int)
+    knn = np.loadtxt(path + "【weighted】knn.csv", dtype=np.int, delimiter=",")
+    (n, k) = knn.shape
+
+    b_spline_list = draw_b_spline(path=path, line_length=line_length, draw=draw_spline)
+
+    f = open(path + "temp_total.json", encoding='utf-8')
+    data = json.load(f)
+    index = 0
+    for item in data:
+        spline = b_spline_list[index]
+        item['pointsNum'] = spline.shape[0]
+        item['polygon'] = spline.tolist()
+        index += 1
+
+    out_file = open(path + "highKNN_2d_LocalPCA.json", "w")
+    out_file.write('[')
+    index = 0
+    for item in data:
+        line1 = str(item)
+        line2 = ''
+        for a_c in line1:
+            if a_c == '\'':
+                line2 = line2 + '\"'
+            else:
+                line2 = line2 + a_c
+        out_file.write(line2)
+        index += 1
+        if index == n:
+            out_file.write(']')
+        else:
+            out_file.write(',\n')
+    out_file.close()
     print('已成功生成高维邻域二维数据的json文件')
 
 
