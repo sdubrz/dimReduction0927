@@ -5,15 +5,21 @@ from Main import Preprocess
 from Main import LocalPCA
 
 
-def local_pca_2dim(Y, k):
+def local_pca_2dim(Y, k, knn=None, knn_precomputed=False):
     """
     计算二维数据的 local PCA
     :param Y: 数据矩阵，每一行是一个二维的点
     :param k: 邻域大小
+    :param knn: 邻居关系图矩阵
+    :param knn_precomputed: K近邻关系是否已经计算过
     :return:
     """
     (n, dim) = Y.shape
-    nbrs_index = Preprocess.knn(Y, k)
+    nbrs_index = None
+    if knn_precomputed:
+        nbrs_index = knn
+    else:
+        nbrs_index = Preprocess.knn(Y, k)
 
     local_eigenvalues = np.zeros((n, dim))
     first_eigenvectors = np.zeros((n, dim))
@@ -41,4 +47,6 @@ def local_pca_2dim_file(path='', k=10):
     Y = y_reader[:, :].astype(np.float)
 
     return local_pca_2dim(Y, k)
+
+
 

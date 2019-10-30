@@ -16,6 +16,7 @@ from Tools import MySort
 from JSON_Data import polygon_json190927
 from JSON_Data import Json_2d
 from JSON_Data import CircleScatter
+from JSON_Data import highKNN_2dPCA
 from Main import MainDirector
 
 """"
@@ -592,11 +593,13 @@ def run_test(data_name0=None):
     end_time = time()
     print("程序的总运行时间为\t", end_time - start_time)
 
-    Json_2d.create_json(last_path, k=nbrs_k, line_length=0.1, draw_spline=True)
+    Json_2d.create_json(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
     print("计算二维完成")
 
     CircleScatter.circle_json(last_path, r=0.05)
     print('生成散点json完成')
+
+    highKNN_2dPCA.create_json(last_path, line_length=0.1)
 
     MainDirector.draw_main_director(last_path)
 
