@@ -55,6 +55,7 @@ def coil_20():
     pca = PCA(n_components=16)
     Y = pca.fit_transform(X)
     np.savetxt(path+"Y16.csv", Y, fmt='%f', delimiter=",")
+    np.savetxt(path+"Y16_5class.csv", Y[0:5*72, :], fmt='%f', delimiter=",")
     print("数据处理完毕")
 
 
