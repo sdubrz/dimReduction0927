@@ -25,6 +25,30 @@ def local_pca_dn(data):
     return vectors, values
 
 
+def local_cov(X, knn):
+    """
+    计算 每个点的局部协方差矩阵
+    :param X: 数据矩阵
+    :param knn: K近邻关系矩阵
+    :return:
+    """
+    (n, m) = X.shape
+    (n, k) = knn.shape
+
+    COV = np.zeros((n, m, m))
+    for i in range(0, n):
+        local_data = np.zeros((k, m))
+        for j in range(0, k):
+            local_data[j, :] = X[knn[i, j], :]
+
+        mean_v = np.mean(local_data, axis=0)
+        meant_data = local_data - mean_v
+        i_cov = np.matmul(meant_data.T, meant_data)
+        COV[i] = i_cov
+
+    return COV
+
+
 def how_many_eigens(data, k, threshold=0.8):
     """
     对data计算local-PCA，计算最少需要多少个特征值，才能使得占特征值总和的比重超过threshold
