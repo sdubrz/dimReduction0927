@@ -51,11 +51,21 @@ def test():
 def run_test():
     path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_5class\\"
     X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    (n, m) = X.shape
 
     X = Preprocess.normalize(X, -1, 1)
-    D = local_pca_distance(X, 30)
+    local_cov_D = local_pca_distance(X, 30)
 
-    np.savetxt(path+"D.csv", D, fmt='%f', delimiter=",")
+    np.savetxt(path+"cov_D.csv", local_cov_D, fmt='%f', delimiter=",")
+
+    D = np.zeros((n, n))
+    for i in range(0, n-1):
+        for j in range(i+1, n):
+            d = np.linalg.norm(X[i, :] - X[j, :])
+            D[i, j] = d
+            D[j, i] = d
+
+    np.savetxt(path+"distance.csv", D, fmt='%f', delimiter=",")
 
 
 if __name__ == '__main__':

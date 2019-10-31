@@ -17,9 +17,9 @@ def draw_main_director(path):
 
     colors = ['r', 'g', 'b', 'm', 'yellow', 'k', 'c']
     for i in range(0, n):
-        plt.scatter(Y[i, 0], Y[i, 1], marker='o', c=colors[label[i]], alpha=0.9)
-        plt.plot([Y[i, 0], Y1[i, 0]], [Y[i, 1], Y1[i, 1]], linewidth=0.7, c=colors[label[i]], alpha=0.7)
-        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], linewidth=0.7, c=colors[label[i]], alpha=0.7)
+        plt.scatter(Y[i, 0], Y[i, 1], marker='o', c=colors[label[i] % len(colors)], alpha=0.9)
+        plt.plot([Y[i, 0], Y1[i, 0]], [Y[i, 1], Y1[i, 1]], linewidth=0.7, c=colors[label[i] % len(colors)], alpha=0.7)
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], linewidth=0.7, c=colors[label[i] % len(colors)], alpha=0.7)
 
     ax = plt.gca()
     ax.set_aspect(1)
