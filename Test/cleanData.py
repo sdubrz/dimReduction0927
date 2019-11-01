@@ -27,9 +27,9 @@ def bostonHouse6912():
     data2 = np.zeros((n, 3))
     data2[:, 0] = data[:, 5]
     data2[:, 1] = data[:, 8]
-    data2[:, 2] = data[:, 13]
+    data2[:, 2] = data[:, 12]
 
-    np.savetxt(path+"data2.csv", data2, fmt="%f", delimiter=",")
+    np.savetxt(path+"data3.csv", data2, fmt="%f", delimiter=",")
     print("数据处理完毕")
 
 
@@ -87,9 +87,48 @@ def see_news20():
     plt.show()
 
 
+def eclipse(a, b, x0=0.0, y0=0.0):
+    """
+    计算椭圆
+    :param a: 长轴
+    :param b: 短轴
+    :param x0: 中心点横坐标
+    :param y0: 中心点纵坐标
+    :return:
+    """
+    points = []
+    for t in range(0, 360):
+        x = a * np.cos(t*np.pi/180) + x0
+        y = b * np.sin(t*np.pi/180) + y0
+        points.append([x, y])
+
+    return np.array(points)
+
+
+def show_eclipse():
+    eclipse1 = eclipse(6, 5)
+    eclipse2 = eclipse(36, 25)
+
+    plt.subplot(121)
+    plt.plot(eclipse1[:, 0], eclipse1[:, 1])
+    ax = plt.gca()
+    ax.set_aspect(1)  #
+    plt.title("6:5")
+
+    plt.subplot(122)
+    plt.plot(eclipse2[:, 0], eclipse2[:, 1])
+    ax = plt.gca()
+    ax.set_aspect(1)  #
+    plt.title("36:25")
+
+    plt.show()
+
+
 if __name__ == '__main__':
     # wine_quality_red()
-    # bostonHouse6912()
+    bostonHouse6912()
     # coil_20()
-    news20_group()
+    # news20_group()
     # see_news20()
+    # show_eclipse()
+
