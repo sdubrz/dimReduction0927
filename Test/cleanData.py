@@ -59,7 +59,37 @@ def coil_20():
     print("数据处理完毕")
 
 
+def news20_group():
+    path = "E:\\Project\\DataLab\\20news-18828\\"
+    data = np.loadtxt(path+"vector.csv", dtype=np.float, delimiter=",")
+
+    (n, m) = data.shape
+    print((n, m))
+    X = Preprocess.normalize(data, -1, 1)
+    pca = PCA(n_components=2)
+    Y = pca.fit_transform(X)
+    plt.scatter(Y[:, 0], Y[:, 1])
+    plt.show()
+
+
+def see_news20():
+    path = "E:\\Project\\DataLab\\20news-18828\\"
+    data = np.loadtxt(path + "vector64.csv", dtype=np.float, delimiter=",")
+
+    (n, m) = data.shape
+    print((n, m))
+    X = Preprocess.normalize(data[0:1000, :], -1, 1)
+
+    pca = PCA(n_components=2)
+    Y = pca.fit_transform(X)
+
+    plt.scatter(Y[:, 0], Y[:, 1])
+    plt.show()
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
-    coil_20()
+    # coil_20()
+    news20_group()
+    # see_news20()
