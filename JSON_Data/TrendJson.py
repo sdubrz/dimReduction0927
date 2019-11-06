@@ -56,7 +56,7 @@ def trend_json(path='', draw=False):
 
     n = index  # 数据的总个数
 
-    out_file = open(path + "trend_eclipse.json", "w")
+    out_file = open(path + "trend_oval.json", "w")
     out_file.write('[')
     index = 0
     for item in data:
