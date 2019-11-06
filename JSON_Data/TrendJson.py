@@ -25,7 +25,10 @@ def trend_eclipse(path='', n_points=100):
         if y1[i, 0] == y[i, 0] or a == 0:
             alpha = np.pi / 2
         else:
-            alpha = np.arccos((y1[i, 0] - y[i, 0]) / a)
+            # 这个角度算的不对
+            alpha = np.arcsin((y1[i, 1] - y[i, 1]) / a)
+            if y1[i, 0] < y[i, 0]:
+                alpha = np.pi - alpha
 
         i_eclipse = Eclipse.eclipse(a, b, alpha=alpha, x0=y[i, 0], y0=y[i, 1], n_points=n_points)
         eclipse_list.append(i_eclipse)
@@ -76,7 +79,7 @@ def trend_json(path='', draw=False):
 
 def run_test():
     for i in range(0, 20):
-        angle = np.arcsin(i/10-1) / np.pi * 180
+        angle = np.arccos(i/10-1) / np.pi * 180
         print(angle)
 
 
