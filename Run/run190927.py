@@ -186,7 +186,8 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                           method_k=method_k,
                                                           MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
                                                           yita=yita,
-                                                          save_path=save_path, weighted=weighted, P_matrix=P_matrix)
+                                                          save_path=save_path, weighted=weighted, P_matrix=P_matrix,
+                                                            label=label)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
 
@@ -542,13 +543,13 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "coil20obj_16_5class"
+    data_name = "Wine"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap"
+    method = "LDA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.1
     nbrs_k = 45
     method_k = 20

@@ -4,6 +4,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import MDS
 # from sklearn.manifold import Isomap
 from Main.MyIsomap import Isomap
+from Main.LDA import LDA
 from sklearn.manifold import LocallyLinearEmbedding
 
 
@@ -12,7 +13,7 @@ from sklearn.manifold import LocallyLinearEmbedding
 """
 
 
-def dim_reduce(data, method="MDS", method_k=30, y_random=None):
+def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None):
     """
     对数据进行降维，返回二维的投影结果
     :param data: 原始的高维数据矩阵，每一行是一条高维数据记录
@@ -21,6 +22,7 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None):
                     默认使用的方法是 MDS
     :param method_k: 某些非线性降维方法所需的k值
     :param y_random: 某些降维方法所需要的初始随机结果矩阵，如果为None则调用numpy中的相关函数生成一个随机矩阵
+    :param label: 数据的分类标签， LDA方法会用到
     :return: 降维之后的二维结果矩阵
     """
     data_shape = data.shape
@@ -68,6 +70,10 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None):
         print("[DimReduce]\t当前使用 PCA 降维方法")
         pca = PCA(n_components=2)
         y = pca.fit_transform(data)
+    elif method == 'LDA' or method == 'lda':
+        print("[DimReduce]\t当前使用 LDA 降维方法")
+        lda = LDA(n_component=2)
+        y = lda.fit_transform(data, label)
     else:
         print("[DimReduce]\t未能匹配到合适的降维方法")
 
