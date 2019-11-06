@@ -17,6 +17,7 @@ from JSON_Data import polygon_json190927
 from JSON_Data import Json_2d
 from JSON_Data import CircleScatter
 from JSON_Data import highKNN_2dPCA
+from JSON_Data import TrendJson
 from Main import MainDirector
 
 """"
@@ -549,7 +550,7 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "LDA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.1
     nbrs_k = 45
     method_k = 20
@@ -601,6 +602,9 @@ def run_test(data_name0=None):
     print('生成散点json完成')
 
     highKNN_2dPCA.create_json2(last_path, line_length=0.1)
+
+    # 生成表示高维趋势的 json文件
+    TrendJson.trend_json(last_path)
 
     # 画主成分的投影方向
     MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)

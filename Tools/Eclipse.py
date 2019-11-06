@@ -27,7 +27,7 @@ def eclipse(a, b, alpha=0.0, x0=0.0, y0=0.0, n_points=100):
 
 
 def run():
-    a = eclipse(4, 2, alpha=np.pi/8, x0=2, y0=2)
+    a = eclipse(4, 2, alpha=-5*np.pi/8, x0=2, y0=2)
     plt.plot(a[:, 0], a[:, 1])
     ax = plt.gca()
     ax.set_aspect(1)
