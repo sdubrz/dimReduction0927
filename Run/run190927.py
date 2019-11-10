@@ -544,17 +544,17 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "coil20obj_16_3class"
+    data_name = "swissroll1800"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.03
-    nbrs_k = 20
+    nbrs_k = 10
     method_k = 20
-    eigen_numbers = 4
+    eigen_numbers = 3
     draw_kind = "b-spline"
     normalize = True
     straighten = False  # 是否进行校直操作

@@ -4,6 +4,7 @@ from Main import DimReduce
 from Main import Preprocess
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import openpyxl
 
 
 def wine_quality_red():
@@ -124,11 +125,30 @@ def show_eclipse():
     plt.show()
 
 
+def swissroll1800():
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\swissroll1800\\"
+    # data = np.loadtxt(path, dtype=np.str, delimiter=",", encoding='utf-8')
+    # X = data[:, :].astype(np.float)
+    # print(data.shape)
+    data = openpyxl.load_workbook(path+"data.xlsx")
+    print(data)
+    ws = data.active
+    print(ws.cell(row=1, column=1).value)
+
+    X = np.zeros((1800, 3))
+    for i in range(0, 1800):
+        for j in range(0, 3):
+            X[i, j] = ws.cell(row=i+1, column=j+1).value
+
+    np.savetxt(path+"data.csv", X, fmt='%f', delimiter=",")
+
+
 if __name__ == '__main__':
     # wine_quality_red()
-    bostonHouse6912()
+    # bostonHouse6912()
     # coil_20()
     # news20_group()
     # see_news20()
     # show_eclipse()
+    swissroll1800()
 
