@@ -544,15 +544,15 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "Wine"
+    data_name = "coil20obj_16_3class"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
-    yita = 0.1
-    nbrs_k = 45
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    yita = 0.03
+    nbrs_k = 20
     method_k = 20
     eigen_numbers = 4
     draw_kind = "b-spline"
@@ -562,8 +562,10 @@ def run_test(data_name0=None):
     P_matrix = None  # 普通的线性降维方法的投影矩阵
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
-    if not normalize:
-        main_path = main_path_without_normalize
+    # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
+    # 而对于自己制造的三维数据等，本身就是一个规划好了的数据，应该是直接使用，不需要normalize的
+    # if not normalize:
+    #     main_path = main_path_without_normalize
 
     if not straighten:
         main_path = main_path_without_straighten
@@ -607,7 +609,7 @@ def run_test(data_name0=None):
     TrendJson.trend_json(last_path)
 
     # 画主成分的投影方向
-    MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)
+    MainDirector.draw_main_director(last_path, normalize=True, line_length=0.07)
 
     return last_path, data_name, main_path, method
 
