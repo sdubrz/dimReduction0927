@@ -45,6 +45,7 @@ def draw_oval(path='', k=10, line_length=0.1, draw=False):
         i_oval = Eclipse.eclipse(a, b, alpha=alpha, x0=Y[i, 0], y0=Y[i, 1], n_points=100)
         oval_list.append(i_oval)
 
+    # draw_count = 0
     if draw:
         label_reader = np.loadtxt(path + "label.csv", dtype=np.str, delimiter=',')
         label = label_reader.astype(np.int)
@@ -54,6 +55,7 @@ def draw_oval(path='', k=10, line_length=0.1, draw=False):
             # plt.scatter(Y[i, 0], Y[i, 1], marker=shapes[label[i]], c='k')
             oval = oval_list[i]
             plt.plot(oval[:, 0], oval[:, 1], linewidth=0.6, c='deepskyblue', alpha=0.7)
+            # draw_count += 1
 
         ax = plt.gca()
         ax.set_aspect(1)

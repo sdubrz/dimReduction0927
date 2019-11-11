@@ -89,8 +89,8 @@ def compare_pca():
     path1 = "E:\\Project\\result2019\\samplingTest\\blue_noise\\"
     path2 = "E:\\Project\\result2019\\samplingTest\\random_data\\"
 
-    # Json_2d.draw_b_spline(path=path2, k=15, line_length=0.015, draw=True)
-    Json_2d.draw_oval(path=path1, k=15, line_length=0.015, draw=True)
+    Json_2d.draw_b_spline(path=path1, k=15, line_length=0.015, draw=True)
+    # Json_2d.draw_oval(path=path1, k=15, line_length=0.015, draw=True)
 
 
 if __name__ == '__main__':
