@@ -126,7 +126,7 @@ def show_eclipse():
 
 
 def swissroll1800():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\swissroll1800\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\swissroll2000-3\\"
     # data = np.loadtxt(path, dtype=np.str, delimiter=",", encoding='utf-8')
     # X = data[:, :].astype(np.float)
     # print(data.shape)
@@ -135,8 +135,8 @@ def swissroll1800():
     ws = data.active
     print(ws.cell(row=1, column=1).value)
 
-    X = np.zeros((1800, 3))
-    for i in range(0, 1800):
+    X = np.zeros((2000, 3))
+    for i in range(0, 2000):
         for j in range(0, 3):
             X[i, j] = ws.cell(row=i+1, column=j+1).value
 
