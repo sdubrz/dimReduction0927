@@ -3,6 +3,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from JSON_Data import Json_2d
+from Dim2LocalPCA import LocalPCA_2dim
 
 
 def random_sample():
@@ -11,13 +13,16 @@ def random_sample():
     虽然说是均匀的，但是看生成的效果来看更倾向于随机
     :return:
     """
-    n = 1000
-    y = np.zeros((2, n))
+    path = "E:\\Project\\result2019\\samplingTest\\"
+    n = 3495
+    y = np.zeros((n, 2))
     for i in range(0, n):
-        y[0, i] = random.uniform(0, 1)
-        y[1, i] = random.uniform(0, 1)
+        y[i, 0] = random.uniform(0, 1)
+        y[i, 1] = random.uniform(0, 1)
 
-    plt.scatter(y[0, :], y[1, :])
+    np.savetxt(path+"random_data.csv", y, fmt="%f", delimiter=",")
+
+    plt.scatter(y[:, 0], y[:, 1])
     ax = plt.gca()
     ax.set_aspect(1)
     plt.show()
@@ -76,6 +81,19 @@ def darts():
     plt.show()
 
 
+def compare_pca():
+    """
+    比较二者的local PCA
+    :return:
+    """
+    path1 = "E:\\Project\\result2019\\samplingTest\\blue_noise\\"
+    path2 = "E:\\Project\\result2019\\samplingTest\\random_data\\"
+
+    # Json_2d.draw_b_spline(path=path2, k=15, line_length=0.015, draw=True)
+    Json_2d.draw_oval(path=path1, k=15, line_length=0.015, draw=True)
+
+
 if __name__ == '__main__':
     # random_sample()
-    darts()
+    # darts()
+    compare_pca()

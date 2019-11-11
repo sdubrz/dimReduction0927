@@ -4,6 +4,62 @@ import matplotlib.pyplot as plt
 from BSpline import b_spline
 from Dim2LocalPCA import LocalPCA_2dim
 import json
+from Tools import Eclipse
+
+
+def draw_oval(path='', k=10, line_length=0.1, draw=False):
+    """
+    根据二维的local PCA计算 oval
+    :param path: 文件目录
+    :param k: 邻居数
+    :param line_length: 控制图形的大小
+    :param draw: 是否绘图
+    :return:
+    """
+    y_reader = np.loadtxt(path + "y.csv", dtype=np.str, delimiter=',')
+    Y = y_reader[:, :].astype(np.float)
+    (n, dim) = Y.shape
+    first_eigenvectors, second_eigenvectors, local_eigenvalues = LocalPCA_2dim.local_pca_2dim(Y, k)
+
+    oval_list = []
+    bad_count = 0
+    for i in range(0, n):
+        a = np.linalg.norm(first_eigenvectors[i, :]) * line_length
+        b = np.linalg.norm(second_eigenvectors[i, :]) * line_length
+        alpha = 0
+        if a == 0:
+            alpha = np.pi / 2
+        else:
+            try:
+                sin_value = first_eigenvectors[i, 1] / a
+                if sin_value > 1:
+                    sin_value = 1
+                if sin_value < -1:
+                    sin_value = -1
+                alpha = np.arcsin(first_eigenvectors[i, 1] / a)
+            except RuntimeWarning:
+                print(first_eigenvectors[i, 1] / a)
+            if first_eigenvectors[i, 0] < 0:
+                alpha = np.pi - alpha
+
+        i_oval = Eclipse.eclipse(a, b, alpha=alpha, x0=Y[i, 0], y0=Y[i, 1], n_points=100)
+        oval_list.append(i_oval)
+
+    if draw:
+        label_reader = np.loadtxt(path + "label.csv", dtype=np.str, delimiter=',')
+        label = label_reader.astype(np.int)
+
+        shapes = ['s', 'o', '^', '*', '.', '+', '>', '<', 'p', 'h', 'v']
+        for i in range(0, n):
+            # plt.scatter(Y[i, 0], Y[i, 1], marker=shapes[label[i]], c='k')
+            oval = oval_list[i]
+            plt.plot(oval[:, 0], oval[:, 1], linewidth=0.6, c='deepskyblue', alpha=0.7)
+
+        ax = plt.gca()
+        ax.set_aspect(1)
+        plt.show()
+
+    return oval_list
 
 
 def draw_b_spline(path='', k=10, line_length=0.1, draw=False):
@@ -51,9 +107,11 @@ def draw_b_spline(path='', k=10, line_length=0.1, draw=False):
         shapes = ['s', 'o', '^', '*', '.', '+', '>', '<', 'p', 'h', 'v']
         for i in range(0, n):
             this_spline = b_spline_list[i]
-            plt.scatter(Y[i, 0], Y[i, 1], marker=shapes[label[i]], c='k')
+            # plt.scatter(Y[i, 0], Y[i, 1], marker=shapes[label[i]], c='k')
             plt.plot(this_spline[:, 0], this_spline[:, 1], linewidth=0.6, c='deepskyblue', alpha=0.7)
 
+        ax = plt.gca()
+        ax.set_aspect(1)
         plt.show()
 
     if bad_count > 0:

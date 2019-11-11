@@ -25,7 +25,6 @@ def trend_eclipse(path='', n_points=100):
         if y1[i, 0] == y[i, 0] or a == 0:
             alpha = np.pi / 2
         else:
-            # 这个角度算的不对
             alpha = np.arcsin((y1[i, 1] - y[i, 1]) / a)
             if y1[i, 0] < y[i, 0]:
                 alpha = np.pi - alpha
