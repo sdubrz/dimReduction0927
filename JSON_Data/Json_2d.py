@@ -116,6 +116,13 @@ def draw_b_spline(path='', k=10, line_length=0.1, draw=False):
         ax.set_aspect(1)
         plt.show()
 
+        # 统计一下linearity的情况，这是临时加的，正常情况下可注释掉
+        linearity = np.zeros((n, 1))
+        for i in range(0, n):
+            linearity[i] = local_eigenvalues[i, 0] / np.sum(local_eigenvalues[i, :])
+        plt.hist(linearity)
+        plt.show()
+
     if bad_count > 0:
         print('坏点个数：', bad_count)
 

@@ -55,7 +55,7 @@ def darts():
     :return:
     """
     path = "E:\\Project\\result2019\\samplingTest\\"
-    max_fail = 1000  # 最大失败次数
+    max_fail = 3000  # 最大失败次数
     points = []
 
     loop_count = 0
@@ -63,7 +63,7 @@ def darts():
         temp_x = random.uniform(0, 1)
         temp_y = random.uniform(0, 1)
         p = [temp_x, temp_y]
-        if all_far(points, p, radius=0.013):
+        if all_far(points, p, radius=0.02):
             points.append(p)
             loop_count = 0
             if len(points) % 1000 == 0:
@@ -81,6 +81,61 @@ def darts():
     plt.show()
 
 
+def dart_two_plane():
+    """
+    用飞镖法生成两个平面的数据
+    :return:
+    """
+    path = "E:\\Project\\result2019\\samplingTest\\darts_2plane\\"
+    max_fail = 3000  # 最大失败次数
+    points = []
+
+    loop_count = 0
+    while loop_count < max_fail:
+        temp_x = random.uniform(0, 1)
+        temp_y = random.uniform(0, 1)
+        p = [temp_x, temp_y]
+        if all_far(points, p, radius=0.02):
+            points.append(p)
+            loop_count = 0
+            if len(points) % 1000 == 0:
+                print(len(points))
+        else:
+            loop_count = loop_count + 1
+
+    print("第一个平面： ", len(points))
+
+    points2 = []
+    loop_count = 0
+    while loop_count < max_fail:
+        temp_x = random.uniform(0, 1)
+        temp_y = random.uniform(0, 1)
+        p = [temp_x, temp_y]
+        if all_far(points2, p, radius=0.02):
+            points2.append(p)
+            loop_count = 0
+            if len(points2) % 1000 == 0:
+                print(len(points2))
+        else:
+            loop_count = loop_count + 1
+
+    print("第二个平面： ", len(points2))
+
+    n = len(points) + len(points2)
+    X = np.zeros((n, 3))
+    X1 = np.array(points)
+    X2 = np.array(points2)
+
+    X[0:len(points), 0:2] = X1[:, :]
+    X[len(points):n, 1:3] = X2[:, :]
+    X[0:len(points), 2] = 0.5
+    X[len(points):n, 0] = 0.5
+    np.savetxt(path+"data.csv", X, fmt="%f", delimiter=",")
+    label = np.ones((n, 1))
+    label[len(points):n, 0] = 2
+    np.savetxt(path+"label.csv", label, fmt="%d", delimiter=",")
+
+
 def compare_pca():
     """
     比较二者的local PCA
@@ -89,11 +144,12 @@ def compare_pca():
     path1 = "E:\\Project\\result2019\\samplingTest\\blue_noise\\"
     path2 = "E:\\Project\\result2019\\samplingTest\\random_data\\"
 
-    Json_2d.draw_b_spline(path=path1, k=15, line_length=0.015, draw=True)
+    Json_2d.draw_b_spline(path=path2, k=60, line_length=0.015, draw=True)
     # Json_2d.draw_oval(path=path1, k=15, line_length=0.015, draw=True)
 
 
 if __name__ == '__main__':
     # random_sample()
     # darts()
-    compare_pca()
+    # compare_pca()
+    dart_two_plane()
