@@ -544,19 +544,19 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "darts_2plane-2"
+    data_name = "darts_2plane"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
-    yita = 0.03
+    yita = 0.05
     nbrs_k = 20
     method_k = nbrs_k
     eigen_numbers = 3
     draw_kind = "b-spline"
-    normalize = False
+    normalize = True
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
     P_matrix = None  # 普通的线性降维方法的投影矩阵

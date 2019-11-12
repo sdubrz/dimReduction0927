@@ -162,9 +162,41 @@ def swissroll_spiral():
     plt.show()
 
 
+def swissroll():
+    path = "E:\\Project\\result2019\\samplingTest\\swissroll\\"
+    max_fail = 3000  # 最大失败次数
+
+    data = []
+    points = []
+    loop_count = 0
+    while loop_count < max_fail:
+        t = random.uniform(0, 1)
+        t = t * np.pi * 3 + np.pi
+        virtual_x = (t*t - np.pi*np.pi)/2
+        temp_z = random.uniform(0, 1) * 15
+        p = [virtual_x, temp_z]
+        if all_far(points, p, radius=0.85):
+            points.append(p)
+            temp_x = t * np.sin(t)
+            temp_y = t * np.cos(t)
+            data.append([temp_x, temp_y, temp_z])
+            loop_count = 0
+            if len(points) % 1000 == 0:
+                print(len(points))
+        else:
+            loop_count += 1
+
+    n = len(points)
+    print(n)
+    X = np.array(data)
+    np.savetxt(path+"data.csv", X, fmt='%f', delimiter=",")
+    np.savetxt(path+"label.csv", np.ones((n, 1)), fmt='%d', delimiter=",")
+
+
 if __name__ == '__main__':
     # random_sample()
     # darts()
     # compare_pca()
-    dart_two_plane()
+    # dart_two_plane()
     # swissroll_spiral()
+    swissroll()
