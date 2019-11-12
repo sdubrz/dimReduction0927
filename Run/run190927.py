@@ -538,25 +538,25 @@ def run_test(data_name0=None):
             digits5_8
         """
     start_time = time()
-    main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
+    main_path_without_normalize = "E:\\project\\result2019\\result1112without_normalize\\"  # 华硕
     main_path_without_straighten = "E:\\project\\result2019\\result1026without_straighten\\"  # 华硕
     # main_path = "F:\\result2019\\result0927\\"  # HP
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "swissroll500"
+    data_name = "spacespace"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.03
     nbrs_k = 20
     method_k = nbrs_k
     eigen_numbers = 3
     draw_kind = "b-spline"
-    normalize = True
+    normalize = False
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
     P_matrix = None  # 普通的线性降维方法的投影矩阵
@@ -564,14 +564,14 @@ def run_test(data_name0=None):
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
     # 而对于自己制造的三维数据等，本身就是一个规划好了的数据，应该是直接使用，不需要normalize的
-    # if not normalize:
-    #     main_path = main_path_without_normalize
+    if not normalize:
+        main_path = main_path_without_normalize
 
     if not straighten:
         main_path = main_path_without_straighten
 
     if (not normalize) and (not straighten):
-        print("暂不支持，该组合形式")
+        main_path = main_path_without_normalize
 
     # 继续设置普通的线性降维方法的参数
     (n, m) = data_shape(main_path, data_name)
