@@ -86,7 +86,7 @@ def dart_two_plane():
     用飞镖法生成两个平面的数据
     :return:
     """
-    path = "E:\\Project\\result2019\\samplingTest\\darts_2plane\\"
+    path = "E:\\Project\\result2019\\samplingTest\\darts_2plane-2\\"
     max_fail = 3000  # 最大失败次数
     points = []
 
@@ -95,7 +95,7 @@ def dart_two_plane():
         temp_x = random.uniform(0, 1)
         temp_y = random.uniform(0, 1)
         p = [temp_x, temp_y]
-        if all_far(points, p, radius=0.02):
+        if all_far(points, p, radius=0.025):
             points.append(p)
             loop_count = 0
             if len(points) % 1000 == 0:
@@ -148,8 +148,23 @@ def compare_pca():
     # Json_2d.draw_oval(path=path1, k=15, line_length=0.015, draw=True)
 
 
+def swissroll_spiral():
+    n = 1000
+    X = np.zeros((n, 2))
+    for i in range(0, n):
+        t = i / n * 3*np.pi
+        X[i, 0] = t * np.cos(t)
+        X[i, 1] = t * np.sin(t)
+
+    plt.plot(X[:, 0], X[:, 1])
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.show()
+
+
 if __name__ == '__main__':
     # random_sample()
     # darts()
     # compare_pca()
     dart_two_plane()
+    # swissroll_spiral()

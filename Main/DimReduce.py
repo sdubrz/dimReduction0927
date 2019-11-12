@@ -6,6 +6,8 @@ from sklearn.manifold import MDS
 from Main.MyIsomap import Isomap
 from Main.LDA import LDA
 from sklearn.manifold import LocallyLinearEmbedding
+from Main import Preprocess
+import matplotlib.pyplot as plt
 
 
 """
@@ -78,4 +80,22 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None):
         print("[DimReduce]\t未能匹配到合适的降维方法")
 
     return y
+
+
+def run_test():
+    path = "E:\\Project\\result2019\\samplingTest\\darts_2plane-2\\"
+    X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+    (n, m) = X.shape
+    X = Preprocess.normalize(X, -1, 1)
+    Y = dim_reduce(X, method="MDS")
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.show()
+
+
+if __name__ == '__main__':
+    run_test()
 
