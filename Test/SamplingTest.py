@@ -193,10 +193,69 @@ def swissroll():
     np.savetxt(path+"label.csv", np.ones((n, 1)), fmt='%d', delimiter=",")
 
 
+def planes_cross():
+    """
+    两个相交的平面，有一定的夹角
+    :return:
+    """
+    path = "E:\\Project\\result2019\\samplingTest\\2splane_60degree\\"
+    max_fail = 3000  # 最大失败次数
+    angle = np.pi / 3  # 两个平面的夹角
+    slop_k = np.tan(angle)  # 斜率
+
+    points = []
+
+    loop_count = 0
+    while loop_count < max_fail:
+        temp_x = random.uniform(0, 1)
+        temp_y = random.uniform(0, 1)
+        p = [temp_x, temp_y]
+        if all_far(points, p, radius=0.025):
+            points.append(p)
+            loop_count = 0
+            if len(points) % 1000 == 0:
+                print(len(points))
+        else:
+            loop_count = loop_count + 1
+
+    print("第一个平面： ", len(points))
+
+    points2 = []
+    loop_count = 0
+    while loop_count < max_fail:
+        temp_x = random.uniform(0, 1)
+        temp_y = random.uniform(0, 1)
+        p = [temp_x, temp_y, temp_y*slop_k]
+        if all_far(points2, p, radius=0.025):
+            points2.append(p)
+            loop_count = 0
+            if len(points2) % 1000 == 0:
+                print(len(points2))
+        else:
+            loop_count = loop_count + 1
+
+    print("第二个平面： ", len(points2))
+
+    n = len(points) + len(points2)
+    X = np.zeros((n, 3))
+    X1 = np.array(points)
+    X2 = np.array(points2)
+
+    X[0:len(points), 0:2] = X1[:, :]
+    X[len(points):n, 0:3] = X2[:, :]
+    X[0:len(points), 2] = 0.5
+    # X[len(points):n, 0] = 0.5
+    np.savetxt(path + "data.csv", X, fmt="%f", delimiter=",")
+    label = np.ones((n, 1))
+    label[len(points):n, 0] = 2
+    np.savetxt(path + "label.csv", label, fmt="%d", delimiter=",")
+
+
 if __name__ == '__main__':
     # random_sample()
     # darts()
     # compare_pca()
     # dart_two_plane()
     # swissroll_spiral()
-    swissroll()
+    # swissroll()
+    planes_cross()
