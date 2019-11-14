@@ -198,19 +198,19 @@ def planes_cross():
     两个相交的平面，有一定的夹角
     :return:
     """
-    path = "E:\\Project\\result2019\\samplingTest\\2plane_45degree\\"
+    path = "E:\\Project\\result2019\\samplingTest\\2plane_60degree_long\\"
     max_fail = 3000  # 最大失败次数
-    angle = np.pi / 4  # 两个平面的夹角
+    angle = np.pi / 3  # 两个平面的夹角
     slop_k = np.tan(angle)  # 斜率
 
     points = []
 
     loop_count = 0
     while loop_count < max_fail:
-        temp_x = random.uniform(0, 1)
-        temp_y = random.uniform(0, 1)
+        temp_x = random.uniform(0, 0.5)
+        temp_y = random.uniform(0, 5)
         p = [temp_x, temp_y]
-        if all_far(points, p, radius=0.025):
+        if all_far(points, p, radius=0.03):
             points.append(p)
             loop_count = 0
             if len(points) % 1000 == 0:
@@ -223,10 +223,10 @@ def planes_cross():
     points2 = []
     loop_count = 0
     while loop_count < max_fail:
-        temp_x = random.uniform(0, 1)
-        temp_y = random.uniform(0, 1)
+        temp_x = random.uniform(0, 0.5)
+        temp_y = random.uniform(0, 5)
         p = [temp_x, temp_y, temp_y*slop_k]
-        if all_far(points2, p, radius=0.025):
+        if all_far(points2, p, radius=0.03):
             points2.append(p)
             loop_count = 0
             if len(points2) % 1000 == 0:
@@ -243,7 +243,7 @@ def planes_cross():
 
     X[0:len(points), 0:2] = X1[:, :]
     X[len(points):n, 0:3] = X2[:, :]
-    X[0:len(points), 2] = 0.5
+    X[0:len(points), 2] = 4.5
     # X[len(points):n, 0] = 0.5
     np.savetxt(path + "data.csv", X, fmt="%f", delimiter=",")
     label = np.ones((n, 1))

@@ -83,12 +83,12 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None):
 
 
 def run_test():
-    path = "E:\\Project\\result2019\\samplingTest\\2splane_60degree\\"
+    path = "E:\\Project\\result2019\\samplingTest\\2plane_60degree_long\\"
     X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
-    # X = Preprocess.normalize(X, -1, 1)
-    Y = dim_reduce(X, method="PCA")
+    X = Preprocess.normalize(X, -1, 1)
+    Y = dim_reduce(X, method="MDS")
 
     plt.scatter(Y[:, 0], Y[:, 1], c=label)
     ax = plt.gca()
