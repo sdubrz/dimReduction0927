@@ -198,9 +198,9 @@ def planes_cross():
     两个相交的平面，有一定的夹角
     :return:
     """
-    path = "E:\\Project\\result2019\\samplingTest\\2splane_60degree\\"
+    path = "E:\\Project\\result2019\\samplingTest\\2plane_45degree\\"
     max_fail = 3000  # 最大失败次数
-    angle = np.pi / 3  # 两个平面的夹角
+    angle = np.pi / 4  # 两个平面的夹角
     slop_k = np.tan(angle)  # 斜率
 
     points = []

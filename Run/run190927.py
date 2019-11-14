@@ -544,7 +544,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "2splane_60degree"
+    data_name = "Iris"
     if data_name0 is None:
         pass
     else:
@@ -609,7 +609,7 @@ def run_test(data_name0=None):
     TrendJson.trend_json(last_path)
 
     # 画主成分的投影方向
-    MainDirector.draw_main_director(last_path, normalize=True, line_length=0.013)
+    MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)
 
     return last_path, data_name, main_path, method
 
