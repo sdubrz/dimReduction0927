@@ -19,6 +19,7 @@ from JSON_Data import CircleScatter
 from JSON_Data import highKNN_2dPCA
 from JSON_Data import TrendJson
 from Main import MainDirector
+from Tools import VisualizationKNN
 
 """"
 本程序是基于run190422.py修改的
@@ -610,6 +611,9 @@ def run_test(data_name0=None):
 
     # 画主成分的投影方向
     MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)
+
+    # 画KNN关系图
+    VisualizationKNN.draw_knn(last_path)
 
     return last_path, data_name, main_path, method
 
