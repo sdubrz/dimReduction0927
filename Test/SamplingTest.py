@@ -251,6 +251,13 @@ def planes_cross():
     np.savetxt(path + "label.csv", label, fmt="%d", delimiter=",")
 
 
+def S_data():
+    """
+    S 形的流形数据
+    :return:
+    """
+
+
 if __name__ == '__main__':
     # random_sample()
     # darts()
