@@ -545,7 +545,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "2plane_60degree_long"
+    data_name = "Wine"
     if data_name0 is None:
         pass
     else:
@@ -553,9 +553,9 @@ def run_test(data_name0=None):
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.05
-    nbrs_k = 30
+    nbrs_k = 40
     method_k = nbrs_k
-    eigen_numbers = 3
+    eigen_numbers = 4
     draw_kind = "b-spline"
     normalize = True
     straighten = False  # 是否进行校直操作
@@ -614,6 +614,8 @@ def run_test(data_name0=None):
 
     # 画KNN关系图
     VisualizationKNN.draw_knn(last_path)
+    # 计算KNN相似性
+    VisualizationKNN.KNN_similar(last_path)
 
     return last_path, data_name, main_path, method
 

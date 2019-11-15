@@ -44,6 +44,34 @@ def draw_knn(path=""):
     print("KNN关系图保存完毕")
 
 
+def KNN_similar(path=""):
+    """
+    计算每个点之间的KNN的相似性
+    由于我们在计算local PCA时，并没有各个点分配权重，因为在计算相似度时，KNN中的点不分先后。
+    :param path: 计算结果的存放路径
+    :return:
+    """
+    KNN = np.loadtxt(path + "【weighted】knn.csv", dtype=np.int, delimiter=",")
+    (n, k) = KNN.shape
+
+    similar = np.zeros((n, n))
+    KNN_list = KNN.tolist()
+    for i in range(0, n-1):
+        i_list = KNN_list[i]
+        for j in range(i+1, n):
+            j_list = KNN_list[j]
+            for index in i_list:
+                count = 0
+                if index in j_list:
+                    count += 1
+                similar[i, j] = count / k
+                similar[j, i] = count / k
+        similar[i, i] = 1
+
+    np.savetxt(path+"knn_similar.csv", similar, fmt='%f', delimiter=",")
+    print("KNN相似性计算完毕")
+
+
 def run_test():
     path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Wine\\yita(0.1)nbrs_k(45)method_k(20)numbers(4)_b-spline_weighted\\"
     draw_knn(path)
