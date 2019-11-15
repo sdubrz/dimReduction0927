@@ -60,12 +60,12 @@ def KNN_similar(path=""):
         i_list = KNN_list[i]
         for j in range(i+1, n):
             j_list = KNN_list[j]
+            count = 0
             for index in i_list:
-                count = 0
                 if index in j_list:
                     count += 1
-                similar[i, j] = count / k
-                similar[j, i] = count / k
+            similar[i, j] = count / k
+            similar[j, i] = count / k
         similar[i, i] = 1
 
     np.savetxt(path+"knn_similar.csv", similar, fmt='%f', delimiter=",")
