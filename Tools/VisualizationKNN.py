@@ -73,7 +73,7 @@ def KNN_similar(path=""):
 
 
 def run_test():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Wine\\yita(0.1)nbrs_k(45)method_k(20)numbers(4)_b-spline_weighted\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\olive\\yita(0.03)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
     draw_knn(path)
 
 
