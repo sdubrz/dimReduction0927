@@ -361,7 +361,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
 
             # 计算B样条
             if len(temp_convex) >= 3:
-                splines = b_spline.bspline(temp_convex, n=100, degree=2, periodic=True)
+                splines = b_spline.bspline(temp_convex, n=100, degree=3, periodic=True)
                 spline_x, spline_y = splines.T
             else:
                 spline_x = []
@@ -551,7 +551,7 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.05
     nbrs_k = 40
     method_k = nbrs_k
@@ -613,7 +613,7 @@ def run_test(data_name0=None):
     MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)
 
     # 画KNN关系图
-    VisualizationKNN.draw_knn(last_path)
+    # VisualizationKNN.draw_knn(last_path)  # 太浪费空间，暂时注释掉，默认不运行
     # 计算KNN相似性
     VisualizationKNN.KNN_similar(last_path)
 
