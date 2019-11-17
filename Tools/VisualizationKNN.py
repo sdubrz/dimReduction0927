@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from sklearn.neighbors import NearestNeighbors
 
 
 def draw_knn(path=""):
@@ -72,9 +73,47 @@ def KNN_similar(path=""):
     print("KNN相似性计算完毕")
 
 
+def knn_keep(path=""):
+    """
+    计算降维前后 KNN 的保持程度
+    :param path: 中间结果的存放路径
+    :return:
+    """
+    Y = np.loadtxt(path+"y.csv", dtype=np.float, delimiter=",")
+    high_knn = np.loadtxt(path+"【weighted】knn.csv", dtype=np.int, delimiter=",")
+    (n, k) = high_knn.shape
+
+    nbr_s = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(Y)
+    distance, d2_knn = nbr_s.kneighbors(Y)
+
+    high_knn_list = high_knn.tolist()
+    low_knn_list = d2_knn.tolist()
+    knn_score = np.zeros((n, 1))
+
+    for i in range(0, n):
+        list_h = high_knn_list[i]
+        list_l = low_knn_list[i]
+        count = 0
+        for index in list_h:
+            if index in list_l:
+                count += 1
+        knn_score[i, 0] = count / k
+
+    np.savetxt(path+"knn_keep.csv", knn_score, fmt='%f', delimiter=",")
+    return knn_score
+
+
 def run_test():
     path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\olive\\yita(0.03)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
-    draw_knn(path)
+    # draw_knn(path)
+    knn_keep(path)
+
+
+def run_test2():
+    list1 = [1, 2, 3, 4]
+    list2 = [6, 7, 8, 9]
+    for (a, b) in (list1, list2):
+        print("a="+str(a)+", b="+str(b))
 
 
 if __name__ == '__main__':
