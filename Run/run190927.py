@@ -18,6 +18,7 @@ from JSON_Data import Json_2d
 from JSON_Data import CircleScatter
 from JSON_Data import highKNN_2dPCA
 from JSON_Data import TrendJson
+from JSON_Data import Stress_json
 from Main import MainDirector
 from Tools import VisualizationKNN
 
@@ -603,6 +604,8 @@ def run_test(data_name0=None):
 
     CircleScatter.circle_json(last_path, r=0.03)
     print('生成散点json完成')
+
+    Stress_json.create_json(last_path)
 
     highKNN_2dPCA.create_json2(last_path, line_length=0.1)
 

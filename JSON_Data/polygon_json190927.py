@@ -241,7 +241,7 @@ def how_many_eigens(read_path, proportion=0.8, weighted=True):
 
 
 def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_kind=None,
-               MAX_EIGEN_NUMBER=4, weighted=True):
+               MAX_EIGEN_NUMBER=4, weighted=True, test_attr=None):
     """
     构建json文件
     :param main_path:
@@ -249,6 +249,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     :param method_k:
     :param max_eigen_numbers: 最多使用的特征向量个数
     :param weighted: 在使用特征向量作为扰动的时候是否根据特征值的大小分配了权重
+    :param test_attr: 用于测试的冗余属性
     :return:
     """
 
@@ -272,6 +273,9 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     y = y_reader[:, :].astype(np.float)
     (n, temp_dim) = y.shape
     knn_keep = VisualizationKNN.knn_keep(read_path)
+
+    if test_attr is None:
+        test_attr = np.random.random((n, 1))
 
     y_add1_reader = np.loadtxt(read_path+"y1+.csv", dtype=np.str, delimiter=",")  # 添加第一特征向量作为扰动的投影结果
     y_add1 = y_add1_reader[:, :].astype(np.float)
@@ -431,7 +435,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         line = line + "[" + str(polygon[(polygon_size-1)*2]) + ", "+str(polygon[(polygon_size-1)*2+1]) + "]], "
 
         line = line + "\"angles\": " + str(angles[i]) + ", "
-        line = line + "\"knn_keep\": " + str(knn_keep[i]) + ","
+        line = line + "\"knn_keep\": " + str(knn_keep[i, 0]) + ","
 
         line = line + "\"eigenNumber\": " + str(int(eigen_numbers[i])) + ", "
         line = line + "\"proportion\": " + str(float(proportions[i])) + ", "
@@ -468,7 +472,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
 
         line = line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[i]) + ","
         line = line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[i]) + ","
-        line = line + "\"angle12Sin\": " + str(angle12Sin[i])
+        line = line + "\"angle12Sin\": " + str(angle12Sin[i]) + ","
+        line = line + "\"test_attr\": " + str(test_attr[i, 0])
 
         line = line + "},\n"
         jsonfile.write(line)
@@ -494,7 +499,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     final_line = final_line + "[" + str(final_polygon[(final_polygon_size - 1) * 2]) + ", " + str(final_polygon[(final_polygon_size - 1) * 2 + 1]) + "]], "
 
     final_line = final_line + "\"angles\": " + str(angles[n-1]) + ", "
-    final_line = final_line + "\"knn_keep\": " + str(knn_keep[n-1]) + ","
+    final_line = final_line + "\"knn_keep\": " + str(knn_keep[n-1, 0]) + ","
     final_line = final_line + "\"eigenNumber\": " + str(int(eigen_numbers[n-1])) + ", "
     final_line = final_line + "\"proportion\": " + str(float(proportions[n-1])) + ", "
 
@@ -529,7 +534,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
 
     final_line = final_line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[n-1]) + ","
     final_line = final_line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[n-1]) + ","
-    final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1])
+    final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1]) + ","
+    final_line = final_line + "\"test_attr\": " + str(test_attr[n-1, 0])
 
     final_line = final_line + "}"
     final_line = final_line + "]"
