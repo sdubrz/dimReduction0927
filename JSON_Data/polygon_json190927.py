@@ -13,6 +13,7 @@ import numpy.linalg as LA
 from Tools import HistogramEqualization as HistEqual
 from Tools import MyGeometry
 from Tools import PolygonArea
+from Tools import VisualizationKNN
 
 
 """
@@ -270,6 +271,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     y_reader = np.loadtxt(read_path+"y.csv", dtype=np.str, delimiter=",")  # 原始数据的降维结果
     y = y_reader[:, :].astype(np.float)
     (n, temp_dim) = y.shape
+    knn_keep = VisualizationKNN.knn_keep(read_path)
 
     y_add1_reader = np.loadtxt(read_path+"y1+.csv", dtype=np.str, delimiter=",")  # 添加第一特征向量作为扰动的投影结果
     y_add1 = y_add1_reader[:, :].astype(np.float)
@@ -429,6 +431,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         line = line + "[" + str(polygon[(polygon_size-1)*2]) + ", "+str(polygon[(polygon_size-1)*2+1]) + "]], "
 
         line = line + "\"angles\": " + str(angles[i]) + ", "
+        line = line + "\"knn_keep\": " + str(knn_keep[i]) + ","
 
         line = line + "\"eigenNumber\": " + str(int(eigen_numbers[i])) + ", "
         line = line + "\"proportion\": " + str(float(proportions[i])) + ", "
@@ -491,6 +494,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     final_line = final_line + "[" + str(final_polygon[(final_polygon_size - 1) * 2]) + ", " + str(final_polygon[(final_polygon_size - 1) * 2 + 1]) + "]], "
 
     final_line = final_line + "\"angles\": " + str(angles[n-1]) + ", "
+    final_line = final_line + "\"knn_keep\": " + str(knn_keep[n-1]) + ","
     final_line = final_line + "\"eigenNumber\": " + str(int(eigen_numbers[n-1])) + ", "
     final_line = final_line + "\"proportion\": " + str(float(proportions[n-1])) + ", "
 
