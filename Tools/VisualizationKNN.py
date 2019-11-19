@@ -103,10 +103,29 @@ def knn_keep(path=""):
     return knn_score
 
 
+def draw_index(path=""):
+    """
+    画散点的索引图
+    :param path:
+    :return:
+    """
+    Y = np.loadtxt(path + "y.csv", dtype=np.float, delimiter=",")
+    labels = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    (n, m) = Y.shape
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=labels)
+    for i in range(0, n):
+        plt.text(Y[i, 0], Y[i, 1], str(i))
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.show()
+
+
 def run_test():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\olive\\yita(0.03)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\coil20obj_16_5class\\yita(0.1)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
     # draw_knn(path)
-    knn_keep(path)
+    # knn_keep(path)
+    draw_index(path)
 
 
 def run_test2():
