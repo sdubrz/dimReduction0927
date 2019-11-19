@@ -333,3 +333,13 @@ def mds_stress(path=""):
     dD = Dy - Dx
     np.savetxt(path+"dD.csv", dD, fmt='%f', delimiter=",")
     return dD
+
+
+def run_test():
+    path = "E:\\Project\\result2019\\result1026without_straighten\\MDS\\Wine\\yita(0.1)nbrs_k(45)method_k(20)numbers(4)_b-spline_weighted\\"
+    D = mds_stress(path)
+    print(D[0, :].tolist())
+
+
+if __name__ == '__main__':
+    run_test()
