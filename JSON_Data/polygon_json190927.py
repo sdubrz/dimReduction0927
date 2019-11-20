@@ -241,7 +241,7 @@ def how_many_eigens(read_path, proportion=0.8, weighted=True):
 
 
 def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_kind=None,
-               MAX_EIGEN_NUMBER=4, weighted=True, test_attr=None):
+               MAX_EIGEN_NUMBER=4, weighted=True, test_attr=None, notes=None):
     """
     构建json文件
     :param main_path:
@@ -250,6 +250,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     :param max_eigen_numbers: 最多使用的特征向量个数
     :param weighted: 在使用特征向量作为扰动的时候是否根据特征值的大小分配了权重
     :param test_attr: 用于测试的冗余属性
+    :param notes: 备注
     :return:
     """
 
@@ -273,6 +274,11 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     y = y_reader[:, :].astype(np.float)
     (n, temp_dim) = y.shape
     knn_keep = VisualizationKNN.knn_keep(read_path)
+
+    if notes is None:  # 默认的备注
+        notes = []
+        for i in range(0, n):
+            notes.append(str(i))
 
     if test_attr is None:
         test_attr = np.random.random((n, 1))
@@ -473,7 +479,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         line = line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[i]) + ","
         line = line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[i]) + ","
         line = line + "\"angle12Sin\": " + str(angle12Sin[i]) + ","
-        line = line + "\"test_attr\": " + str(test_attr[i, 0])
+        line = line + "\"test_attr\": " + str(test_attr[i, 0]) + ","
+        line = line + "\"notes\": \"" + notes[i] + "\""
 
         line = line + "},\n"
         jsonfile.write(line)
@@ -535,7 +542,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     final_line = final_line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[n-1]) + ","
     final_line = final_line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[n-1]) + ","
     final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1]) + ","
-    final_line = final_line + "\"test_attr\": " + str(test_attr[n-1, 0])
+    final_line = final_line + "\"test_attr\": " + str(test_attr[n-1, 0]) + ","
+    final_line = final_line + "\"notes\": \"" + notes[n-1] + "\""
 
     final_line = final_line + "}"
     final_line = final_line + "]"
