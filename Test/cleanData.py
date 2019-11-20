@@ -5,6 +5,8 @@ from Main import Preprocess
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import openpyxl
+import csv
+import os
 
 
 def wine_quality_red():
@@ -143,6 +145,109 @@ def swissroll1800():
     np.savetxt(path+"data.csv", X, fmt='%f', delimiter=",")
 
 
+def gapminder():
+    """将gapminder数据中的异常数据进行处理"""
+    path = "E:\\Project\\DataLab\\gapminder\\"
+    f = open(path+"gapminder_unfiltered.csv")
+    reader = csv.reader(f)
+    data = list(reader)
+    n = len(data)
+    for i in range(0, n):
+        temp_list = data[i]
+        if len(temp_list) == 6:
+            continue
+        alter_list = []
+        first_str = temp_list[0]
+        for j in range(1, len(temp_list)-5):
+            first_str = first_str + temp_list[j]
+        alter_list.append(first_str)
+        for j in range(len(temp_list)-5, len(temp_list)):
+            alter_list.append(temp_list[j])
+        data[i] = alter_list
+
+    file2 = open(path+"gapminder.csv", 'w', newline='')
+    file_writer = csv.writer(file2)
+    for row in data:
+        file_writer.writerow(row)
+    file2.close()
+
+
+def gapminder_years():
+    """对gapminder 数据根据年份进行划分"""
+    path = "E:\\Project\\DataLab\\gapminder\\"
+    in_file = open(path+"gapminder_notitle.csv")
+    reader = csv.reader(in_file)
+    data = list(reader)
+    dicts = {}
+    n = len(data)
+    for record in data:
+        year = record[2]
+        if year in dicts:
+            temp_list = dicts[year]
+            temp_list.append(record)
+        else:
+            temp_list = []
+            temp_list.append(record)
+            dicts[year] = temp_list
+
+    for key in dicts:
+        print(key)
+        out_file = open(path+key+".csv", 'w', newline='')
+        writer = csv.writer(out_file)
+        key_values = dicts[key]
+        for record in key_values:
+            writer.writerow(record)
+        out_file.close()
+
+
+def gapminder_label():
+    """对 gapminder 数据添加标签"""
+    path = "E:\\Project\\DataLab\\gapminder\\"
+    year = 1952
+    while year <= 2007:
+        in_file = open(path+"years\\"+str(year)+".csv")
+        reader = csv.reader(in_file)
+        data = list(reader)
+        n = len(data)
+        label = np.zeros((n, 1))
+        country = []
+        label_dict = {}
+        label_count = 0
+        out_data = []
+        for i in range(0, n):
+            record = data[i]
+            country.append(record[0])
+            if record[1] in label_dict:
+                label[i, 0] = label_dict[record[1]]
+            else:
+                label_count += 1
+                label_dict[record[1]] = label_count
+                label[i, 0] = label_count
+            temp_list = []
+            for j in range(3, len(record)):
+                temp_list.append(record[j])
+            out_data.append(temp_list)
+        in_file.close()
+
+        out_path = path + "gapminder" + str(year) + "\\"
+        if not os.path.exists(out_path):
+            os.makedirs(out_path)
+        np.savetxt(out_path+"label.csv", label, fmt='%d', delimiter=",")
+        data_file = open(out_path+"data.csv", 'w', newline='')
+        data_writer = csv.writer(data_file)
+        for row in out_data:
+            data_writer.writerow(row)
+        data_file.close()
+        country_file = open(out_path+"country.csv", 'w', newline='')
+        country_writer = csv.writer(country_file)
+        for c in country:
+            country_writer.writerow(c)
+        country_file.close()
+
+        print(year)
+        year += 5
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
@@ -150,5 +255,7 @@ if __name__ == '__main__':
     # news20_group()
     # see_news20()
     # show_eclipse()
-    swissroll1800()
+    # swissroll1800()
+    # gapminder()
+    gapminder_label()
 
