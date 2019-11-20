@@ -204,6 +204,8 @@ def gapminder_label():
     """对 gapminder 数据添加标签"""
     path = "E:\\Project\\DataLab\\gapminder\\"
     year = 1952
+    label_dict = {}
+    label_count = 0
     while year <= 2007:
         in_file = open(path+"years\\"+str(year)+".csv")
         reader = csv.reader(in_file)
@@ -211,8 +213,6 @@ def gapminder_label():
         n = len(data)
         label = np.zeros((n, 1))
         country = []
-        label_dict = {}
-        label_count = 0
         out_data = []
         for i in range(0, n):
             record = data[i]
