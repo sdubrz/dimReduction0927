@@ -248,6 +248,23 @@ def gapminder_label():
         year += 5
 
 
+def coli_custer_pca():
+    """
+    对coli的每个数据分别进行PCA降维
+    :return:
+    """
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_5class\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+
+    for i in range(0, 5):
+        X = data[i*72:(i+1)*72, :]
+        X = Preprocess.normalize(X)
+        pca = PCA(n_components=2)
+        Y = pca.fit_transform(X)
+        np.savetxt(path+"pca"+str(i+1)+".csv", Y, fmt='%f', delimiter=",")
+    print("finished")
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
@@ -257,5 +274,6 @@ if __name__ == '__main__':
     # show_eclipse()
     # swissroll1800()
     # gapminder()
-    gapminder_label()
+    # gapminder_label()
+    coli_custer_pca()
 
