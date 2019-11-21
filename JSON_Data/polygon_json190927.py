@@ -241,7 +241,7 @@ def how_many_eigens(read_path, proportion=0.8, weighted=True):
 
 
 def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_kind=None,
-               MAX_EIGEN_NUMBER=4, weighted=True, test_attr=None, notes=None):
+               MAX_EIGEN_NUMBER=4, weighted=True, test_attr=None, notes=None, false_class=None):
     """
     构建json文件
     :param main_path:
@@ -251,6 +251,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     :param weighted: 在使用特征向量作为扰动的时候是否根据特征值的大小分配了权重
     :param test_attr: 用于测试的冗余属性
     :param notes: 备注
+    :param false_class: 假的类，离散的冗余属性
     :return:
     """
 
@@ -282,6 +283,9 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
 
     if test_attr is None:
         test_attr = np.random.random((n, 1))
+
+    if false_class is None:
+        false_class = np.ones((n, 1))
 
     y_add1_reader = np.loadtxt(read_path+"y1+.csv", dtype=np.str, delimiter=",")  # 添加第一特征向量作为扰动的投影结果
     y_add1 = y_add1_reader[:, :].astype(np.float)
@@ -479,7 +483,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         line = line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[i]) + ","
         line = line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[i]) + ","
         line = line + "\"angle12Sin\": " + str(angle12Sin[i]) + ","
-        line = line + "\"test_attr\": " + str(test_attr[i, 0]) + ","
+        line = line + "\"test_attr\": " + str(test_attr[i]) + ","
+        line = line + "\"false_class\": " + str(false_class[i]) + ","
         line = line + "\"notes\": \"" + notes[i] + "\""
 
         line = line + "},\n"
@@ -542,7 +547,8 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     final_line = final_line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[n-1]) + ","
     final_line = final_line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[n-1]) + ","
     final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1]) + ","
-    final_line = final_line + "\"test_attr\": " + str(test_attr[n-1, 0]) + ","
+    final_line = final_line + "\"test_attr\": " + str(test_attr[n-1]) + ","
+    final_line = final_line + "\"false_class\":" + str(false_class[n-1]) + ","
     final_line = final_line + "\"notes\": \"" + notes[n-1] + "\""
 
     final_line = final_line + "}"

@@ -596,7 +596,7 @@ def run_test(data_name0=None):
     # main_path2 = main_path + method + "\\" + data_name + "\\"
     polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, nbrs_k, draw_kind,
                                   MAX_EIGEN_NUMBER=eigen_numbers,
-                                  weighted=weighted, test_attr=cluster_label)
+                                  weighted=weighted, test_attr=cluster_label, false_class=cluster_label)
     json_end = time()
     print("合成json文件的时间为\t", json_end - json_start)
 
