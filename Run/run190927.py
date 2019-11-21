@@ -21,6 +21,7 @@ from JSON_Data import TrendJson
 from JSON_Data import Stress_json
 from Main import MainDirector
 from Tools import VisualizationKNN
+from ClusterTest import clusterTest
 
 """"
 本程序是基于run190422.py修改的
@@ -588,11 +589,14 @@ def run_test(data_name0=None):
         method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix)
 
+    # 添加测试属性的地方
+    cluster_label = clusterTest.k_means_data(last_path, n_cluster=10, draw=False)
+
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
     polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, nbrs_k, draw_kind,
                                   MAX_EIGEN_NUMBER=eigen_numbers,
-                                  weighted=weighted)
+                                  weighted=weighted, test_attr=cluster_label)
     json_end = time()
     print("合成json文件的时间为\t", json_end - json_start)
 

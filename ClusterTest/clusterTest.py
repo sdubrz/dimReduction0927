@@ -29,7 +29,7 @@ def k_means_data(path, n_cluster=8, draw=False):
         ax = plt.gca()
         ax.set_aspect(1)
         plt.show()
-    
+
     return label
 
 
