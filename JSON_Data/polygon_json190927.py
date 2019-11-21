@@ -484,7 +484,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         line = line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[i]) + ","
         line = line + "\"angle12Sin\": " + str(angle12Sin[i]) + ","
         line = line + "\"test_attr\": " + str(test_attr[i]) + ","
-        line = line + "\"false_class\": " + str(false_class[i]) + ","
+        line = line + "\"int_attr\": " + str(false_class[i]) + ","
         line = line + "\"notes\": \"" + notes[i] + "\""
 
         line = line + "},\n"
@@ -548,7 +548,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     final_line = final_line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[n-1]) + ","
     final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1]) + ","
     final_line = final_line + "\"test_attr\": " + str(test_attr[n-1]) + ","
-    final_line = final_line + "\"false_class\":" + str(false_class[n-1]) + ","
+    final_line = final_line + "\"int_attr\":" + str(false_class[n-1]) + ","
     final_line = final_line + "\"notes\": \"" + notes[n-1] + "\""
 
     final_line = final_line + "}"

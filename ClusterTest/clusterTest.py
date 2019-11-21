@@ -30,6 +30,8 @@ def k_means_data(path, n_cluster=8, draw=False):
         ax.set_aspect(1)
         plt.show()
 
+    np.savetxt(path+str(n_cluster)+"_means.csv", label, fmt='%d', delimiter=",")
+
     return label
 
 

@@ -547,7 +547,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "Wine"
+    data_name = "olive"
     if data_name0 is None:
         pass
     else:
@@ -555,7 +555,7 @@ def run_test(data_name0=None):
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.05
-    nbrs_k = 30
+    nbrs_k = 20
     method_k = 30
     eigen_numbers = 4
     draw_kind = "b-spline"
@@ -590,7 +590,7 @@ def run_test(data_name0=None):
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix)
 
     # 添加测试属性的地方
-    cluster_label = clusterTest.k_means_data(last_path, n_cluster=10, draw=False)
+    cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
 
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
