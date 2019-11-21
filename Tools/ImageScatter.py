@@ -58,7 +58,7 @@ def coil_image_scatter():
     """在coil数据的降维结果中展示图片"""
     path = "E:\\Project\\DataLab\\imageScatter\\"
     small_image(eta=0.15, in_path=path+"images\\", out_path=path+"smallImages\\")
-    Y = np.loadtxt(path+"pca.csv", dtype=np.float, delimiter=",")
+    Y = np.loadtxt(path+"pca3class.csv", dtype=np.float, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()
     ax.scatter(Y[:, 0], Y[:, 1])

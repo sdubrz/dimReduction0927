@@ -554,7 +554,7 @@ def run_test(data_name0=None):
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.05
-    nbrs_k = 50
+    nbrs_k = 30
     method_k = 30
     eigen_numbers = 4
     draw_kind = "b-spline"
