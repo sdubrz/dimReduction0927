@@ -132,7 +132,7 @@ def create_json2(path='', line_length=0.1, draw_spline=False):
 
     b_spline_list = draw_b_spline(path=path, line_length=line_length, draw=draw_spline)
 
-    f = open(path + "temp_total.json", encoding='utf-8')
+    f = open(path + "stress.json", encoding='utf-8')
     data = json.load(f)
     index = 0
     for item in data:

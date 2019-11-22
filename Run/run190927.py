@@ -547,14 +547,14 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "olive"
+    data_name = "coil20obj_16_3class"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
-    yita = 0.05
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    yita = 0.2
     nbrs_k = 20
     method_k = 30
     eigen_numbers = 4
@@ -603,13 +603,13 @@ def run_test(data_name0=None):
     end_time = time()
     print("程序的总运行时间为\t", end_time - start_time)
 
+    Stress_json.create_json(last_path)
+
     Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
     print("计算二维完成")
 
     CircleScatter.circle_json(last_path, r=0.03)
     print('生成散点json完成')
-
-    Stress_json.create_json(last_path)
 
     highKNN_2dPCA.create_json2(last_path, line_length=0.1)
 

@@ -265,6 +265,12 @@ def coli_custer_pca():
     print("finished")
 
 
+def wine_quality():
+    path = "E:\\Project\\DataLab\\wineQuality\\"
+    red_data = np.loadtxt(path+"winequality-red.csv", dtype=np.float, delimiter=";")
+    white_data = np.loadtxt(path+"winquality-white.csv", dtype=np.float, delimiter=";")
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
