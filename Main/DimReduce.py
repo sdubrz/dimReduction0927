@@ -83,14 +83,16 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None):
 
 
 def run_test():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_5class\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_5class\\"
+    path = "E:\\Project\\DataLab\\wineQuality\\"
     X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
     X = Preprocess.normalize(X, -1, 1)
-    Y = dim_reduce(X, method="LLE", method_k=30)
+    Y = dim_reduce(X, method="tsne", method_k=90)
 
     plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.colorbar()
     ax = plt.gca()
     ax.set_aspect(1)
     plt.show()

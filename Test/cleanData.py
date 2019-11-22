@@ -268,7 +268,25 @@ def coli_custer_pca():
 def wine_quality():
     path = "E:\\Project\\DataLab\\wineQuality\\"
     red_data = np.loadtxt(path+"winequality-red.csv", dtype=np.float, delimiter=";")
-    white_data = np.loadtxt(path+"winquality-white.csv", dtype=np.float, delimiter=";")
+    white_data = np.loadtxt(path+"winequality-white.csv", dtype=np.float, delimiter=";")
+    data = np.zeros((1000, 11))
+    label = np.ones((1000, 1))
+    quality = np.zeros((1000, 1))
+
+    for i in range(0, 500):
+        data[i, :] = red_data[i*3, 0:11]
+        label[i] = 1
+        quality[i] = red_data[i*3, 11]
+
+    for i in range(0, 500):
+        data[i+500, :] = white_data[i*9, 0:11]
+        label[500+i] = 2
+        quality[i+500] = white_data[i*9, 11]
+
+    np.savetxt(path+"data.csv", data, fmt='%f', delimiter=",")
+    np.savetxt(path+"label.csv", label, fmt='%d', delimiter=",")
+    np.savetxt(path+"quality.csv", quality, fmt='%d', delimiter=",")
+    print("sampling finished")
 
 
 if __name__ == '__main__':
@@ -281,5 +299,6 @@ if __name__ == '__main__':
     # swissroll1800()
     # gapminder()
     # gapminder_label()
-    coli_custer_pca()
+    # coli_custer_pca()
+    wine_quality()
 
