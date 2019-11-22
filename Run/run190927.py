@@ -554,7 +554,7 @@ def run_test(data_name0=None):
         data_name = data_name0
 
     method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
-    yita = 0.2
+    yita = 0.1
     nbrs_k = 20
     method_k = 30
     eigen_numbers = 4
