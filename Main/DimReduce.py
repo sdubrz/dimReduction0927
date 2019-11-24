@@ -84,17 +84,17 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None):
 
 def run_test():
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_5class\\"
-    path = "E:\\Project\\DataLab\\wineQuality\\"
-    X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    path = "E:\\Project\\DataLab\\MoCap\\cleanData\\"
+    X = np.loadtxt(path+"highjump.csv", dtype=np.float, delimiter=",")
     # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
-    label = np.loadtxt(path + "quality.csv", dtype=np.int, delimiter=",")
+    # label = np.loadtxt(path + "quality.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
-    X = Preprocess.normalize(X, -1, 1)
-    Y = dim_reduce(X, method="PCA", method_k=90)
+    X2 = Preprocess.normalize(X, -1, 1)
+    Y = dim_reduce(X2, method="PCA", method_k=90)
 
     np.savetxt(path+"y.csv", Y, fmt='%f', delimiter=",")
 
-    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.scatter(Y[:, 0], Y[:, 1])
     plt.colorbar()
     ax = plt.gca()
     ax.set_aspect(1)

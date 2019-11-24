@@ -289,6 +289,13 @@ def wine_quality():
     print("sampling finished")
 
 
+def pose_test():
+    path = "E:\\Project\\DataLab\\MoCap\\testframe\\poseTest.txt"
+    reader_file = open(path, encoding='utf-8')
+    pose = reader_file.read()
+    print(pose)
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
@@ -300,5 +307,6 @@ if __name__ == '__main__':
     # gapminder()
     # gapminder_label()
     # coli_custer_pca()
-    wine_quality()
+    # wine_quality()
+    pose_test()
 
