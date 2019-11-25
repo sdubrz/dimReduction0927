@@ -1,5 +1,10 @@
 import numpy as np
-from .Kmeans import kmeans
+from SMMC_.Kmeans import kmeans
+
+
+"""
+Yong. etc. Spectral Clustering on Multiple Manifolds
+"""
 
 
 class MPPCA():

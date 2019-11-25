@@ -1,6 +1,11 @@
 import numpy as np
 
 
+"""
+Yong. etc. Spectral Clustering on Multiple Manifolds
+"""
+
+
 class PrincipalAngle():
     
     def __init__(self,A,B):

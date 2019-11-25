@@ -1,5 +1,5 @@
 # 实验测试
-from SMMC.SMMC import SMMC
+from SMMC_.SMMC import SMMC
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np

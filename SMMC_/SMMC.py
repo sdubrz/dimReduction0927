@@ -1,7 +1,12 @@
-from SMMC.MPPCA import MPPCA
-from SMMC.PrincipalAngle import PrincipalAngle
-from SMMC.Kmeans import kmeans
+from SMMC_.MPPCA import MPPCA
+from SMMC_.PrincipalAngle import PrincipalAngle
+from SMMC_.Kmeans import kmeans
 import numpy as np
+
+
+"""
+Yong. etc. Spectral Clustering on Multiple Manifolds
+"""
 
 
 class SMMC():

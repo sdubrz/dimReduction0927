@@ -1,7 +1,11 @@
 import numpy as np
 
+"""
+Yong. etc. Spectral Clustering on Multiple Manifolds
+"""
 
-def kmeans(data, k=2, max_iter = 100, centers = None, tol = 1e-4):
+
+def kmeans(data, k=2, max_iter=100, centers=None, tol=1e-4):
     
     if centers is None:
         center_locs = []
