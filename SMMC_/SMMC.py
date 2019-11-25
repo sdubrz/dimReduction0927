@@ -112,8 +112,8 @@ class SMMC():
         temp = U[:,-K:]*1
         temp /= np.sqrt(np.sum(temp**2,axis=1)).reshape((-1,1))
         locs = kmeans(temp,K)
-        save_path = "E:\\Project\\result2019\\TPCA1008\\SMMC\\temp.csv"
-        np.savetxt(save_path, temp, fmt='%f', delimiter=',')
+        # save_path = "E:\\Project\\result2019\\TPCA1008\\SMMC\\temp.csv"
+        # np.savetxt(save_path, temp, fmt='%f', delimiter=',')
         return locs
         
     def run_cluster(self,o,k,K):
@@ -131,6 +131,6 @@ class SMMC():
         locs = self.cluster(U,K = K)
 
         # 保存相似度矩阵
-        save_path = "E:\\Project\\result2019\\TPCA1008\\SMMC\\W.csv"
-        np.savetxt(save_path, W, fmt='%f', delimiter=',')
+        # save_path = "E:\\Project\\result2019\\TPCA1008\\SMMC\\W.csv"
+        # np.savetxt(save_path, W, fmt='%f', delimiter=',')
         return locs

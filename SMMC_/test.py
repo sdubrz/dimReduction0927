@@ -147,6 +147,8 @@ def test_file_data_3d():
     K = 2
     locs = test.run_cluster(8, 20, K)
 
+    # print(locs)
+
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     for i in range(K):

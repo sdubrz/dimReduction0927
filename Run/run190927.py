@@ -22,6 +22,7 @@ from JSON_Data import Stress_json
 from Main import MainDirector
 from Tools import VisualizationKNN
 from ClusterTest import clusterTest
+from SMMC_ import Clustering
 
 """"
 本程序是基于run190422.py修改的
@@ -590,7 +591,8 @@ def run_test(data_name0=None):
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix)
 
     # 添加测试属性的地方
-    cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
+    # cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
+    cluster_label = Clustering.run_clustering_path(last_path, d_latent=m, n_pca=20, n_clusters=8, k_knn=nbrs_k, o=8, max_iter=100)
 
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
