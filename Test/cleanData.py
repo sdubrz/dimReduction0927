@@ -327,34 +327,45 @@ def mnist_50m():
     print('success')
 
 
-def mnist_50m_class():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2\\"
-    X_ = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+def mnist_50m_class(path1="", origin_path=""):
+    """
+    采样
+    :param path1:
+    :param origin_path:
+    :return:
+    """
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2\\"
+    X_ = np.loadtxt(path1, dtype=np.float, delimiter=",")
     (n, m) = X_.shape
     X = X_.tolist()
-    origin_ = np.loadtxt(path+"2.csv", dtype=np.int, delimiter=",")
+    origin_ = np.loadtxt(origin_path, dtype=np.int, delimiter=",")
     origin = origin_.tolist()
 
-    small_data = []
-    small_1 = []
+    small_data = []  # PCA之后的数据
+    small_1 = []  # 原始的数据
     for i in range(0, n):
         if i % 8 == 0:
             small_data.append(X[i])
             small_1.append(origin[i])
-    np.savetxt(path+"small.csv", np.array(small_data), fmt='%f', delimiter=",")
-    np.savetxt(path+"origin.csv", np.array(small_1), fmt='%d', delimiter=",")
+
+    return np.array(small_data), np.array(small_1)
+    # np.savetxt(path+"small.csv", np.array(small_data), fmt='%f', delimiter=",")
+    # np.savetxt(path+"origin.csv", np.array(small_1), fmt='%d', delimiter=",")
 
 
-def mnist_pictures():
+def mnist_pictures(path=""):
     """生成MNIST的图片"""
     # path = "E:\\Project\\DataLab\\MNIST\\"
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
     X = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
     X = 255*np.ones(X.shape) - X
     # X = np.maximum(X, 1)
     # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     # count = np.zeros((10, 1))
+    picture_path = path + "pictures\\"
+    if not os.path.exists(picture_path):
+        os.makedirs(picture_path)
 
     for i in range(0, n):
         new_data = np.reshape(X[i, :], (28, 28))
@@ -362,12 +373,32 @@ def mnist_pictures():
         # plt.imshow(new_data, cmap=plt.cm.gray, interpolation='nearest')
         # im.show()
         # im.save(path+"pictures\\"+str(label[i])+"\\"+str(int(count[label[i]]))+".png")
-        im.save(path+"pictures\\"+str(i)+".png")
+        im.save(picture_path+str(i)+".png")
         # count[label[i]] += 1
         if i % 1000 == 0:
             print(i)
 
     print("finished")
+
+
+def mnist_run():
+    """ 处理 MNIST数据 """
+    path = "E:\\Project\\DataLab\\MNIST50m\\"
+    origin_path = "E:\\Project\\DataLab\\MNIST\\"
+
+    for digit in range(3, 10):
+        print("digit = ", digit)
+        X, origin_X = mnist_50m_class(path+str(digit)+".csv", origin_path+str(digit)+".csv")
+        (n, m) = X.shape
+        label = np.ones((n, 1)) * digit
+
+        digit_path = path + "MNIST50mclass" + str(digit) + "_" + str(n) + "\\"
+        if not os.path.exists(digit_path):
+            os.makedirs(digit_path)
+        np.savetxt(digit_path+"data.csv", X, fmt='%f', delimiter=",")
+        np.savetxt(digit_path+"origin.csv", origin_X, fmt='%d', delimiter=",")
+        np.savetxt(digit_path+"label.csv", label, fmt='%d', delimiter=",")
+        mnist_pictures(digit_path)
 
 
 if __name__ == '__main__':
@@ -384,6 +415,7 @@ if __name__ == '__main__':
     # wine_quality()
     # pose_test()
     # mnist_50m_class()
-    mnist_pictures()
+    # mnist_pictures()
     # mnist_50m()
+    mnist_run()
 
