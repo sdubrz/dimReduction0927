@@ -296,6 +296,49 @@ def pose_test():
     print(pose)
 
 
+def mnist():
+    path = "E:\\Project\\DataLab\\MNIST\\"
+    X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    pca = PCA(n_components=50)
+    Y = pca.fit_transform(X)
+
+    np.savetxt(path+"Y.csv", Y, fmt='%f', delimiter=",")
+
+
+def mnist_50m():
+    path = "E:\\Project\\DataLab\\MNIST50m\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    (n, m) = data.shape
+    X = data.tolist()
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+    data_list = []
+    for i in range(0, 10):
+        data_list.append([])
+
+    index = 0
+    while index < n:
+        data_list[label[index]].append(X[index])
+        index += 1
+
+    for i in range(0, 10):
+        np.savetxt(path+str(i)+".csv", np.array(data_list[i]), fmt='%f', delimiter=",")
+
+    print('success')
+
+
+def mnist_50m_class():
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass1\\"
+    X_ = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    (n, m) = X_.shape
+    X = X_.tolist()
+
+    small_data = []
+    for i in range(0, n):
+        if i % 8 == 0:
+            small_data.append(X[i])
+    np.savetxt(path+"small.csv", np.array(small_data), fmt='%f', delimiter=",")
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
@@ -308,5 +351,6 @@ if __name__ == '__main__':
     # gapminder_label()
     # coli_custer_pca()
     # wine_quality()
-    pose_test()
+    # pose_test()
+    mnist_50m_class()
 
