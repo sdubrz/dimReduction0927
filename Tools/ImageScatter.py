@@ -77,15 +77,18 @@ def mnist_images():
     用MNIST数据画艺术散点图
     :return:
     """
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
-    small_image(eta=0.6, in_path=path+"pictures\\", out_path=path+"smallImages\\")
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass5_790\\"
+    small_path = path + "smallImages\\"
+    if not os.path.exists(small_path):
+        os.makedirs(small_path)
+    small_image(eta=0.5, in_path=path+"pictures\\", out_path=small_path)
     Y = np.loadtxt(path + "pca.csv", dtype=np.float, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()
     # plt.colormaps()
     ax.scatter(Y[:, 0], Y[:, 1])
     for i in range(0, n):
-        ab = AnnotationBbox(get_image(path + "smallImages\\" + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
+        ab = AnnotationBbox(get_image(small_path + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
         ax.add_artist(ab)
     ax = plt.gca()
     ax.set_aspect(1)
