@@ -72,10 +72,31 @@ def coil_image_scatter():
     plt.show()
 
 
+def mnist_images():
+    """
+    用MNIST数据画艺术散点图
+    :return:
+    """
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
+    small_image(eta=0.6, in_path=path+"pictures\\", out_path=path+"smallImages\\")
+    Y = np.loadtxt(path + "pca.csv", dtype=np.float, delimiter=",")
+    (n, m) = Y.shape
+    fig, ax = plt.subplots()
+    # plt.colormaps()
+    ax.scatter(Y[:, 0], Y[:, 1])
+    for i in range(0, n):
+        ab = AnnotationBbox(get_image(path + "smallImages\\" + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
+        ax.add_artist(ab)
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.show()
+
+
 if __name__ == '__main__':
     # image_scatter()
     # path1 = "E:\\Project\\DataLab\\duck\\images\\"
     # for i, j, k in os.walk(path1):
     #     for file in k:
     #         print(file)
-    coil_image_scatter()
+    # coil_image_scatter()
+    mnist_images()

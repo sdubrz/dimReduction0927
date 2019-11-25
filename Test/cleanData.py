@@ -7,6 +7,7 @@ from sklearn.decomposition import PCA
 import openpyxl
 import csv
 import os
+from PIL import Image
 
 
 def wine_quality_red():
@@ -306,7 +307,7 @@ def mnist():
 
 
 def mnist_50m():
-    path = "E:\\Project\\DataLab\\MNIST50m\\"
+    path = "E:\\Project\\DataLab\\MNIST\\"
     data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     (n, m) = data.shape
     X = data.tolist()
@@ -321,22 +322,52 @@ def mnist_50m():
         index += 1
 
     for i in range(0, 10):
-        np.savetxt(path+str(i)+".csv", np.array(data_list[i]), fmt='%f', delimiter=",")
+        np.savetxt(path+str(i)+".csv", np.array(data_list[i]), fmt='%d', delimiter=",")
 
     print('success')
 
 
 def mnist_50m_class():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass1\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2\\"
     X_ = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     (n, m) = X_.shape
     X = X_.tolist()
+    origin_ = np.loadtxt(path+"2.csv", dtype=np.int, delimiter=",")
+    origin = origin_.tolist()
 
     small_data = []
+    small_1 = []
     for i in range(0, n):
         if i % 8 == 0:
             small_data.append(X[i])
+            small_1.append(origin[i])
     np.savetxt(path+"small.csv", np.array(small_data), fmt='%f', delimiter=",")
+    np.savetxt(path+"origin.csv", np.array(small_1), fmt='%d', delimiter=",")
+
+
+def mnist_pictures():
+    """生成MNIST的图片"""
+    # path = "E:\\Project\\DataLab\\MNIST\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
+    X = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
+    (n, m) = X.shape
+    X = 255*np.ones(X.shape) - X
+    # X = np.maximum(X, 1)
+    # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+    # count = np.zeros((10, 1))
+
+    for i in range(0, n):
+        new_data = np.reshape(X[i, :], (28, 28))
+        im = Image.fromarray(new_data.astype(np.uint8))
+        # plt.imshow(new_data, cmap=plt.cm.gray, interpolation='nearest')
+        # im.show()
+        # im.save(path+"pictures\\"+str(label[i])+"\\"+str(int(count[label[i]]))+".png")
+        im.save(path+"pictures\\"+str(i)+".png")
+        # count[label[i]] += 1
+        if i % 1000 == 0:
+            print(i)
+
+    print("finished")
 
 
 if __name__ == '__main__':
@@ -352,5 +383,7 @@ if __name__ == '__main__':
     # coli_custer_pca()
     # wine_quality()
     # pose_test()
-    mnist_50m_class()
+    # mnist_50m_class()
+    mnist_pictures()
+    # mnist_50m()
 
