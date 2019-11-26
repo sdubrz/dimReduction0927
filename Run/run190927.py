@@ -548,7 +548,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "MNIST50mclass5_790"
+    data_name = "MNIST50mclass9_870"
     if data_name0 is None:
         pass
     else:
@@ -591,8 +591,8 @@ def run_test(data_name0=None):
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix)
 
     # 添加测试属性的地方
-    # cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
-    cluster_label = Clustering.run_clustering_path(last_path, d_latent=m, n_pca=20, n_clusters=8, k_knn=nbrs_k, o=8, max_iter=100)
+    cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
+    # cluster_label = Clustering.run_clustering_path(last_path, d_latent=m, n_pca=20, n_clusters=8, k_knn=nbrs_k, o=8, max_iter=100)
 
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
