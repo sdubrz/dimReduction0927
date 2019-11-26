@@ -106,6 +106,78 @@ def run_test():
     plt.show()
 
 
+def mnist_combination():
+    """
+    MNIST 数据组合查看降维效果
+    :return:
+    """
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\"
+    save_path = "E:\\Project\\DataLab\\MNIST50m\\combination3\\normalize\\"
+    digits_count = [863, 985, 874, 893, 853, 790, 860, 912, 854, 870]
+
+    for i in range(0, 8):
+        X1 = np.loadtxt(path+"MNIST50mclass"+str(i)+"_"+str(digits_count[i])+"\\data.csv", dtype=np.float, delimiter=",")
+        (n1, m1) = X1.shape
+        for j in range(i+1, 9):
+            X2 = np.loadtxt(path + "MNIST50mclass" + str(j) + "_" + str(digits_count[j]) + "\\data.csv", dtype=np.float, delimiter=",")
+            (n2, m2) = X2.shape
+            for k in range(j+1, 10):
+                X3 = np.loadtxt(path + "MNIST50mclass" + str(k) + "_" + str(digits_count[k]) + "\\data.csv", dtype=np.float, delimiter=",")
+                (n3, m3) = X3.shape
+                X = np.zeros((n1+n2+n3, m1))
+                X[0:n1, :] = X1[:, :]
+                X[n1:n1+n2] = X2[:, :]
+                X[n1+n2:n1+n2+n3] = X3[:, :]
+                # label = np.zeros((n1+n2+n3, 1))
+                # label[0:n1] = i
+                # label[n1:n1+n2] = j
+                # label[n1+n2:n1+n2+n3] = k
+                # for i in range
+                label = []
+                for index in range(0, n1):
+                    label.append(i)
+                for index in range(0, n2):
+                    label.append(j)
+                for index in range(0, n3):
+                    label.append(k)
+                X = Preprocess.normalize(X, -1, 1)
+
+                Y = dim_reduce(X, method="PCA")
+                plt.scatter(Y[:, 0], Y[:, 1], c=label)
+                plt.colorbar()
+                ax = plt.gca()
+                ax.set_aspect(1)
+                plt.savefig(save_path+str(i)+str(j)+str(k)+".png")
+                plt.close()
+
+                print(i, j, k)
+
+
+def mnist_50m_small():
+    """
+    对每个类大约有500个点的数据进行处理，预览降维效果
+    :return:
+    """
+    digit_count = [461, 526, 466, 477, 455, 421, 459, 487, 455, 464]
+    path = "E:\\Project\\DataLab\\MNIST50m\\"
+    method = "pca"
+    for i in range(0, 10):
+        this_path = path + "MNIST50mclass" + str(i) + "_" + str(digit_count[i]) + "\\"
+        X = np.loadtxt(this_path+"data.csv", dtype=np.float, delimiter=",")
+        X = Preprocess.normalize(X, -1, 1)
+        Y = dim_reduce(X, method=method)
+        np.savetxt(this_path+method+".csv", Y, fmt="%f", delimiter=",")
+        plt.scatter(Y[:, 0], Y[:, 1])
+        plt.title(str(i)+"-"+method)
+        ax = plt.gca()
+        ax.set_aspect(1)
+        plt.savefig(this_path+str(i)+"-"+method+".png")
+        plt.close()
+        print(i)
+
+
 if __name__ == '__main__':
-    run_test()
+    # run_test()
+    # mnist_combination()
+    mnist_50m_small()
 

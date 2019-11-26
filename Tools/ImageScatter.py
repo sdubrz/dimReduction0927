@@ -77,12 +77,12 @@ def mnist_images():
     用MNIST数据画艺术散点图
     :return:
     """
-    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass8_854\\"
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass9_870\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
         os.makedirs(small_path)
-    small_image(eta=3.5, in_path=path+"pictures\\", out_path=small_path)
+    small_image(eta=0.5, in_path=path+"pictures\\", out_path=small_path)
     Y = np.loadtxt(path + "pca.csv", dtype=np.float, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()

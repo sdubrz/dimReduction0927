@@ -344,7 +344,7 @@ def mnist_50m_class(path1="", origin_path=""):
     small_data = []  # PCA之后的数据
     small_1 = []  # 原始的数据
     for i in range(0, n):
-        if i % 8 == 0:
+        if i % 15 == 0:
             small_data.append(X[i])
             small_1.append(origin[i])
 
@@ -386,7 +386,7 @@ def mnist_run():
     path = "E:\\Project\\DataLab\\MNIST50m\\"
     origin_path = "E:\\Project\\DataLab\\MNIST\\"
 
-    for digit in range(3, 10):
+    for digit in range(0, 10):
         print("digit = ", digit)
         X, origin_X = mnist_50m_class(path+str(digit)+".csv", origin_path+str(digit)+".csv")
         (n, m) = X.shape
