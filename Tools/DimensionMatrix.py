@@ -45,7 +45,9 @@ def point_image(path=""):
 
 
 def run_test():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\Wine\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\Wine\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\Iris\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
     point_image(path)
 
 
