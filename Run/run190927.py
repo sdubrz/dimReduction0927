@@ -98,7 +98,7 @@ def local_pca_calculated(path):
 
 def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
-        weighted=True, P_matrix=None):
+        weighted=True, P_matrix=None, show_result=False):
     """"
 
     :param main_path: 主文件目录
@@ -123,6 +123,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     :param MAX_NK: 是一个元组，并且这个元组中的两个数都是0~1之间的值。第一个值控制k值差别大小，第二个值控制超过差别阈值的邻居个数
                     如果一个点的dim+1邻域中有超过(dim+1)*MAX_NK[1]个点与这个点的k值差别超过了(MAX_K-dim-1)*MAX_NK[0]，则我们需要考虑采取措施
     :param P_matrix: 普通的线性降维方法的投影矩阵
+    :param show_result: 在计算完成后，是否将结果画出来
 
     @author subbrz
     2018年12月20日
@@ -275,7 +276,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     for i in range(0, n):
         plt.scatter(y[i, 0], y[i, 1], marker=shapes[i], c='k', alpha=0.6)
 
-    if draw_kind == "line" or has_line:
+    if (draw_kind == "line" or has_line) and show_result:
         for j in range(0, max_eigen_numbers):
             y_add_v = y_list_add_adjust[j]
             y_sub_v = y_list_sub_adjust[j]
@@ -316,7 +317,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
             convex_hull_list.append(temp_convex0)  # 存储这个凸包顶点信息
             temp_convex = np.array(temp_convex0)
 
-            if draw_kind == "convex_hull":
+            if draw_kind == "convex_hull" and show_result:
                 for j in range(0, len(temp_convex)-1):
                     plt.plot([temp_convex[j, 0], temp_convex[j+1, 0]], [temp_convex[j, 1], temp_convex[j+1, 1]], linewidth=0.6, c='deepskyblue', alpha=0.7)
                 plt.plot([temp_convex[len(temp_convex)-1, 0], temp_convex[0, 0]], [temp_convex[len(temp_convex)-1, 1], temp_convex[0, 1]],
@@ -375,7 +376,8 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
 
             if len(temp_convex) < 3:
                 print('bad')
-            plt.plot(spline_x, spline_y, linewidth=0.6, c='deepskyblue', alpha=0.7)
+            if show_result:
+                plt.plot(spline_x, spline_y, linewidth=0.6, c='deepskyblue', alpha=0.7)
 
             this_spline = []
             for j in range(0, len(spline_x)):
@@ -406,7 +408,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         star_shape_list = []  # 存放星型多边形顶点信息，方便进行存储
         for i in range(0, n):
             temp_points = total_list[i]
-            if len(temp_points) == 3:  # 也就是只使用一个特征向量就满足了所要求的比例
+            if len(temp_points) == 3 and show_result:  # 也就是只使用一个特征向量就满足了所要求的比例
                 plt.plot([temp_points[2, 0], temp_points[0, 0]], [temp_points[2, 1], temp_points[0, 1]], linewidth=0.8, c='deepskyblue', alpha=0.7)
                 plt.plot([temp_points[2, 0], temp_points[1, 0]], [temp_points[2, 1], temp_points[1, 1]], linewidth=0.8,
                          c='deepskyblue', alpha=0.7)
@@ -417,16 +419,18 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
 
             sorted_points = MySort.points_sort(temp_points)
             star_shape_list.append(sorted_points)
-            for j in range(0, len(sorted_points)-1):
-                plt.plot([sorted_points[j, 0], sorted_points[j+1, 0]], [sorted_points[j, 1], sorted_points[j+1, 1]], linewidth=0.8, c='deepskyblue', alpha=0.7)
-            plt.plot([sorted_points[0, 0], sorted_points[len(sorted_points)-1, 0]], [sorted_points[0, 1], sorted_points[len(sorted_points)-1, 1]],
-                     linewidth=0.8, c='deepskyblue', alpha=0.7)
+            if show_result:
+                for j in range(0, len(sorted_points)-1):
+                    plt.plot([sorted_points[j, 0], sorted_points[j+1, 0]], [sorted_points[j, 1], sorted_points[j+1, 1]], linewidth=0.8, c='deepskyblue', alpha=0.7)
+                plt.plot([sorted_points[0, 0], sorted_points[len(sorted_points)-1, 0]], [sorted_points[0, 1], sorted_points[len(sorted_points)-1, 1]],
+                         linewidth=0.8, c='deepskyblue', alpha=0.7)
 
         SaveData.save_lists(star_shape_list, save_path + "convex_hull_list.csv")
 
-    ax = plt.gca()
-    ax.set_aspect(1)
-    plt.show()
+    if show_result:
+        ax = plt.gca()
+        ax.set_aspect(1)
+        plt.show()
 
     # 无论使用什么画法都需要把最原始的star_shape_polygon信息保存下来
     final_star_shape_list = star_polygons(y, y_list_add, y_list_sub, max_eigen_numbers)
@@ -564,6 +568,9 @@ def run_test(data_name0=None):
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
     P_matrix = None  # 普通的线性降维方法的投影矩阵
+    show_result = False
+    if data_name0 is None:
+        show_result = True
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
@@ -587,8 +594,8 @@ def run_test(data_name0=None):
         P_matrix[y_index, 1] = 1
 
     last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
-        method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
-        do_straight=straighten, weighted=weighted, P_matrix=P_matrix)
+        method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
+        do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result)
 
     # 添加测试属性的地方
     cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
@@ -618,8 +625,9 @@ def run_test(data_name0=None):
     # 生成表示高维趋势的 json文件
     TrendJson.trend_json(last_path)
 
-    # 画主成分的投影方向
-    MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)
+    # 画主成分的投影方向，如果是循环调用该函数的话，是默认不画图的
+    if data_name0 is None:
+        MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)
 
     # 画KNN关系图
     # VisualizationKNN.draw_knn(last_path)  # 太浪费空间，暂时注释掉，默认不运行
