@@ -77,7 +77,7 @@ def mnist_images():
     用MNIST数据画艺术散点图
     :return:
     """
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass9_870\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass9_464\\"
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):

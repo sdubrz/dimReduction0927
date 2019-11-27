@@ -558,7 +558,7 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.1
     nbrs_k = 54
     method_k = 30
