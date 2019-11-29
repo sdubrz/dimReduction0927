@@ -401,6 +401,46 @@ def mnist_run():
         mnist_pictures(digit_path)
 
 
+def mocap_teen():
+    """
+    对人体骨骼数据删除一些关节，制作一个简化版的数据
+    :return:
+    """
+    read_path = "E:\\Project\\DataLab\\MoCap\\cleanData\\swimmer.csv"
+    write_path = "E:\\Project\\DataLab\\MoCap\\mocap_teen\\swimmer.csv"
+    data = np.loadtxt(read_path, dtype=np.float, delimiter=",")
+    (n, m) = data.shape  # 目前的数据中共有28个关节，是84维的数据
+
+    left_points = [2, 3, 4, 7, 8, 9, 11, 14, 16, 17, 18, 19, 24, 25, 26]  # 要保留的关节号，是从1开始计数的
+    X = np.zeros((n, len(left_points)*3))
+    for i in range(0, len(left_points)):
+        j = left_points[i] - 1
+        X[:, 3*i] = data[:, j*3]
+        X[:, 3*i+1] = data[:, j*3+1]
+        X[:, 3*i+2] = data[:, j*3+2]
+
+    np.savetxt(write_path, X, fmt='%f', delimiter=",")
+
+
+def mocap_less_frame():
+    """
+    减少人体骨骼数据的帧数
+    :return:
+    """
+    read_path = "E:\\Project\\DataLab\\MoCap\\mocap_teen\\swimmer.csv"
+    write_path = "E:\\Project\\DataLab\\MoCap\\mocap_teen\\swimmer_small.csv"
+    data = np.loadtxt(read_path, dtype=np.float, delimiter=",")
+    (n, m) = data.shape
+    data_list = data.tolist()
+    X = []
+
+    for i in range(0, n):
+        if i % 10 == 0:
+            X.append(data_list[i])
+
+    np.savetxt(write_path, np.array(X), fmt='%f', delimiter=",")
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
@@ -417,5 +457,7 @@ if __name__ == '__main__':
     # mnist_50m_class()
     # mnist_pictures()
     # mnist_50m()
-    mnist_run()
+    # mnist_run()
+    # mocap_teen()
+    mocap_less_frame()
 

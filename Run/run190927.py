@@ -552,7 +552,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "MNIST50mclass9_870"
+    data_name = "swimmer_small"
     if data_name0 is None:
         pass
     else:
@@ -560,7 +560,7 @@ def run_test(data_name0=None):
 
     method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.1
-    nbrs_k = 54
+    nbrs_k = 50
     method_k = 30
     eigen_numbers = 4
     draw_kind = "b-spline"
