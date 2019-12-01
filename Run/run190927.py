@@ -560,7 +560,7 @@ def run_test(data_name0=None):
 
     method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 0.1
-    nbrs_k = 50
+    nbrs_k = 54
     method_k = 30
     eigen_numbers = 4
     draw_kind = "b-spline"
@@ -596,6 +596,11 @@ def run_test(data_name0=None):
     last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
         method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result)
+
+    if not(data_name0 is None):  # 规模化运行时，保存降维结果
+        read_path = main_path + "datasets\\" + data_name + "\\"
+        Y = np.loadtxt(last_path+"y.csv", dtype=np.float, delimiter=",")
+        np.savetxt(read_path+method+".csv", Y, fmt='%f', delimiter=",")
 
     # 添加测试属性的地方
     cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)

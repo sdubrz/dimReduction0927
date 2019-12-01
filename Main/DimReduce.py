@@ -8,6 +8,7 @@ from Main.LDA import LDA
 from sklearn.manifold import LocallyLinearEmbedding
 from Main import Preprocess
 import matplotlib.pyplot as plt
+import os
 
 
 """
@@ -113,21 +114,30 @@ def mnist_combination():
     """
     path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\"
     save_path = "E:\\Project\\DataLab\\MNIST50m\\combination3\\normalize\\"
-    digits_count = [863, 985, 874, 893, 853, 790, 860, 912, 854, 870]
+    data_path = "E:\\Project\\DataLab\\MNIST50m\\combination3\\data\\"
+    # digits_count = [863, 985, 874, 893, 853, 790, 860, 912, 854, 870]
+    digits_count = [461, 526, 466, 477, 455, 421, 459, 487, 455, 464]
 
     for i in range(0, 8):
         X1 = np.loadtxt(path+"MNIST50mclass"+str(i)+"_"+str(digits_count[i])+"\\data.csv", dtype=np.float, delimiter=",")
+        X1_origin = np.loadtxt(path+"MNIST50mclass"+str(i)+"_"+str(digits_count[i])+"\\origin.csv", dtype=np.float, delimiter=",")
         (n1, m1) = X1.shape
         for j in range(i+1, 9):
             X2 = np.loadtxt(path + "MNIST50mclass" + str(j) + "_" + str(digits_count[j]) + "\\data.csv", dtype=np.float, delimiter=",")
+            X2_origin = np.loadtxt(path + "MNIST50mclass" + str(j) + "_" + str(digits_count[j]) + "\\origin.csv", dtype=np.float, delimiter=",")
             (n2, m2) = X2.shape
             for k in range(j+1, 10):
                 X3 = np.loadtxt(path + "MNIST50mclass" + str(k) + "_" + str(digits_count[k]) + "\\data.csv", dtype=np.float, delimiter=",")
+                X3_origin = np.loadtxt(path + "MNIST50mclass" + str(k) + "_" + str(digits_count[k]) + "\\origin.csv", dtype=np.float, delimiter=",")
                 (n3, m3) = X3.shape
                 X = np.zeros((n1+n2+n3, m1))
+                X_origin = np.zeros((n1+n2+n3, 784))
                 X[0:n1, :] = X1[:, :]
-                X[n1:n1+n2] = X2[:, :]
-                X[n1+n2:n1+n2+n3] = X3[:, :]
+                X[n1:n1+n2, :] = X2[:, :]
+                X[n1+n2:n1+n2+n3, :] = X3[:, :]
+                X_origin[0:n1, :] = X1_origin[:, :]
+                X_origin[n1:n1 + n2, :] = X2_origin[:, :]
+                X_origin[n1 + n2:n1 + n2 + n3, :] = X3_origin[:, :]
                 # label = np.zeros((n1+n2+n3, 1))
                 # label[0:n1] = i
                 # label[n1:n1+n2] = j
@@ -140,6 +150,14 @@ def mnist_combination():
                     label.append(j)
                 for index in range(0, n3):
                     label.append(k)
+
+                temp_path = data_path+"mnist50mclass"+str(i)+str(j)+str(k)+"\\"
+                if not os.path.exists(temp_path):
+                    os.makedirs(temp_path)
+                np.savetxt(temp_path+"data.csv", X, fmt="%f", delimiter=",")
+                np.savetxt(temp_path+"label.csv", np.array(label).T, fmt='%d', delimiter=",")
+                np.savetxt(temp_path+"origin.csv", X_origin, fmt='%d', delimiter=",")
+
                 X = Preprocess.normalize(X, -1, 1)
 
                 Y = dim_reduce(X, method="PCA")
@@ -178,6 +196,6 @@ def mnist_50m_small():
 
 if __name__ == '__main__':
     # run_test()
-    # mnist_combination()
-    mnist_50m_small()
+    mnist_combination()
+    # mnist_50m_small()
 
