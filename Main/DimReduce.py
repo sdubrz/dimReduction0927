@@ -116,7 +116,8 @@ def mnist_combination():
     save_path = "E:\\Project\\DataLab\\MNIST50m\\combination3\\normalize\\"
     data_path = "E:\\Project\\DataLab\\MNIST50m\\combination3\\data\\"
     # digits_count = [863, 985, 874, 893, 853, 790, 860, 912, 854, 870]
-    digits_count = [461, 526, 466, 477, 455, 421, 459, 487, 455, 464]
+    # digits_count = [461, 526, 466, 477, 455, 421, 459, 487, 455, 464]
+    digits_count = [231, 263, 233, 239, 228, 211, 230, 244, 228, 232]
 
     for i in range(0, 8):
         X1 = np.loadtxt(path+"MNIST50mclass"+str(i)+"_"+str(digits_count[i])+"\\data.csv", dtype=np.float, delimiter=",")
@@ -151,7 +152,7 @@ def mnist_combination():
                 for index in range(0, n3):
                     label.append(k)
 
-                temp_path = data_path+"mnist50mclass"+str(i)+str(j)+str(k)+"\\"
+                temp_path = data_path+"mnist50mminiclass"+str(i)+str(j)+str(k)+"\\"
                 if not os.path.exists(temp_path):
                     os.makedirs(temp_path)
                 np.savetxt(temp_path+"data.csv", X, fmt="%f", delimiter=",")

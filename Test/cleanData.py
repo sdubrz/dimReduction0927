@@ -344,7 +344,7 @@ def mnist_50m_class(path1="", origin_path=""):
     small_data = []  # PCA之后的数据
     small_1 = []  # 原始的数据
     for i in range(0, n):
-        if i % 15 == 0:
+        if i % 30 == 0:
             small_data.append(X[i])
             small_1.append(origin[i])
 
@@ -472,8 +472,8 @@ if __name__ == '__main__':
     # mnist_50m_class()
     # mnist_pictures()
     # mnist_50m()
-    # mnist_run()
+    mnist_run()
     # mocap_teen()
     # mocap_less_frame()
-    mnist_pca_research()
+    # mnist_pca_research()
 
