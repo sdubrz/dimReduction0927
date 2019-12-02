@@ -6,6 +6,7 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 from PIL import Image
 import os
+from Test import cleanData
 
 
 def small_image(eta=0.5, in_path="", out_path=""):
@@ -72,18 +73,23 @@ def coil_image_scatter():
     plt.show()
 
 
-def mnist_images():
+def mnist_images(path=None):
     """
     用MNIST数据画艺术散点图
     :return:
     """
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass9_464\\"
+    if path is None:
+        path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass019\\"
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
+
+    # 如果事前没有生成图片，则需要先生成图片
+    cleanData.mnist_pictures(path)
+
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
         os.makedirs(small_path)
-    small_image(eta=0.5, in_path=path+"pictures\\", out_path=small_path)
-    Y = np.loadtxt(path + "pca.csv", dtype=np.float, delimiter=",")
+    small_image(eta=0.36, in_path=path+"pictures\\", out_path=small_path)
+    Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()
     # plt.colormaps()
@@ -96,6 +102,21 @@ def mnist_images():
     plt.show()
 
 
+def mnist_scatter():
+    option = 2
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass127\\"
+    if option == 1:  # 直接画散点图
+        Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
+        label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+        plt.scatter(Y[:, 0], Y[:, 1], c=label)
+        ax = plt.gca()
+        ax.set_aspect(1)
+        plt.colorbar()
+        plt.show()
+    else:  # 画艺术散点图
+        mnist_images(path)
+
+
 if __name__ == '__main__':
     # image_scatter()
     # path1 = "E:\\Project\\DataLab\\duck\\images\\"
@@ -103,4 +124,5 @@ if __name__ == '__main__':
     #     for file in k:
     #         print(file)
     # coil_image_scatter()
-    mnist_images()
+    # mnist_images()
+    mnist_scatter()

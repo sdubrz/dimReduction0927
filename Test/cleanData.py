@@ -441,6 +441,21 @@ def mocap_less_frame():
     np.savetxt(write_path, np.array(X), fmt='%f', delimiter=",")
 
 
+def mnist_pca_research():
+    path = "E:\\Project\\DataLab\\MNIST\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    (n, m) = data.shape
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+
+    pca = PCA(n_components=m)
+    pca.fit(data)
+    vectors = pca.components_  # 所有的特征向量
+    values = pca.explained_variance_  # 所有的特征值
+    np.savetxt(path+"eigenvectors.csv", vectors, fmt='%f', delimiter=",")
+    np.savetxt(path+"eigenvalues.csv", values, fmt='%f', delimiter=",")
+    print("finished")
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
@@ -459,5 +474,6 @@ if __name__ == '__main__':
     # mnist_50m()
     # mnist_run()
     # mocap_teen()
-    mocap_less_frame()
+    # mocap_less_frame()
+    mnist_pca_research()
 
