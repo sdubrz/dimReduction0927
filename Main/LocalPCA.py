@@ -17,11 +17,23 @@ def local_pca_dn(data):
     :param data: 局部数据
     :return:
     """
-    data_shape = data.shape
-    local_pca = PCA(n_components=data_shape[1], copy=True, whiten=True)
-    local_pca.fit(data)
-    vectors = local_pca.components_  # 所有的特征向量
-    values = local_pca.explained_variance_  # 所有的特征值
+    (n, m) = data.shape
+    if n <= m:
+        mean_data = np.mean(data, axis=0)
+        X = data - mean_data
+        C = np.matmul(np.transpose(X), X) / n
+        eigen_values, eigen_vectors = np.linalg.eig(C)
+        eig_idx = np.argpartition(eigen_values, -m)[-m:]
+        eig_idx = eig_idx[np.argsort(-eigen_values[eig_idx])]
+        vectors = eigen_vectors[:, eig_idx]
+        vectors = np.transpose(vectors)
+        values = eigen_values[eig_idx]
+    else:
+        data_shape = data.shape
+        local_pca = PCA(n_components=data_shape[1], copy=True, whiten=True)
+        local_pca.fit(data)
+        vectors = local_pca.components_  # 所有的特征向量
+        values = local_pca.explained_variance_  # 所有的特征值
     return vectors, values
 
 
@@ -415,5 +427,15 @@ def loop_test():
     print(list)
 
 
+def pca_test():
+    data = np.array([[1, 2, 3, 4, 5],
+                     [6, 7, 8, 9, 10],
+                     [1, 3, 6, 8, 4]])
+    vectors, values = local_pca_dn(data)
+    print(vectors)
+    print(values)
+
+
 if __name__ == "__main__":
-    loop_test()
+    # loop_test()
+    pca_test()
