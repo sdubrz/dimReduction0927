@@ -559,12 +559,12 @@ def run_test(data_name0=None):
         data_name = data_name0
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
-    yita = 0.1
-    nbrs_k = 30
+    yita = 100
+    nbrs_k = 51
     method_k = 30
     eigen_numbers = 4
     draw_kind = "b-spline"
-    normalize = True
+    normalize = False
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
     P_matrix = None  # 普通的线性降维方法的投影矩阵

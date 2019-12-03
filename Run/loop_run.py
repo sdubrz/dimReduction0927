@@ -5,9 +5,11 @@ import os
 
 def loop_run():
     # digit_count = [461, 526, 466, 477, 455, 421, 459, 487, 455, 464]
-    digit_count = [863, 985, 874, 893, 853, 790, 860, 912, 854, 870]
+    # digit_count = [863, 985, 874, 893, 853, 790, 860, 912, 854, 870]
+    fashion_count = [238, 254, 251, 262, 264, 251, 251, 244, 227, 258]
+    digit_count = fashion_count
     for i in range(0, 10):
-        data_name = "MNIST50mclass" + str(i) + "_" + str(digit_count[i])
+        data_name = "fashion50mclass" + str(i) + "_" + str(digit_count[i])
         run190927.run_test(data_name0=data_name)
         print("###############################################################")
 
@@ -32,5 +34,5 @@ def shutdown():
 
 
 if __name__ == '__main__':
-    loop_run2()
+    loop_run()
     # shutdown()

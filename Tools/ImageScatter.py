@@ -1,6 +1,7 @@
 # 在散点图中插入图片
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import cm
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
@@ -73,7 +74,7 @@ def coil_image_scatter():
     plt.show()
 
 
-def mnist_images(path=None):
+def mnist_images(path=None, eta=0.4, y_name="PCA.csv"):
     """
     用MNIST数据画艺术散点图
     :return:
@@ -88,12 +89,13 @@ def mnist_images(path=None):
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
         os.makedirs(small_path)
-    small_image(eta=0.4, in_path=path+"pictures\\", out_path=small_path)
-    Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
+    small_image(eta=eta, in_path=path+"pictures\\", out_path=small_path)
+    Y = np.loadtxt(path + y_name, dtype=np.float, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()
     # plt.colormaps()
     ax.scatter(Y[:, 0], Y[:, 1])
+    plt.set_cmap(cm.gray)
     for i in range(0, n):
         ab = AnnotationBbox(get_image(small_path + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
         ax.add_artist(ab)
