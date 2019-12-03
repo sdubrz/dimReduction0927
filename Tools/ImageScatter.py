@@ -88,7 +88,7 @@ def mnist_images(path=None):
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
         os.makedirs(small_path)
-    small_image(eta=0.5, in_path=path+"pictures\\", out_path=small_path)
+    small_image(eta=0.4, in_path=path+"pictures\\", out_path=small_path)
     Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()
@@ -104,7 +104,7 @@ def mnist_images(path=None):
 
 def mnist_scatter():
     option = 2
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\mnist50mminiclass014\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\mnist50mminiclass019\\"
     if option == 1:  # 直接画散点图
         Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
         label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
