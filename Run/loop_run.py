@@ -22,7 +22,7 @@ def loop_run2():
     for i in range(0, 8):
         for j in range(i+1, 9):
             for k in range(j+1, 10):
-                data_name = "mnist50mclass"+str(i)+str(j)+str(k)
+                data_name = "fashion50mclass"+str(i)+str(j)+str(k)
                 run190927.run_test(data_name0=data_name)
                 print("[ " + str(i) + ", " + str(j) + ", " + str(k) + "]")
                 print("###########################################################")
@@ -34,5 +34,5 @@ def shutdown():
 
 
 if __name__ == '__main__':
-    loop_run()
+    loop_run2()
     # shutdown()

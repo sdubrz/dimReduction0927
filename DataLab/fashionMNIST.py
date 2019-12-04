@@ -118,25 +118,81 @@ def pca_art_scatter():
     对每个类画艺术散点图
     :return:
     """
-    obj_index = 6
+    obj_index = 9
     option = 2
     path = "E:\\Project\\DataLab\\fashionMnist\\"
     fashion_count = [238, 254, 251, 262, 264, 251, 251, 244, 227, 258]
     obj_path = path + "fashion50mclass" + str(obj_index) + "_" + str(fashion_count[obj_index]) + "\\"
+    obj_path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\fashion50mclass358\\"
     data = np.loadtxt(obj_path+"data.csv", dtype=np.float, delimiter=",")
     # data = Preprocess.normalize(data)
-    pca = PCA(n_components=2)
-    Y = pca.fit_transform(data)
-    np.savetxt(obj_path+"PCA.csv", Y, fmt='%f', delimiter=",")
+    # pca = PCA(n_components=2)
+    # Y = pca.fit_transform(data)
+    # np.savetxt(obj_path + "PCA.csv", Y, fmt='%f', delimiter=",")
+    Y = np.loadtxt(obj_path+"PCA.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(obj_path+"label.csv", dtype=np.int, delimiter=",")
 
     if option == 1:
-        plt.scatter(Y[:, 0], Y[:, 1])
+        plt.scatter(Y[:, 0], Y[:, 1], c=label)
+        plt.colorbar()
         ax = plt.gca()
         ax.set_aspect(1)
         # plt.colorbar()
         plt.show()
     else:
-        ImageScatter.mnist_images(obj_path, eta=0.8)
+        ImageScatter.mnist_images(obj_path, eta=0.8, label=label)
+
+
+def combination():
+    """
+    对数据进行组合，每三个类组合成一个数据
+    :return:
+    """
+    path = "E:\\Project\\DataLab\\fashionMnist\\"
+    fashion_count = [238, 254, 251, 262, 264, 251, 251, 244, 227, 258]
+
+    for i in range(0, 8):
+        X1 = np.loadtxt(path + "fashion50mclass" + str(i) + "_" + str(fashion_count[i]) + "\\data.csv", dtype=np.float,
+                        delimiter=",")
+        X1_origin = np.loadtxt(path + "fashion50mclass" + str(i) + "_" + str(fashion_count[i]) + "\\origin.csv",
+                               dtype=np.float, delimiter=",")
+        (n1, m1) = X1.shape
+        for j in range(i + 1, 9):
+            X2 = np.loadtxt(path + "fashion50mclass" + str(j) + "_" + str(fashion_count[j]) + "\\data.csv", dtype=np.float,
+                            delimiter=",")
+            X2_origin = np.loadtxt(path + "fashion50mclass" + str(j) + "_" + str(fashion_count[j]) + "\\origin.csv",
+                                   dtype=np.float, delimiter=",")
+            (n2, m2) = X2.shape
+            for k in range(j + 1, 10):
+                X3 = np.loadtxt(path + "fashion50mclass" + str(k) + "_" + str(fashion_count[k]) + "\\data.csv",
+                                dtype=np.float, delimiter=",")
+                X3_origin = np.loadtxt(path + "fashion50mclass" + str(k) + "_" + str(fashion_count[k]) + "\\origin.csv",
+                                       dtype=np.float, delimiter=",")
+                (n3, m3) = X3.shape
+                X = np.zeros((n1 + n2 + n3, m1))
+                X_origin = np.zeros((n1 + n2 + n3, 784))
+                X[0:n1, :] = X1[:, :]
+                X[n1:n1 + n2, :] = X2[:, :]
+                X[n1 + n2:n1 + n2 + n3, :] = X3[:, :]
+                X_origin[0:n1, :] = X1_origin[:, :]
+                X_origin[n1:n1 + n2, :] = X2_origin[:, :]
+                X_origin[n1 + n2:n1 + n2 + n3, :] = X3_origin[:, :]
+
+                label = []
+                for index in range(0, n1):
+                    label.append(i)
+                for index in range(0, n2):
+                    label.append(j)
+                for index in range(0, n3):
+                    label.append(k)
+
+                temp_path = path + "combination\\" + "fashion50mclass" + str(i) + str(j) + str(k) + "\\"
+                if not os.path.exists(temp_path):
+                    os.makedirs(temp_path)
+                np.savetxt(temp_path + "data.csv", X, fmt="%f", delimiter=",")
+                np.savetxt(temp_path + "label.csv", np.array(label).T, fmt='%d', delimiter=",")
+                np.savetxt(temp_path + "origin.csv", X_origin, fmt='%d', delimiter=",")
+                print(i, j, k)
 
 
 if __name__ == '__main__':
@@ -145,3 +201,4 @@ if __name__ == '__main__':
     # pca_research()
     # classify()
     pca_art_scatter()
+    # combination()

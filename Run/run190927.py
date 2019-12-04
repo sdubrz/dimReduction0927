@@ -552,7 +552,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "mnist50mminiclass019"
+    data_name = "fashion50mclass358"
     if data_name0 is None:
         pass
     else:
@@ -597,10 +597,10 @@ def run_test(data_name0=None):
         method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result)
 
-    if not(data_name0 is None):  # 规模化运行时，保存降维结果
-        read_path = main_path + "datasets\\" + data_name + "\\"
-        Y = np.loadtxt(last_path+"y.csv", dtype=np.float, delimiter=",")
-        np.savetxt(read_path+method+".csv", Y, fmt='%f', delimiter=",")
+    # if not(data_name0 is None):  # 规模化运行时，保存降维结果
+    read_path = main_path + "datasets\\" + data_name + "\\"  # 保存降维结果，方便画艺术散点图
+    Y = np.loadtxt(last_path+"y.csv", dtype=np.float, delimiter=",")
+    np.savetxt(read_path+method+".csv", Y, fmt='%f', delimiter=",")
 
     # 添加测试属性的地方
     cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)

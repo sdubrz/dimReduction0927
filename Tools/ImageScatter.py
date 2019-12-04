@@ -74,7 +74,7 @@ def coil_image_scatter():
     plt.show()
 
 
-def mnist_images(path=None, eta=0.4, y_name="PCA.csv"):
+def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None):
     """
     用MNIST数据画艺术散点图
     :return:
@@ -97,6 +97,8 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv"):
     ax.scatter(Y[:, 0], Y[:, 1])
     plt.set_cmap(cm.gray)
     for i in range(0, n):
+        # if label[i] != 5:
+        #     continue
         ab = AnnotationBbox(get_image(small_path + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
         ax.add_artist(ab)
     ax = plt.gca()
