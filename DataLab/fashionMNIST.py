@@ -123,7 +123,7 @@ def pca_art_scatter():
     path = "E:\\Project\\DataLab\\fashionMnist\\"
     fashion_count = [238, 254, 251, 262, 264, 251, 251, 244, 227, 258]
     obj_path = path + "fashion50mclass" + str(obj_index) + "_" + str(fashion_count[obj_index]) + "\\"
-    obj_path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\fashion50mclass358\\"
+    obj_path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\fashion50mclass7_244\\"
     data = np.loadtxt(obj_path+"data.csv", dtype=np.float, delimiter=",")
     # data = Preprocess.normalize(data)
     # pca = PCA(n_components=2)
