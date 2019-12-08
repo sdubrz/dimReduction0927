@@ -62,6 +62,25 @@ def pca_art_scatter():
         ImageScatter.mnist_images(path, eta=0.8, image_shape=(28, 20))
 
 
+def pca_research():
+    """
+    进行PCA变换，观察需要用多少个特征向量来表示原来的数据
+    :return:
+    """
+    path = "E:\\Project\\DataLab\\FreyFace\\"
+    data = np.loadtxt(path + "origin.csv", dtype=np.float, delimiter=",")
+    (n, m) = data.shape
+    # label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+
+    pca = PCA(n_components=m)
+    pca.fit(data)
+    vectors = pca.components_  # 所有的特征向量
+    values = pca.explained_variance_  # 所有的特征值
+    np.savetxt(path+"eigenvectors.csv", vectors, fmt='%f', delimiter=",")
+    np.savetxt(path+"eigenvalues.csv", values, fmt='%f', delimiter=",")
+    print("finished")
+
+
 def sampling():
     path = "E:\\Project\\DataLab\\FreyFace\\"
     X = np.loadtxt(path + "origin.csv", dtype=np.int, delimiter=",")
@@ -78,4 +97,5 @@ def sampling():
 if __name__ == '__main__':
     # create_images()
     # see_data()
-    pca_art_scatter()
+    # pca_art_scatter()
+    pca_research()
