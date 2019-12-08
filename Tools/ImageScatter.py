@@ -74,7 +74,7 @@ def coil_image_scatter():
     plt.show()
 
 
-def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None):
+def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(28, 28)):
     """
     用MNIST数据画艺术散点图
     :return:
@@ -84,7 +84,7 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None):
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
 
     # 如果事前没有生成图片，则需要先生成图片
-    cleanData.mnist_pictures(path)
+    cleanData.mnist_pictures(path, image_shape=image_shape)
 
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):

@@ -353,13 +353,13 @@ def mnist_50m_class(path1="", origin_path=""):
     # np.savetxt(path+"origin.csv", np.array(small_1), fmt='%d', delimiter=",")
 
 
-def mnist_pictures(path=""):
+def mnist_pictures(path="", image_shape=(28, 28)):
     """生成MNIST的图片"""
     # path = "E:\\Project\\DataLab\\MNIST\\"
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
     X = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
-    X = 255*np.ones(X.shape) - X
+    # X = 255*np.ones(X.shape) - X
     # X = np.maximum(X, 1)
     # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     # count = np.zeros((10, 1))
@@ -368,7 +368,7 @@ def mnist_pictures(path=""):
         os.makedirs(picture_path)
 
     for i in range(0, n):
-        new_data = np.reshape(X[i, :], (28, 28))
+        new_data = np.reshape(X[i, :], image_shape)
         im = Image.fromarray(new_data.astype(np.uint8))
         # plt.imshow(new_data, cmap=plt.cm.gray, interpolation='nearest')
         # im.show()
