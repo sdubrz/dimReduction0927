@@ -552,17 +552,17 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "freyFace40m"
+    data_name = "twoSphere"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
-    yita = 100
-    nbrs_k = 100
+    yita = 0.1
+    nbrs_k = 10
     method_k = 30
-    eigen_numbers = 4
+    eigen_numbers = 3
     draw_kind = "b-spline"
     normalize = False
     straighten = False  # 是否进行校直操作
@@ -594,7 +594,7 @@ def run_test(data_name0=None):
         P_matrix[y_index, 1] = 1
 
     last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
-        method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
+        method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result)
 
     # if not(data_name0 is None):  # 规模化运行时，保存降维结果
@@ -632,7 +632,7 @@ def run_test(data_name0=None):
 
     # 画主成分的投影方向，如果是循环调用该函数的话，是默认不画图的
     if data_name0 is None:
-        MainDirector.draw_main_director(last_path, normalize=True, line_length=0.05)
+        MainDirector.draw_main_director(last_path, normalize=True, line_length=0.03)
 
     # 画KNN关系图
     # VisualizationKNN.draw_knn(last_path)  # 太浪费空间，暂时注释掉，默认不运行
