@@ -552,15 +552,15 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "norb_test"
+    data_name = "freyFace40m"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
     yita = 100
-    nbrs_k = 35
+    nbrs_k = 100
     method_k = 30
     eigen_numbers = 4
     draw_kind = "b-spline"

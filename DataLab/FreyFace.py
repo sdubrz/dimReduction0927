@@ -31,7 +31,7 @@ def create_images():
 
 
 def see_data():
-    path = "E:\\Project\\DataLab\\FreyFace\\"
+    path = "E:\\Project\\DataLab\\FreyFace\\smalldata\\"
     X = np.loadtxt(path + "origin.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
 
@@ -50,8 +50,9 @@ def pca_art_scatter():
     :return:
     """
     option = 2
-    path = "E:\\Project\\DataLab\\FreyFace\\"
-    Y = np.loadtxt(path+"pca.csv", dtype=np.float, delimiter=",")
+    # path = "E:\\Project\\DataLab\\FreyFace\\smalldata\\"
+    path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\freyFace40m\\"
+    Y = np.loadtxt(path+"PCA.csv", dtype=np.float, delimiter=",")
 
     if option == 1:
         plt.scatter(Y[:, 0], Y[:, 1])
@@ -67,7 +68,7 @@ def pca_research():
     进行PCA变换，观察需要用多少个特征向量来表示原来的数据
     :return:
     """
-    path = "E:\\Project\\DataLab\\FreyFace\\"
+    path = "E:\\Project\\DataLab\\FreyFace\\smalldata\\"
     data = np.loadtxt(path + "origin.csv", dtype=np.float, delimiter=",")
     (n, m) = data.shape
     # label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
@@ -89,13 +90,25 @@ def sampling():
     data = X.tolist()
     small_data = []
     for i in range(0, n):
-        if i%3 == 0:
+        if i % 3 == 0:
             small_data.append(data[i])
     np.savetxt(path+"small.csv", np.array(small_data), fmt='%d', delimiter=",")
+
+
+def pre_dr():
+    path = "E:\\Project\\DataLab\\FreyFace\\smalldata\\"
+    data = np.loadtxt(path + "origin.csv", dtype=np.float, delimiter=",")
+    (n, m) = data.shape
+
+    pca = PCA(n_components=40)
+    Y = pca.fit_transform(data)
+    np.savetxt(path+"data40m.csv", Y, fmt='%f', delimiter=",")
 
 
 if __name__ == '__main__':
     # create_images()
     # see_data()
-    # pca_art_scatter()
-    pca_research()
+    pca_art_scatter()
+    # pca_research()
+    # sampling()
+    # pre_dr()
