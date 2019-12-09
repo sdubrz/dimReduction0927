@@ -34,13 +34,13 @@ def sphere():
     用飞镖法制造符合蓝噪声采样的球形数据
     :return:
     """
-    r = 1.0
+    r = 0.7
     center = [0, 0, 0]
     path = "E:\\Project\\DataLab\\twoSpheres\\"
 
     max_fail = 8000  # 最大失败次数
     points = []
-    max_d = 0.12
+    max_d = 0.11
 
     loop_count = 0
     while loop_count < max_fail:
@@ -59,7 +59,7 @@ def sphere():
         else:
             loop_count += 1
 
-    np.savetxt(path+"test.csv", np.array(points), fmt='%f', delimiter=",")
+    np.savetxt(path+"smalldata.csv", np.array(points), fmt='%f', delimiter=",")
     print(len(points))
 
 
