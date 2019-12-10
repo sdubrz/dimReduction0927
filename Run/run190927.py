@@ -552,7 +552,7 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "MonekySaddle"
+    data_name = "spheresBigSmall"
     if data_name0 is None:
         pass
     else:
