@@ -65,14 +65,15 @@ def pre_pca():
 
 def tsne_data():
     path = "E:\\Project\\DataLab\\NORB\\"
-    data = np.loadtxt(path + "small_pca.csv", dtype=np.float, delimiter=",")
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     (n, m) = data.shape
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     info = np.loadtxt(path + "info.csv", dtype=np.int, delimiter=",")
 
-    t_sne = TSNE(n_components=2)
+    # t_sne = TSNE(n_components=2)
+    t_sne = PCA(n_components=2)
     Y = t_sne.fit_transform(data)
-    plt.scatter(Y[:, 0], Y[:, 1], c=info[0:1000, 3])
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
     ax = plt.gca()
     ax.set_aspect(1)
     plt.colorbar()
