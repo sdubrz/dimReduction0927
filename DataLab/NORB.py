@@ -70,8 +70,8 @@ def tsne_data():
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     info = np.loadtxt(path + "info.csv", dtype=np.int, delimiter=",")
 
-    # t_sne = TSNE(n_components=2)
-    t_sne = PCA(n_components=2)
+    t_sne = TSNE(n_components=2)
+    # t_sne = PCA(n_components=2)
     Y = t_sne.fit_transform(data)
     plt.scatter(Y[:, 0], Y[:, 1], c=label)
     ax = plt.gca()
