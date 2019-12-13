@@ -10,6 +10,34 @@ import os
 from Test import cleanData
 
 
+def create_pictures(path="", image_shape=(28, 28)):
+    """生成MNIST的图片"""
+    # path = "E:\\Project\\DataLab\\MNIST\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
+    X = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
+    (n, m) = X.shape
+    X = 255*np.ones(X.shape) - X
+    # X = np.maximum(X, 1)
+    # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+    # count = np.zeros((10, 1))
+    picture_path = path + "pictures\\"
+    if not os.path.exists(picture_path):
+        os.makedirs(picture_path)
+
+    for i in range(0, n):
+        new_data = np.reshape(X[i, :], image_shape)
+        im = Image.fromarray(new_data.astype(np.uint8))
+        # plt.imshow(new_data, cmap=plt.cm.gray, interpolation='nearest')
+        # im.show()
+        # im.save(path+"pictures\\"+str(label[i])+"\\"+str(int(count[label[i]]))+".png")
+        im.save(picture_path+str(i)+".png")
+        # count[label[i]] += 1
+        if i % 1000 == 0:
+            print(i)
+
+    print("finished")
+
+
 def small_image(eta=0.5, in_path="", out_path=""):
     """
     将图片缩小
@@ -84,7 +112,7 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
 
     # 如果事前没有生成图片，则需要先生成图片
-    cleanData.mnist_pictures(path, image_shape=image_shape)
+    create_pictures(path, image_shape=image_shape)
 
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
@@ -108,9 +136,9 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
 
 def mnist_scatter():
     option = 2
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\mnist50mminiclass019\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\mnist50mclass1_985\\"
     if option == 1:  # 直接画散点图
-        Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
+        Y = np.loadtxt(path + "tsne.csv", dtype=np.float, delimiter=",")
         label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
         plt.scatter(Y[:, 0], Y[:, 1], c=label)
         ax = plt.gca()
@@ -118,15 +146,8 @@ def mnist_scatter():
         plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path)
+        mnist_images(path, y_name="tsne.csv")
 
 
 if __name__ == '__main__':
-    # image_scatter()
-    # path1 = "E:\\Project\\DataLab\\duck\\images\\"
-    # for i, j, k in os.walk(path1):
-    #     for file in k:
-    #         print(file)
-    # coil_image_scatter()
-    # mnist_images()
     mnist_scatter()
