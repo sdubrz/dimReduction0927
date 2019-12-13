@@ -103,6 +103,12 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
         print('当前使用比较稳定的t-SNE方法')
         tsne = TSNE(n_components=2, perplexity=method_k / 3, init=y_init)
         y = tsne.fit_transform(data)
+    # elif method_name == "tsne" or method_name == "t-SNE":
+    #     # 通过实验来看t-SNE只执行一次的话结果不是很稳定 2019.12.13 实验证明并不怎么起作用
+    #     t_sne = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=np.random.random((n, 2)))
+    #     y0 = t_sne.fit_transform(data)
+    #     t_sne2 = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=y0)
+    #     y = t_sne2.fit_transform(data)
     else:
         y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
         # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)

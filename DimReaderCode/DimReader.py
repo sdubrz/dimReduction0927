@@ -26,7 +26,7 @@ class runTsne:
 
         self.perturb = perturbations
         if self.origY is None:
-            #initial run of tsne to get seed parameters
+            # initial run of tsne to get seed parameters
             t = tsne.tSNE(points, initial_dims=d / 2, perplexity=self.perplex)
             self.origY = t.runTSNE()
             self.beta, self.iY = t.getFinalParameters()
