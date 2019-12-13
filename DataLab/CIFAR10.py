@@ -51,7 +51,7 @@ def pca_research():
     :return:
     """
     path = "E:\\Project\\DataLab\\CIFAR\\"
-    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    data = np.loadtxt(path + "blue.csv", dtype=np.float, delimiter=",")
     (n, m) = data.shape
     # label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
 
@@ -59,23 +59,23 @@ def pca_research():
     pca.fit(data)
     vectors = pca.components_  # 所有的特征向量
     values = pca.explained_variance_  # 所有的特征值
-    np.savetxt(path+"eigenvectors.csv", vectors, fmt='%f', delimiter=",")
-    np.savetxt(path+"eigenvalues.csv", values, fmt='%f', delimiter=",")
+    np.savetxt(path+"green_eigenvectors.csv", vectors, fmt='%f', delimiter=",")
+    np.savetxt(path+"green_eigenvalues.csv", values, fmt='%f', delimiter=",")
     print("finished")
 
 
 def t_sne_data():
     path = "E:\\Project\\DataLab\\CIFAR\\"
-    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    data = np.loadtxt(path + "green.csv", dtype=np.float, delimiter=",")
     (n, m) = data.shape
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
 
     pca = PCA(n_components=64)
-    pca_y = pca.fit_transform(data[:, 0:1024])
+    pca_y = pca.fit_transform(data)
     t_sne = TSNE(n_components=2)
-    Y = t_sne.fit_transform(pca_y[0:5000, :])
+    Y = t_sne.fit_transform(pca_y)
 
-    plt.scatter(Y[:, 0], Y[:, 1], c=label[0:5000])
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
     plt.colorbar()
     ax = plt.gca()
     ax.set_aspect(1)
