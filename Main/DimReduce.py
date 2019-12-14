@@ -70,6 +70,10 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
         hessien = LocallyLinearEmbedding(n_neighbors=method_k, n_components=2, method='hessian', eigen_solver='dense')
         y = hessien.fit_transform(data)
 
+    elif method == 'LTSA' or method == 'ltsa':
+        ltsa = LocallyLinearEmbedding(n_neighbors=method_k, n_components=2, method='ltsa')
+        y = ltsa.fit_transform(data)
+
     elif method == 'PCA' or method == 'pca':
         print("[DimReduce]\t当前使用 PCA 降维方法")
         pca = PCA(n_components=2)
