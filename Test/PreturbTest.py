@@ -14,9 +14,9 @@ def preturb():
     yita = 0.0
     k = 90
     X2 = X + yita*vectors
-    Y = DimReduce.dim_reduce(X, method='tsne', method_k=k, n_iters=5000)
-    Y2 = DimReduce.dim_reduce(X, method='tsne', method_k=k, y_random=Y, n_iters=5000)
-    Y3 = DimReduce.dim_reduce(X, method='tsne', method_k=k, y_random=Y, n_iters=5010)
+    Y = DimReduce.dim_reduce(X, method='tsne', method_k=k, n_iters=10000)
+    Y2 = DimReduce.dim_reduce(X, method='tsne', method_k=k, y_random=Y, n_iters=300, early_exaggeration=1.0)
+    Y3 = DimReduce.dim_reduce(X, method='tsne', method_k=k, y_random=Y, n_iters=10000, early_exaggeration=1.0)
 
     plt.scatter(Y[:, 0], Y[:, 1], c='r')
     plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
@@ -34,8 +34,6 @@ def class_t_sne_preturb():
     yita = 0.0
     k = 90
     X2 = X + yita * vectors
-
-    t_sne = classTSNE.tsne()
 
 
 if __name__ == '__main__':

@@ -16,7 +16,7 @@ import os
 """
 
 
-def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_iters=5000):
+def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_iters=5000, early_exaggeration=12.0):
     """
     对数据进行降维，返回二维的投影结果
     :param data: 原始的高维数据矩阵，每一行是一条高维数据记录
@@ -43,7 +43,7 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
         print("[DimReduce]\t当前使用 t-SNE 降维方法")
         if y_random is None:
             y_random = np.random.random((n, 2))
-        tsne = TSNE(n_components=2, n_iter=n_iters, perplexity=method_k / 3, init=y_random)
+        tsne = TSNE(n_components=2, n_iter=n_iters, perplexity=method_k / 3, init=y_random, early_exaggeration=early_exaggeration)
         y = tsne.fit_transform(data)
 
     elif method == 'MDS' or method == 'mds':
