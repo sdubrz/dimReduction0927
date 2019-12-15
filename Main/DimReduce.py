@@ -71,7 +71,7 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
         y = hessien.fit_transform(data)
 
     elif method == 'LTSA' or method == 'ltsa':
-        ltsa = LocallyLinearEmbedding(n_neighbors=method_k, n_components=2, method='ltsa')
+        ltsa = LocallyLinearEmbedding(n_neighbors=method_k, n_components=2, method='ltsa', n_jobs=1)
         y = ltsa.fit_transform(data)
 
     elif method == 'PCA' or method == 'pca':
