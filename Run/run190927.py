@@ -98,7 +98,7 @@ def local_pca_calculated(path):
 
 def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
-        weighted=True, P_matrix=None, show_result=False):
+        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9):
     """"
 
     :param main_path: 主文件目录
@@ -190,10 +190,10 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     else:
         y, y_list_add, y_list_sub = Preturb.perturb_once_weighted(x, nbrs_k=nbrs_k, y_init=y_random,
                                                           method_k=method_k,
-                                                          MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
+                                                            method_name=method,
                                                           yita=yita,
                                                           save_path=save_path, weighted=weighted, P_matrix=P_matrix,
-                                                            label=label)
+                                                            label=label, min_proportion=min_proportion, min_good_points=min_good_points)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
 
@@ -558,13 +558,16 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
     yita = 0.1
     nbrs_k = 60
     method_k = nbrs_k
-    eigen_numbers = 4
+    eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True
+    min_proportion = 0.9
+    min_good_points = 0.9
+
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
     P_matrix = None  # 普通的线性降维方法的投影矩阵
@@ -595,7 +598,7 @@ def run_test(data_name0=None):
 
     last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
         method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
-        do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result)
+        do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result, min_proportion=min_proportion, min_good_points=min_good_points)
 
     # if not(data_name0 is None):  # 规模化运行时，保存降维结果
     read_path = main_path + "datasets\\" + data_name + "\\"  # 保存降维结果，方便画艺术散点图

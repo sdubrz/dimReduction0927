@@ -12,7 +12,7 @@ from Tools import SymbolAdjust
 
 
 def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
-                 yita=0.1, save_path="", weighted=True, P_matrix=None, label=None):
+                 yita=0.1, save_path="", weighted=True, P_matrix=None, label=None, MIN_EIGEN_NUMBER=2, min_proportion=0.9, min_good_points=0.9):
     """
     一次性对所有的点添加扰动，是之前使用过的方法
     这里各个特征向量的扰动按照特征值的比重添加权重
@@ -21,13 +21,16 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     :param y_init: 某些降维方法所需的初始随机矩阵
     :param enough: 是否达到给定的阈值要求
     :param method_k: 某些降维方法所需要使用的k值
-    :param MAX_EIGEN_COUNT: 最多使用的特征值数目
+    :param MAX_EIGEN_COUNT: 最多使用的特征值数目，暂时不用
     :param method_name: 所使用的降维方法
     :param yita: 扰动所乘的系数
     :param save_path: 存储中间结果的路径
     :param weighted: 特征向量作为扰动时是否按照其所对应的特征值分配权重
     :param P_matrix: 一个 dim × 2 的矩阵，直接观测数据中的两个维度，可以看做是一种线性降维方法
     :param label: 数据的分类标签
+    :param MIN_EIGEN_NUMBER: 最少使用的特征向量个数
+    :param min_proportion: 每个点的主特征值占所有特征值的占比
+    :param min_good_points: 主特征值占比达到要求的点占所有的点的比重
     :return:
     """
     data_shape = data.shape
@@ -54,6 +57,9 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     eigen_values = np.zeros((n, dim))  # 存储对每个点的localPCA所得的特征值
 
     eigen_weights = np.ones((n, dim))  # 计算每个特征值占所有特征值和的比重
+
+    MAX_EIGEN_COUNT = LocalPCA.eigen_number(data, knn, proportion=min_proportion, good_points=min_good_points, min_number=MIN_EIGEN_NUMBER)
+    print("使用的特征向量个数为：", MAX_EIGEN_COUNT)
 
     for i in range(0, MAX_EIGEN_COUNT):
         eigen_vectors_list.append(np.zeros((n, dim)))

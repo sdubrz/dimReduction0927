@@ -79,7 +79,7 @@ def eigen_number(data, knn, proportion=0.9, good_points=0.9, min_number=2):
     for index in range(0, n):
         local_data = np.zeros((k, m))
         for i in range(0, k):
-            local_data[i, :] = data[knn(index, i), :]
+            local_data[i, :] = data[knn[index, i], :]
         temp_vectors, eigenvalues[index, :] = local_pca_dn(local_data)
         eigen_sum[index] = np.sum(eigenvalues[index, :])
 
