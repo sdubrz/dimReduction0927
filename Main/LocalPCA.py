@@ -61,6 +61,41 @@ def local_cov(X, knn):
     return COV
 
 
+def eigen_number(data, knn, proportion=0.9, good_points=0.9, min_number=2):
+    """
+    按照误差的方式确定特征向量的个数
+    :param data: 数据矩阵，每一行是一个样本
+    :param knn: KNN关系矩阵，每一行是一个样本的K近邻
+    :param proportion: 一个好的点，所用的特征向量个数应该满足所选取的特征值占比超过proportion
+    :param good_points: 好的点应该占全部点的比重
+    :param min_number: 最少使用的特征向量个数
+    :return:
+    """
+    (n, m) = data.shape
+    (n, k) = knn.shape
+
+    eigenvalues = np.zeros((n, m))
+    eigen_sum = np.zeros((n, 1))
+    for index in range(0, n):
+        local_data = np.zeros((k, m))
+        for i in range(0, k):
+            local_data[i, :] = data[knn(index, i), :]
+        temp_vectors, eigenvalues[index, :] = local_pca_dn(local_data)
+        eigen_sum[index] = np.sum(eigenvalues[index, :])
+
+    final_number = min_number
+    while final_number < m:
+        good_count = 0
+        for i in range(0, n):
+            temp_sum = np.sum(eigenvalues[i, 0:final_number])
+            if temp_sum >= eigen_sum[i] * proportion:
+                good_count += 1
+        if good_count >= n*good_points:
+            break
+        final_number += 1
+    return final_number
+
+
 def how_many_eigens(data, k, threshold=0.8):
     """
     对data计算local-PCA，计算最少需要多少个特征值，才能使得占特征值总和的比重超过threshold
