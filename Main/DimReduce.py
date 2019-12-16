@@ -9,6 +9,7 @@ from sklearn.manifold import LocallyLinearEmbedding
 from Main import Preprocess
 import matplotlib.pyplot as plt
 import os
+from MyDR import cTSNE
 
 
 """
@@ -16,7 +17,7 @@ import os
 """
 
 
-def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_iters=5000, early_exaggeration=12.0):
+def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_iters=5000, early_exaggeration=12.0, c_early_exage=True):
     """
     对数据进行降维，返回二维的投影结果
     :param data: 原始的高维数据矩阵，每一行是一条高维数据记录
@@ -45,6 +46,11 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
             y_random = np.random.random((n, 2))
         tsne = TSNE(n_components=2, n_iter=n_iters, perplexity=method_k / 3, init=y_random, early_exaggeration=early_exaggeration)
         y = tsne.fit_transform(data)
+
+    if method == 'ctsne' or method == 'cTSNE':
+        print("[DimReduce]\t当前使用 c-t-SNE 降维方法")
+        t_sne = cTSNE.cTSNE(n_component=2, perplexity=method_k/3)
+        y = t_sne.fit_transform(data, max_iter=n_iters, y_random=y_random, early_exaggerate=c_early_exage, show_progress=False)
 
     elif method == 'MDS' or method == 'mds':
         print("[DimReduce]\t当前使用 MDS 降维方法")

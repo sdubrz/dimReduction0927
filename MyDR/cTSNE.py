@@ -85,13 +85,14 @@ class cTSNE:
         print("Mean value of sigma: %f" % np.mean(np.sqrt(1 / beta)))
         return P
 
-    def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None):
+    def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None, show_progress=True):
         """
         执行降维
         :param X: 高维数据
         :param max_iter: 最大迭代次数
         :param early_exaggerate: 是否早期放大
         :param y_random: 随机的初始矩阵，如果为None,需要在本函数中随机生成
+        :param dY: 用于迭代的一个参数
         :param iY: 用于迭代的一个参数
         :param gains: 用于迭代的一个参数
         :return:
@@ -153,7 +154,7 @@ class cTSNE:
             Y = Y - np.tile(np.mean(Y, 0), (n, 1))
 
             # Compute current value of cost function
-            if (iter + 1) % 1000 == 0:
+            if (iter + 1) % 1000 == 0 and show_progress:
                 C = np.sum(P * np.log(P / Q))
                 print("Iteration %d: error is %f" % (iter + 1, C))
                 # print("eta = ", eta)
@@ -163,24 +164,34 @@ class cTSNE:
                 P = P / 4.
 
         # Return solution
-        return Y, iY, gains, dY
+        return Y
 
 
 if __name__ == '__main__':
     path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Iris\\yita(0.05)nbrs_k(20)method_k(20)numbers(3)_b-spline_weighted\\"
     X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+    vectors = np.loadtxt(path+"【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
+    (n, m) = X.shape
+
+    yita = 0.05
 
     t_sne = cTSNE(n_component=2, perplexity=30.0)
-    Y, iY, gains, dY = t_sne.fit_transform(X, max_iter=30000)
+    Y = t_sne.fit_transform(X, max_iter=30000)
     # Y2, iY2, gains2, dY2 = t_sne.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False, iY=iY, gains=gains)
     # Y3, iY3, gains3, dY3 = t_sne.fit_transform(X, y_random=Y, max_iter=1500, early_exaggerate=False, iY=iY, gains=gains)
-    Y2, iY2, gains2, dY2 = t_sne.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False)
-    Y3, iY3, gains3, dY3 = t_sne.fit_transform(X, y_random=Y, max_iter=1500, early_exaggerate=False)
+    # Y2 = t_sne.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False)
+    # Y3 = t_sne.fit_transform(X, y_random=Y, max_iter=1500, early_exaggerate=False)
+    Y2 = t_sne.fit_transform(X+yita*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
+    Y3 = t_sne.fit_transform(X-yita*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
 
-    plt.scatter(Y[:, 0], Y[:, 1], c='r')
-    plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
-    plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    # plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
+    # plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
+
+    for i in range(0, n):
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
+        plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue')
     plt.show()
 
 

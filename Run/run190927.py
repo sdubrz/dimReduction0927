@@ -552,19 +552,19 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "fashion50mclass568"
+    data_name = "MNIST50mclass1_985"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "LTSA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA"
-    yita = 100.0
-    nbrs_k = 80
+    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    yita = 0.1
+    nbrs_k = 60
     method_k = nbrs_k
     eigen_numbers = 4
     draw_kind = "b-spline"
-    normalize = False
+    normalize = True
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
     P_matrix = None  # 普通的线性降维方法的投影矩阵

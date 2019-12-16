@@ -110,7 +110,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     #     t_sne2 = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=y0)
     #     y = t_sne2.fit_transform(data)
     else:
-        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
+        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=30000)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
         # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)
 
     # 开始执行扰动计算
@@ -142,9 +142,9 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
             y_add_v = tsne.fit_transform(x_add_v)
             y_sub_v = tsne.fit_transform(x_sub_v)
         else:
-            y_add_v = DimReduce.dim_reduce(x_add_v, method=method_name, method_k=method_k, y_random=y)
+            y_add_v = DimReduce.dim_reduce(x_add_v, method=method_name, method_k=method_k, y_random=y, n_iters=1500, c_early_exage=False)
             # y_sub_v = 2*y-y_add_v  # 胡乱加的，要改回去
-            y_sub_v = DimReduce.dim_reduce(x_sub_v, method=method_name, method_k=method_k, y_random=y)
+            y_sub_v = DimReduce.dim_reduce(x_sub_v, method=method_name, method_k=method_k, y_random=y, n_iters=1500, c_early_exage=False)
 
         y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)  # 这个是防止翻转的那种情况发生的。
         y_sub_v = SymbolAdjust.symbol_adjust(y, y_sub_v)
