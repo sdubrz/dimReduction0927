@@ -25,10 +25,10 @@ from sklearn.utils import check_array
 from sklearn.utils import check_random_state
 from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import pairwise_distances
-# from sklearn.manifold import _utils
-# from . import _barnes_hut_tsne
-from MyDR import _utils
-from MyDR import _barnes_hut_tsne
+from sklearn.manifold import _utils
+from sklearn.manifold import _barnes_hut_tsne
+# from MyDR import _utils
+# from MyDR import _barnes_hut_tsne
 from sklearn.externals.six import string_types
 
 
