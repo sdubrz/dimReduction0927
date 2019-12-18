@@ -169,6 +169,7 @@ class cTSNE:
 
 if __name__ == '__main__':
     path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Iris\\yita(0.05)nbrs_k(20)method_k(20)numbers(3)_b-spline_weighted\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.1)nbrs_k(30)method_k(30)numbers(4)_b-spline_weighted\\"
     X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     vectors = np.loadtxt(path+"【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
@@ -178,16 +179,27 @@ if __name__ == '__main__':
 
     t_sne = cTSNE(n_component=2, perplexity=30.0)
     Y = t_sne.fit_transform(X, max_iter=30000)
+    # Y = np.loadtxt(path+"y.csv", dtype=np.float, delimiter=",")
     # Y2, iY2, gains2, dY2 = t_sne.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False, iY=iY, gains=gains)
     # Y3, iY3, gains3, dY3 = t_sne.fit_transform(X, y_random=Y, max_iter=1500, early_exaggerate=False, iY=iY, gains=gains)
     # Y2 = t_sne.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False)
     # Y3 = t_sne.fit_transform(X, y_random=Y, max_iter=1500, early_exaggerate=False)
-    Y2 = t_sne.fit_transform(X+yita*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
-    Y3 = t_sne.fit_transform(X-yita*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
+    # W = np.ones((n, 2)) * yita
 
-    plt.scatter(Y[:, 0], Y[:, 1], c=label)
-    # plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
-    # plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
+    eigen_weights = np.loadtxt(path+"【weighted】eigenweights.csv", dtype=np.float, delimiter=",")
+    W = eigen_weights[:, 0] * yita
+
+    for i in range(0, n):
+        vectors[i, :] = W[i] * vectors[i, :]
+
+    t_sne2 = cTSNE(n_component=2, perplexity=31.0)
+    t_sne3 = cTSNE(n_component=2, perplexity=32.0)
+    Y2 = t_sne2.fit_transform(X+0.1*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
+    Y3 = t_sne3.fit_transform(X+0.5*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
+
+    plt.scatter(Y[:, 0], Y[:, 1], c='r')
+    plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
+    plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
 
     for i in range(0, n):
         plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')

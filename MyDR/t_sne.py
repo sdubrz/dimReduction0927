@@ -27,9 +27,8 @@ from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.manifold import _utils
 from sklearn.manifold import _barnes_hut_tsne
-# from MyDR import _utils
-# from MyDR import _barnes_hut_tsne
-from sklearn.externals.six import string_types
+
+# from sklearn.externals.six import string_types  # 这个包以后可能会被删掉
 
 
 MACHINE_EPSILON = np.finfo(np.double).eps
@@ -675,7 +674,8 @@ class TSNE(BaseEstimator):
         if self.angle < 0.0 or self.angle > 1.0:
             raise ValueError("'angle' must be between 0.0 - 1.0")
         if self.metric == "precomputed":
-            if isinstance(self.init, string_types) and self.init == 'pca':
+            # if isinstance(self.init, string_types) and self.init == 'pca':  # 这是我自己改的
+            if self.init == 'pca':
                 raise ValueError("The parameter init=\"pca\" cannot be "
                                  "used with metric=\"precomputed\".")
             if X.shape[0] != X.shape[1]:
@@ -708,7 +708,8 @@ class TSNE(BaseEstimator):
                              .format(self.early_exaggeration))
 
         if self.n_iter < 250:
-            raise ValueError("n_iter should be at least 250")
+            # raise ValueError("n_iter should be at least 250")
+            print("warning： 只迭代了一次")
 
         n_samples = X.shape[0]
 
