@@ -382,13 +382,16 @@ def _gradient_descent(objective, p0, it, n_iter,
             if error < best_error:
                 best_error = error
                 best_iter = i
+                # print("过早地停掉了", i)
             elif i - best_iter > n_iter_without_progress:
+                # print("大于without_progress")
                 if verbose >= 2:
                     print("[t-SNE] Iteration %d: did not make any progress "
                           "during the last %d episodes. Finished."
                           % (i + 1, n_iter_without_progress))
-                break
+                # break  # 我注释掉的
             if grad_norm <= min_grad_norm:
+                print("因范数问题终止")
                 if verbose >= 2:
                     print("[t-SNE] Iteration %d: gradient norm %f. Finished."
                           % (i + 1, grad_norm))
@@ -709,7 +712,7 @@ class TSNE(BaseEstimator):
 
         if self.n_iter < 250:
             # raise ValueError("n_iter should be at least 250")
-            print("warning： 只迭代了一次")
+            print("warning： 迭代次数过少")
 
         n_samples = X.shape[0]
 
@@ -819,6 +822,11 @@ class TSNE(BaseEstimator):
         # * final optimization with momentum at 0.8
         params = X_embedded.ravel()
 
+        temp_momentum = 0.5
+        if self.early_exaggeration == 1.0:
+            temp_momentum = 0.8
+            print("修改了momentum")
+
         opt_args = {
             "it": 0,
             "n_iter_check": self._N_ITER_CHECK,
@@ -829,7 +837,7 @@ class TSNE(BaseEstimator):
             "args": [P, degrees_of_freedom, n_samples, self.n_components],
             "n_iter_without_progress": self._EXPLORATION_N_ITER,
             "n_iter": self._EXPLORATION_N_ITER,
-            "momentum": 0.5,
+            "momentum": temp_momentum,
         }
         if self.method == 'barnes_hut':
             obj_func = _kl_divergence_bh
@@ -841,7 +849,7 @@ class TSNE(BaseEstimator):
 
         # Learning schedule (part 1): do 250 iteration with lower momentum but
         # higher learning rate controlled via the early exageration parameter
-        P *= self.early_exaggeration
+        P *= self.early_exaggeration  # 把早期放大设置为1，其实相当于将两次迭代接在一起了
         params, kl_divergence, it = _gradient_descent(obj_func, params,
                                                       **opt_args)
         if self.verbose:
@@ -852,7 +860,10 @@ class TSNE(BaseEstimator):
         # optimization with a higher momentum at 0.8
         P /= self.early_exaggeration
         remaining = self.n_iter - self._EXPLORATION_N_ITER
+        print("本应执行的次数是", self.n_iter)
         if it < self._EXPLORATION_N_ITER or remaining > 0:
+            print("小于早期放大次数", it)
+            print("remain:", remaining)
             opt_args['n_iter'] = self.n_iter
             opt_args['it'] = it + 1
             opt_args['momentum'] = 0.8
@@ -862,6 +873,7 @@ class TSNE(BaseEstimator):
 
         # Save the final number of iterations
         self.n_iter_ = it
+        print("最终迭代的次数是", it)
 
         if self.verbose:
             print("[t-SNE] KL divergence after %d iterations: %f"

@@ -575,6 +575,8 @@ def run_test(data_name0=None):
     if data_name0 is None:
         show_result = True
 
+    show_result = False  # 临时修改
+
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
     # 而对于自己制造的三维数据等，本身就是一个规划好了的数据，应该是直接使用，不需要normalize的
