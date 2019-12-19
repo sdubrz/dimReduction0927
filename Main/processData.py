@@ -308,3 +308,38 @@ def length_radio(y1, y2, y=None):
 
     return radios
 
+
+def mds_stress(path=""):
+    """
+    计算 MDS 中的stress误差，只针对MDS方法有效
+    :param path: 中间结果的存储路径
+    :return:
+    """
+    X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
+    Y = np.loadtxt(path+"y.csv", dtype=np.float, delimiter=",")
+    (n, m) = X.shape
+
+    Dx = np.zeros((n, n))
+    Dy = np.zeros((n, n))
+
+    for i in range(0, n-1):
+        for j in range(i+1, n):
+            norm_x = np.linalg.norm(X[i, :] - X[j, :])
+            Dx[i, j] = norm_x
+            Dx[j, i] = norm_x
+            norm_y = np.linalg.norm(Y[i, :] - Y[j, :])
+            Dy[i, j] = norm_y
+            Dy[j, i] = norm_y
+    dD = Dy - Dx
+    np.savetxt(path+"dD.csv", dD, fmt='%f', delimiter=",")
+    return dD
+
+
+def run_test():
+    path = "E:\\Project\\result2019\\result1026without_straighten\\MDS\\Wine\\yita(0.1)nbrs_k(45)method_k(20)numbers(4)_b-spline_weighted\\"
+    D = mds_stress(path)
+    print(D[0, :].tolist())
+
+
+if __name__ == '__main__':
+    run_test()

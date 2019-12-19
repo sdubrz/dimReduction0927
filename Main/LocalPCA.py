@@ -17,12 +17,98 @@ def local_pca_dn(data):
     :param data: 局部数据
     :return:
     """
-    data_shape = data.shape
-    local_pca = PCA(n_components=data_shape[1], copy=True, whiten=True)
-    local_pca.fit(data)
-    vectors = local_pca.components_  # 所有的特征向量
-    values = local_pca.explained_variance_  # 所有的特征值
+    (n, m) = data.shape
+    if n <= m:
+        mean_data = np.mean(data, axis=0)
+        X = data - mean_data
+        C = np.matmul(np.transpose(X), X) / n
+        eigen_values, eigen_vectors = np.linalg.eig(C)
+        eig_idx = np.argpartition(eigen_values, -m)[-m:]
+        eig_idx = eig_idx[np.argsort(-eigen_values[eig_idx])]
+        vectors = eigen_vectors[:, eig_idx]
+        vectors = np.transpose(vectors)
+        values = eigen_values[eig_idx]
+    else:
+        data_shape = data.shape
+        local_pca = PCA(n_components=data_shape[1], copy=True, whiten=True)
+        local_pca.fit(data)
+        vectors = local_pca.components_  # 所有的特征向量
+        values = local_pca.explained_variance_  # 所有的特征值
     return vectors, values
+
+
+def local_cov(X, knn):
+    """
+    计算 每个点的局部协方差矩阵
+    :param X: 数据矩阵
+    :param knn: K近邻关系矩阵
+    :return:
+    """
+    (n, m) = X.shape
+    (n, k) = knn.shape
+
+    COV = np.zeros((n, m, m))
+    for i in range(0, n):
+        local_data = np.zeros((k, m))
+        for j in range(0, k):
+            local_data[j, :] = X[knn[i, j], :]
+
+        mean_v = np.mean(local_data, axis=0)
+        meant_data = local_data - mean_v
+        i_cov = np.matmul(meant_data.T, meant_data)
+        COV[i] = i_cov
+
+    return COV
+
+
+def eigen_number_(data, knn, proportion=0.9, good_points=0.9, min_number=2):
+    """
+    按照误差的方式确定特征向量的个数
+    :param data: 数据矩阵，每一行是一个样本
+    :param knn: KNN关系矩阵，每一行是一个样本的K近邻
+    :param proportion: 一个好的点，所用的特征向量个数应该满足所选取的特征值占比超过proportion
+    :param good_points: 好的点应该占全部点的比重
+    :param min_number: 最少使用的特征向量个数
+    :return:
+    """
+    (n, m) = data.shape
+    (n, k) = knn.shape
+
+    eigenvalues = np.zeros((n, m))
+    eigen_sum = np.zeros((n, 1))
+    for index in range(0, n):
+        local_data = np.zeros((k, m))
+        for i in range(0, k):
+            local_data[i, :] = data[knn[index, i], :]
+        temp_vectors, eigenvalues[index, :] = local_pca_dn(local_data)
+        eigen_sum[index] = np.sum(eigenvalues[index, :])
+
+    final_number = min_number
+    while final_number < m:
+        good_count = 0
+        for i in range(0, n):
+            temp_sum = np.sum(eigenvalues[i, 0:final_number])
+            if temp_sum >= eigen_sum[i] * proportion:
+                good_count += 1
+        if good_count >= n*good_points:
+            break
+        final_number += 1
+    return final_number
+
+
+def eigen_number(data, k, proportion=0.9, good_points=0.9, min_number=2):
+    """
+    按照误差的方式计算需要的特征向量的个数
+    :param data: 数据矩阵，每一行是一个样本
+    :param k: K 近邻个数
+    :param proportion: 一个好的点，所用的特征向量个数应该满足所选取的特征值占比超过proportion
+    :param good_points: 好的点应该占全部点的比重
+    :param min_number: 最少使用的特征向量个数
+    :return:
+    """
+    (n, m) = data.shape
+    knn = Preprocess.knn(data, k)
+    return eigen_number_(data, knn, proportion=proportion, good_points=good_points, min_number=min_number)
 
 
 def how_many_eigens(data, k, threshold=0.8):
@@ -391,5 +477,15 @@ def loop_test():
     print(list)
 
 
+def pca_test():
+    data = np.array([[1, 2, 3, 4, 5],
+                     [6, 7, 8, 9, 10],
+                     [1, 3, 6, 8, 4]])
+    vectors, values = local_pca_dn(data)
+    print(vectors)
+    print(values)
+
+
 if __name__ == "__main__":
-    loop_test()
+    # loop_test()
+    pca_test()

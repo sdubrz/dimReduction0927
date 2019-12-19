@@ -5,13 +5,14 @@ from Main import DimReduce
 from Main import LocalPCA
 from Main import Preprocess
 from Main import processData as pD
+from Main.LDA import LDA
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from Tools import SymbolAdjust
 
 
 def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
-                 yita=0.1, save_path="", weighted=True):
+                 yita=0.1, save_path="", weighted=True, P_matrix=None, label=None, MIN_EIGEN_NUMBER=2, min_proportion=0.9, min_good_points=0.9):
     """
     一次性对所有的点添加扰动，是之前使用过的方法
     这里各个特征向量的扰动按照特征值的比重添加权重
@@ -20,11 +21,16 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     :param y_init: 某些降维方法所需的初始随机矩阵
     :param enough: 是否达到给定的阈值要求
     :param method_k: 某些降维方法所需要使用的k值
-    :param MAX_EIGEN_COUNT: 最多使用的特征值数目
+    :param MAX_EIGEN_COUNT: 最多使用的特征值数目，暂时不用
     :param method_name: 所使用的降维方法
     :param yita: 扰动所乘的系数
     :param save_path: 存储中间结果的路径
     :param weighted: 特征向量作为扰动时是否按照其所对应的特征值分配权重
+    :param P_matrix: 一个 dim × 2 的矩阵，直接观测数据中的两个维度，可以看做是一种线性降维方法
+    :param label: 数据的分类标签
+    :param MIN_EIGEN_NUMBER: 最少使用的特征向量个数
+    :param min_proportion: 每个点的主特征值占所有特征值的占比
+    :param min_good_points: 主特征值占比达到要求的点占所有的点的比重
     :return:
     """
     data_shape = data.shape
@@ -51,6 +57,9 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     eigen_values = np.zeros((n, dim))  # 存储对每个点的localPCA所得的特征值
 
     eigen_weights = np.ones((n, dim))  # 计算每个特征值占所有特征值和的比重
+
+    # MAX_EIGEN_COUNT = LocalPCA.eigen_number(data, knn, proportion=min_proportion, good_points=min_good_points, min_number=MIN_EIGEN_NUMBER)
+    # print("使用的特征向量个数为：", MAX_EIGEN_COUNT)
 
     for i in range(0, MAX_EIGEN_COUNT):
         eigen_vectors_list.append(np.zeros((n, dim)))
@@ -86,12 +95,29 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
         P = np.transpose(P_)
         y = np.matmul(data, P)
         np.savetxt(save_path+"P.csv", P, fmt="%f", delimiter=",")
+    elif method_name == 'LDA' or method_name == 'lda':
+        print('当前使用 LDA 方法')
+        lda = LDA(n_component=2)
+        y = lda.fit_transform(data, label)
+        P = lda.P
+        np.savetxt(save_path + "P.csv", P, fmt="%f", delimiter=",")
+    elif method_name == "P_matrix" and not (P_matrix is None):
+        print("当前使用普通的线性降维方法")
+        y = np.matmul(data, P_matrix)
+        np.savetxt(save_path + "P_matrix.csv", P_matrix, fmt="%f", delimiter=",")
     elif method_name == "tsne2" or method_name == "t-SNE2":
         print('当前使用比较稳定的t-SNE方法')
         tsne = TSNE(n_components=2, perplexity=method_k / 3, init=y_init)
         y = tsne.fit_transform(data)
+    # elif method_name == "tsne" or method_name == "t-SNE":
+    #     # 通过实验来看t-SNE只执行一次的话结果不是很稳定 2019.12.13 实验证明并不怎么起作用
+    #     t_sne = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=np.random.random((n, 2)))
+    #     y0 = t_sne.fit_transform(data)
+    #     t_sne2 = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=y0)
+    #     y = t_sne2.fit_transform(data)
     else:
-        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)
+        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=50000)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
+        # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)
 
     # 开始执行扰动计算
     for loop_index in range(0, MAX_EIGEN_COUNT):
@@ -108,21 +134,25 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
 
         y_add_v = np.zeros((n, 2))
         y_sub_v = np.zeros((n, 2))
-        if method_name == "pca" or method_name == "PCA":
+        if method_name == "pca" or method_name == "PCA" or method_name == 'LDA' or method_name == 'lda':
             print('当前使用PCA方法')
             y_add_v = np.matmul(x_add_v, P)
             y_sub_v = np.matmul(x_sub_v, P)
+        elif method_name == "P_matrix" and not (P_matrix is None):
+            print("当前使用普通的线性降维方法")
+            y_add_v = np.matmul(x_add_v, P_matrix)
+            y_sub_v = np.matmul(x_sub_v, P_matrix)
         elif method_name == "tsne2" or method_name == "t-SNE2":
             print('当前使用比较稳定的t-SNE方法')
             tsne = TSNE(n_components=2, n_iter=1, perplexity=method_k / 3, init=y)
             y_add_v = tsne.fit_transform(x_add_v)
             y_sub_v = tsne.fit_transform(x_sub_v)
         else:
-            y_add_v = DimReduce.dim_reduce(x_add_v, method=method_name, method_k=method_k, y_random=y)
+            y_add_v = DimReduce.dim_reduce(x_add_v, method=method_name, method_k=method_k, y_random=y, n_iters=1500, c_early_exage=False)
             # y_sub_v = 2*y-y_add_v  # 胡乱加的，要改回去
-            y_sub_v = DimReduce.dim_reduce(x_sub_v, method=method_name, method_k=method_k, y_random=y)
+            y_sub_v = DimReduce.dim_reduce(x_sub_v, method=method_name, method_k=method_k, y_random=y, n_iters=1500, c_early_exage=False)
 
-        y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)
+        y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)  # 这个是防止翻转的那种情况发生的。
         y_sub_v = SymbolAdjust.symbol_adjust(y, y_sub_v)
 
         y_list_add.append(y_add_v)

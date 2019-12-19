@@ -13,6 +13,7 @@ import numpy.linalg as LA
 from Tools import HistogramEqualization as HistEqual
 from Tools import MyGeometry
 from Tools import PolygonArea
+from Tools import VisualizationKNN
 
 
 """
@@ -240,7 +241,7 @@ def how_many_eigens(read_path, proportion=0.8, weighted=True):
 
 
 def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_kind=None,
-               MAX_EIGEN_NUMBER=4, weighted=True):
+               MAX_EIGEN_NUMBER=4, weighted=True, test_attr=None, notes=None, false_class=None):
     """
     构建json文件
     :param main_path:
@@ -248,6 +249,9 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     :param method_k:
     :param max_eigen_numbers: 最多使用的特征向量个数
     :param weighted: 在使用特征向量作为扰动的时候是否根据特征值的大小分配了权重
+    :param test_attr: 用于测试的冗余属性
+    :param notes: 备注
+    :param false_class: 假的类，离散的冗余属性
     :return:
     """
 
@@ -264,11 +268,24 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         read_path = read_path + "_weighted"
     else:
         read_path = read_path + "_withoutweight"
+
     read_path = read_path + "\\"
 
     y_reader = np.loadtxt(read_path+"y.csv", dtype=np.str, delimiter=",")  # 原始数据的降维结果
     y = y_reader[:, :].astype(np.float)
     (n, temp_dim) = y.shape
+    knn_keep = VisualizationKNN.knn_keep(read_path)
+
+    if notes is None:  # 默认的备注
+        notes = []
+        for i in range(0, n):
+            notes.append(str(i))
+
+    if test_attr is None:
+        test_attr = np.random.random((n, 1))
+
+    if false_class is None:
+        false_class = np.ones((n, 1))
 
     y_add1_reader = np.loadtxt(read_path+"y1+.csv", dtype=np.str, delimiter=",")  # 添加第一特征向量作为扰动的投影结果
     y_add1 = y_add1_reader[:, :].astype(np.float)
@@ -428,6 +445,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
         line = line + "[" + str(polygon[(polygon_size-1)*2]) + ", "+str(polygon[(polygon_size-1)*2+1]) + "]], "
 
         line = line + "\"angles\": " + str(angles[i]) + ", "
+        line = line + "\"knn_keep\": " + str(knn_keep[i, 0]) + ","
 
         line = line + "\"eigenNumber\": " + str(int(eigen_numbers[i])) + ", "
         line = line + "\"proportion\": " + str(float(proportions[i])) + ", "
@@ -464,7 +482,10 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
 
         line = line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[i]) + ","
         line = line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[i]) + ","
-        line = line + "\"angle12Sin\": " + str(angle12Sin[i])
+        line = line + "\"angle12Sin\": " + str(angle12Sin[i]) + ","
+        line = line + "\"test_attr\": " + str(test_attr[i]) + ","
+        line = line + "\"int_attr\": " + str(false_class[i]) + ","
+        line = line + "\"notes\": \"" + notes[i] + "\""
 
         line = line + "},\n"
         jsonfile.write(line)
@@ -472,7 +493,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     # 最后一行
     final_line = "{"
     final_line = final_line + "\"x\": " + str(y[n-1, 0]) + ",\"y\": " + str(y[n-1, 1]) + ","
-    final_line = final_line + "\"cluster\": " + str(label[n-1]) + ","
+    final_line = final_line + "\"class\": " + str(label[n-1]) + ","
     final_line = final_line + "\"dNum\": " + str(m) + ",\"hdata\": ["
 
     for j in range(0, m - 1):
@@ -490,6 +511,7 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     final_line = final_line + "[" + str(final_polygon[(final_polygon_size - 1) * 2]) + ", " + str(final_polygon[(final_polygon_size - 1) * 2 + 1]) + "]], "
 
     final_line = final_line + "\"angles\": " + str(angles[n-1]) + ", "
+    final_line = final_line + "\"knn_keep\": " + str(knn_keep[n-1, 0]) + ","
     final_line = final_line + "\"eigenNumber\": " + str(int(eigen_numbers[n-1])) + ", "
     final_line = final_line + "\"proportion\": " + str(float(proportions[n-1])) + ", "
 
@@ -524,7 +546,10 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
 
     final_line = final_line + "\"angleAddSub_basedcos\": " + str(angleAddSub_basedcos[n-1]) + ","
     final_line = final_line + "\"angleAddSub_cosweighted\": " + str(angleAddSub_cosweighted[n-1]) + ","
-    final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1])
+    final_line = final_line + "\"angle12Sin\": " + str(angle12Sin[n-1]) + ","
+    final_line = final_line + "\"test_attr\": " + str(test_attr[n-1]) + ","
+    final_line = final_line + "\"int_attr\":" + str(false_class[n-1]) + ","
+    final_line = final_line + "\"notes\": \"" + notes[n-1] + "\""
 
     final_line = final_line + "}"
     final_line = final_line + "]"

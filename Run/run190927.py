@@ -12,10 +12,18 @@ from time import time
 from Main import Preturb
 from Main import CleanData
 
-
-# 以下为临时引用
 from Tools import MySort
 from JSON_Data import polygon_json190927
+from JSON_Data import Json_2d
+from JSON_Data import CircleScatter
+from JSON_Data import highKNN_2dPCA
+from JSON_Data import TrendJson
+from JSON_Data import Stress_json
+from Main import MainDirector
+from Tools import VisualizationKNN
+from ClusterTest import clusterTest
+from SMMC_ import Clustering
+from Main import LocalPCA
 
 """"
 本程序是基于run190422.py修改的
@@ -91,7 +99,7 @@ def local_pca_calculated(path):
 
 def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
-        weighted=True):
+        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9):
     """"
 
     :param main_path: 主文件目录
@@ -99,7 +107,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     :param threshold: 阈值，要求所选用的特征值之和占所有特征值的和必须超过这个值
     :param yita: 控制扰动的大小
     :param method_k: 有些降维方法所需要使用的k值
-    :param max_eigen_numbers: 允许使用的最多的特征值数目
+    :param max_eigen_numbers: 允许使用的最多的特征值数目，自2019.12.19之后，没有实际用处
     :param MAX_K: 最大允许的k值，在找最佳k值时的限定条件
     :param MDS: 所使用的降维方法
     :param draw_kind: 画图的方式
@@ -115,6 +123,8 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     :param weighted: 在使用特征向量作为扰动的时候是否需要根据其特征值分配权重
     :param MAX_NK: 是一个元组，并且这个元组中的两个数都是0~1之间的值。第一个值控制k值差别大小，第二个值控制超过差别阈值的邻居个数
                     如果一个点的dim+1邻域中有超过(dim+1)*MAX_NK[1]个点与这个点的k值差别超过了(MAX_K-dim-1)*MAX_NK[0]，则我们需要考虑采取措施
+    :param P_matrix: 普通的线性降维方法的投影矩阵
+    :param show_result: 在计算完成后，是否将结果画出来
 
     @author subbrz
     2018年12月20日
@@ -129,6 +139,8 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     n = data_shape[0]
     dim = data_shape[1]
     print(data_shape)
+
+    max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
 
     label = np.zeros((n, 1))
     if hasLabel:
@@ -150,6 +162,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         save_path = save_path + "_weighted"
     else:
         save_path = save_path + "_withoutweight"
+
     save_path = save_path + "\\"
 
     Preprocess.check_filepath(save_path)
@@ -180,11 +193,14 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     else:
         y, y_list_add, y_list_sub = Preturb.perturb_once_weighted(x, nbrs_k=nbrs_k, y_init=y_random,
                                                           method_k=method_k,
-                                                          MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
+                                                            method_name=method,
                                                           yita=yita,
-                                                          save_path=save_path, weighted=weighted)
+                                                          save_path=save_path, weighted=weighted, P_matrix=P_matrix,
+                                                            label=label, MAX_EIGEN_COUNT=max_eigen_numbers, min_proportion=min_proportion, min_good_points=min_good_points)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
+
+    max_eigen_numbers = len(y_list_add)  # 实际使用的特征向量个数
 
     shapes = []
     colors = ['r', 'g', 'b', 'm', 'yellow', 'k', 'c']  # 鸿武七年三月一十八日临时改动
@@ -265,7 +281,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     for i in range(0, n):
         plt.scatter(y[i, 0], y[i, 1], marker=shapes[i], c='k', alpha=0.6)
 
-    if draw_kind == "line" or has_line:
+    if (draw_kind == "line" or has_line) and show_result:
         for j in range(0, max_eigen_numbers):
             y_add_v = y_list_add_adjust[j]
             y_sub_v = y_list_sub_adjust[j]
@@ -306,7 +322,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
             convex_hull_list.append(temp_convex0)  # 存储这个凸包顶点信息
             temp_convex = np.array(temp_convex0)
 
-            if draw_kind == "convex_hull":
+            if draw_kind == "convex_hull" and show_result:
                 for j in range(0, len(temp_convex)-1):
                     plt.plot([temp_convex[j, 0], temp_convex[j+1, 0]], [temp_convex[j, 1], temp_convex[j+1, 1]], linewidth=0.6, c='deepskyblue', alpha=0.7)
                 plt.plot([temp_convex[len(temp_convex)-1, 0], temp_convex[0, 0]], [temp_convex[len(temp_convex)-1, 1], temp_convex[0, 1]],
@@ -353,7 +369,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                 temp_convex = np.array(temp_convex0)
 
             # 计算B样条
-            if len(temp_convex) > 3:
+            if len(temp_convex) >= 3:
                 splines = b_spline.bspline(temp_convex, n=100, degree=3, periodic=True)
                 spline_x, spline_y = splines.T
             else:
@@ -363,9 +379,10 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                     spline_x.append(temp_convex[j, 0])
                     spline_y.append(temp_convex[j, 1])
 
-            if len(temp_convex) < 4:
+            if len(temp_convex) < 3:
                 print('bad')
-            plt.plot(spline_x, spline_y, linewidth=0.6, c='deepskyblue', alpha=0.7)
+            if show_result:
+                plt.plot(spline_x, spline_y, linewidth=0.6, c='deepskyblue', alpha=0.7)
 
             this_spline = []
             for j in range(0, len(spline_x)):
@@ -396,7 +413,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         star_shape_list = []  # 存放星型多边形顶点信息，方便进行存储
         for i in range(0, n):
             temp_points = total_list[i]
-            if len(temp_points) == 3:  # 也就是只使用一个特征向量就满足了所要求的比例
+            if len(temp_points) == 3 and show_result:  # 也就是只使用一个特征向量就满足了所要求的比例
                 plt.plot([temp_points[2, 0], temp_points[0, 0]], [temp_points[2, 1], temp_points[0, 1]], linewidth=0.8, c='deepskyblue', alpha=0.7)
                 plt.plot([temp_points[2, 0], temp_points[1, 0]], [temp_points[2, 1], temp_points[1, 1]], linewidth=0.8,
                          c='deepskyblue', alpha=0.7)
@@ -407,16 +424,18 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
 
             sorted_points = MySort.points_sort(temp_points)
             star_shape_list.append(sorted_points)
-            for j in range(0, len(sorted_points)-1):
-                plt.plot([sorted_points[j, 0], sorted_points[j+1, 0]], [sorted_points[j, 1], sorted_points[j+1, 1]], linewidth=0.8, c='deepskyblue', alpha=0.7)
-            plt.plot([sorted_points[0, 0], sorted_points[len(sorted_points)-1, 0]], [sorted_points[0, 1], sorted_points[len(sorted_points)-1, 1]],
-                     linewidth=0.8, c='deepskyblue', alpha=0.7)
+            if show_result:
+                for j in range(0, len(sorted_points)-1):
+                    plt.plot([sorted_points[j, 0], sorted_points[j+1, 0]], [sorted_points[j, 1], sorted_points[j+1, 1]], linewidth=0.8, c='deepskyblue', alpha=0.7)
+                plt.plot([sorted_points[0, 0], sorted_points[len(sorted_points)-1, 0]], [sorted_points[0, 1], sorted_points[len(sorted_points)-1, 1]],
+                         linewidth=0.8, c='deepskyblue', alpha=0.7)
 
         SaveData.save_lists(star_shape_list, save_path + "convex_hull_list.csv")
 
-    ax = plt.gca()
-    ax.set_aspect(1)
-    plt.show()
+    if show_result:
+        ax = plt.gca()
+        ax.set_aspect(1)
+        plt.show()
 
     # 无论使用什么画法都需要把最原始的star_shape_polygon信息保存下来
     final_star_shape_list = star_polygons(y, y_list_add, y_list_sub, max_eigen_numbers)
@@ -427,7 +446,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     OutShape.angle_p_n_weighted(save_path=save_path, vector_num=max_eigen_numbers)
     OutShape.angle_p_n_1(save_path=save_path)
 
-    return save_path
+    return save_path, max_eigen_numbers
 
 
 def perturbation_adjust(y, y_add_v, y_sub_v):
@@ -505,6 +524,17 @@ def star_polygons(y, y_list_add, y_list_sub, max_eigen_numbers):
     return star_shape_list
 
 
+def data_shape(main_path, data_name):
+    """
+    获取数据的维度数和样本数
+    :param main_path: 主文件目录
+    :param data_name: 数据集名称
+    :return:
+    """
+    data = np.loadtxt(main_path+"datasets\\"+data_name+"\\data.csv", dtype=np.float, delimiter=",")
+    return data.shape
+
+
 def run_test(data_name0=None):
     """"
         画图方法：
@@ -521,29 +551,39 @@ def run_test(data_name0=None):
             digits5_8
         """
     start_time = time()
-    main_path_without_normalize = "F:\\result2019\\result0223without_normalize\\"
-    main_path_without_straighten = "F:\\result2019\\result0425without_straighten\\"
+    main_path_without_normalize = "E:\\project\\result2019\\result1112without_normalize\\"  # 华硕
+    # main_path_without_straighten = "E:\\project\\result2019\\result1026without_straighten\\"  # 华硕
+    main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"
     # main_path = "F:\\result2019\\result0927\\"  # HP
     # main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "Wine"
+    data_name = "Iris"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"
-    yita = 0.5
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    yita = 0.1
     nbrs_k = 30
-    method_k = 70
-    eigen_numbers = 4
+    method_k = nbrs_k
+    eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True
-    straighten = True  # 是否进行校直操作
+    min_proportion = 0.9
+    min_good_points = 0.9
+
+    straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
+    P_matrix = None  # 普通的线性降维方法的投影矩阵
+    show_result = False
+    if data_name0 is None:
+        show_result = True
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
+    # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
+    # 而对于自己制造的三维数据等，本身就是一个规划好了的数据，应该是直接使用，不需要normalize的
     if not normalize:
         main_path = main_path_without_normalize
 
@@ -551,40 +591,80 @@ def run_test(data_name0=None):
         main_path = main_path_without_straighten
 
     if (not normalize) and (not straighten):
-        print("暂不支持，该组合形式")
+        main_path = main_path_without_normalize
 
-    last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
-        method=method, draw_kind=draw_kind, has_line=False, hasLabel=True, to_normalize=normalize,
-        do_straight=straighten, weighted=weighted)
+    # 继续设置普通的线性降维方法的参数
+    (n, m) = data_shape(main_path, data_name)
+    if method == "P_matrix":
+        P_matrix = np.zeros((m, 2))
+        x_index = 12  # 第一个维度
+        y_index = 9  # 第二个维度
+        P_matrix[x_index, 0] = 1
+        P_matrix[y_index, 1] = 1
+
+    last_path, eigen_numbers = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
+        method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
+        do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result, min_proportion=min_proportion, min_good_points=min_good_points)
+
+    # if not(data_name0 is None):  # 规模化运行时，保存降维结果
+    read_path = main_path + "datasets\\" + data_name + "\\"  # 保存降维结果，方便画艺术散点图
+    Y = np.loadtxt(last_path+"y.csv", dtype=np.float, delimiter=",")
+    np.savetxt(read_path+method+".csv", Y, fmt='%f', delimiter=",")
+
+    # 添加测试属性的地方
+    cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
+    # cluster_label = Clustering.run_clustering_path(last_path, d_latent=m, n_pca=20, n_clusters=8, k_knn=nbrs_k, o=8, max_iter=100)
 
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
     polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, nbrs_k, draw_kind,
                                   MAX_EIGEN_NUMBER=eigen_numbers,
-                                  weighted=weighted)
+                                  weighted=weighted, test_attr=cluster_label, false_class=cluster_label)
     json_end = time()
     print("合成json文件的时间为\t", json_end - json_start)
 
     end_time = time()
     print("程序的总运行时间为\t", end_time - start_time)
 
-    return last_path, data_name, main_path
+    Stress_json.create_json(last_path)
+
+    Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
+    print("计算二维完成")
+
+    CircleScatter.circle_json(last_path, r=0.03)
+    print('生成散点json完成')
+
+    highKNN_2dPCA.create_json2(last_path, line_length=0.1)
+
+    # 生成表示高维趋势的 json文件
+    TrendJson.trend_json(last_path)
+
+    # 画主成分的投影方向，如果是循环调用该函数的话，是默认不画图的
+    if data_name0 is None:
+        MainDirector.draw_main_director(last_path, normalize=True, line_length=0.03)
+
+    # 画KNN关系图
+    # VisualizationKNN.draw_knn(last_path)  # 太浪费空间，暂时注释掉，默认不运行
+    # 计算KNN相似性
+    VisualizationKNN.KNN_similar(last_path)
+
+    return last_path, data_name, main_path, method
 
 
 if __name__ == "__main__":
-    last_path, data_name, main_path = run_test()
+    last_path, data_name, main_path, method = run_test()
 
-    do_remove = True  # 是否要做删除outlier操作
-    attri_name = 'sin_1_2.csv'
+    do_remove = False  # 是否要做删除outlier操作
+    attri_name = "angle_+-sumweighted.csv"  # "angle_+-sumweighted.csv"  'sin_1_2.csv'
     threshold = 0.2
     compare = 'less'  # 'bigger' or 'less'
 
     if do_remove:
         if compare == 'less':
             CleanData.clean_small_value(data_name, main_path=main_path, last_path=last_path, attri_file=attri_name,
-                                        threshold=threshold)
-            run_test(data_name0=data_name+"Clean")
+                                        threshold=threshold, method=method)
+            run_test(data_name0=data_name+"Clean " + method + " " + attri_name + " " + compare + " " + str(threshold))
         elif compare == 'bigger':
             CleanData.clean_big_value(data_name, main_path=main_path, last_path=last_path, attri_file=attri_name,
-                                        threshold=threshold)
-            run_test(data_name0=data_name + "Clean")
+                                        threshold=threshold, method=method)
+            run_test(data_name0=data_name + "Clean " + method + " " + attri_name + " " + compare + " " + str(threshold))

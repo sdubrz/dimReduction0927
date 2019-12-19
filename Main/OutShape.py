@@ -92,15 +92,33 @@ def angle_p_n_weighted(save_path='', vector_num=2, weighted=True):
     (n, dim) = eigenvalue.shape
 
     value_list = angle_p_n(save_path, vector_num)
-    k = len(value_list)
+
+    # --------------------------------------------------
+    # k = len(value_list)
+    # if k == vector_num:
+    #     pass
+    # else:
+    #     print('k != vector num')
+    # sum_list = np.zeros((n, 1))
+    # for i in range(0, k):
+    #     temp_list = value_list[i]
+    #     w = 1 / k
+    #     for j in range(0, n):
+    #         if weighted:
+    #             w = eigenvalue[j, i] / np.sum(eigenvalue[j, 0:k])
+    #         sum_list[j] = sum_list[j] + w * temp_list[i]
+    # --------------------------------------------------------
     sum_list = np.zeros((n, 1))
-    for i in range(0, k):
+    W = np.zeros((n, vector_num))
+    for i in range(0, n):
+        w_sum = np.sum(eigenvalue[i, 0:vector_num])
+        for j in range(0, vector_num):
+            W[i, j] = eigenvalue[i, j] / w_sum
+
+    for i in range(0, vector_num):
         temp_list = value_list[i]
-        w = 1 / k
         for j in range(0, n):
-            if weighted:
-                w = eigenvalue[j, i] / np.sum(eigenvalue[j, 0:k])
-            sum_list[j] = sum_list[j] + w * temp_list[i]
+            sum_list[j] = sum_list[j] + W[j, i] * temp_list[j]
 
     save_file = save_path + "angle_+-sum"
     if weighted:
@@ -133,3 +151,9 @@ def angle_p_n_1(save_path=''):
     plt.close()
 
     return values
+
+
+if __name__ == '__main__':
+    A = np.array([[1, 2, 3, 4],
+                  [5, 6, 7, 8]])
+    print(np.sum(A[1, 0:2]))
