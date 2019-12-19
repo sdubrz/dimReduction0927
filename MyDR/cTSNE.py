@@ -178,7 +178,7 @@ if __name__ == '__main__':
     yita = 0.05
 
     t_sne = cTSNE(n_component=2, perplexity=30.0)
-    Y = t_sne.fit_transform(X, max_iter=30000)
+    Y = t_sne.fit_transform(X, max_iter=1000)
     # Y = np.loadtxt(path+"y.csv", dtype=np.float, delimiter=",")
     # Y2, iY2, gains2, dY2 = t_sne.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False, iY=iY, gains=gains)
     # Y3, iY3, gains3, dY3 = t_sne.fit_transform(X, y_random=Y, max_iter=1500, early_exaggerate=False, iY=iY, gains=gains)
@@ -192,10 +192,10 @@ if __name__ == '__main__':
     for i in range(0, n):
         vectors[i, :] = W[i] * vectors[i, :]
 
-    t_sne2 = cTSNE(n_component=2, perplexity=31.0)
-    t_sne3 = cTSNE(n_component=2, perplexity=32.0)
-    Y2 = t_sne2.fit_transform(X+0.1*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
-    Y3 = t_sne3.fit_transform(X+0.5*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
+    t_sne2 = cTSNE(n_component=2, perplexity=30.0)
+    t_sne3 = cTSNE(n_component=2, perplexity=30.0)
+    Y2 = t_sne2.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False)
+    Y3 = t_sne3.fit_transform(X+1.0*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
 
     plt.scatter(Y[:, 0], Y[:, 1], c='r')
     plt.scatter(Y2[:, 0], Y2[:, 1], c='g')

@@ -16,7 +16,7 @@ def create_pictures(path="", image_shape=(28, 28)):
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
     X = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
-    X = 255*np.ones(X.shape) - X
+    # X = 255*np.ones(X.shape) - X
     # X = np.maximum(X, 1)
     # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     # count = np.zeros((10, 1))
@@ -102,7 +102,7 @@ def coil_image_scatter():
     plt.show()
 
 
-def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(28, 28)):
+def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(28, 28), colormap='gray'):
     """
     用MNIST数据画艺术散点图
     :return:
@@ -123,7 +123,8 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     fig, ax = plt.subplots()
     # plt.colormaps()
     ax.scatter(Y[:, 0], Y[:, 1])
-    plt.set_cmap(cm.gray)
+    if colormap == 'gray':
+        plt.set_cmap(cm.gray)
     for i in range(0, n):
         # if label[i] != 5:
         #     continue
@@ -147,7 +148,7 @@ def mnist_scatter():
         plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=0.36, y_name="cTSNE0.csv")
+        mnist_images(path, eta=0.2, y_name="cTSNE72_0_5.csv", image_shape=(128, 128), colormap='yellow')
 
 
 if __name__ == '__main__':

@@ -27,11 +27,11 @@ def run_test2():
     dr2 = t_sne.TSNE(n_components=2, n_iter=1, init=Y, early_exaggeration=1.0, learning_rate=10.0)
     Y2 = dr2.fit_transform(data)
 
-    dr3 = t_sne.TSNE(n_components=2, n_iter=1000, init=Y, early_exaggeration=1.0, learning_rate=10.0)
+    dr3 = t_sne.TSNE(n_components=2, n_iter=1000, init=Y)
     Y3 = dr3.fit_transform(data)
 
     plt.scatter(Y[:, 0], Y[:, 1], c='r')
-    plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
+    # plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
     plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
     plt.show()
 
