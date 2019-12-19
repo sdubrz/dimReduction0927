@@ -823,7 +823,7 @@ class TSNE(BaseEstimator):
         params = X_embedded.ravel()
 
         temp_momentum = 0.5
-        if self.early_exaggeration == 1.0:
+        if self.early_exaggeration == 0.1:
             temp_momentum = 0.8
             print("修改了momentum")
 
@@ -837,7 +837,7 @@ class TSNE(BaseEstimator):
             "args": [P, degrees_of_freedom, n_samples, self.n_components],
             "n_iter_without_progress": self._EXPLORATION_N_ITER,
             "n_iter": self._EXPLORATION_N_ITER,
-            "momentum": temp_momentum,
+            "momentum": 0.5,
         }
         if self.method == 'barnes_hut':
             obj_func = _kl_divergence_bh

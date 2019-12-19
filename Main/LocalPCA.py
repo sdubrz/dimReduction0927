@@ -61,7 +61,7 @@ def local_cov(X, knn):
     return COV
 
 
-def eigen_number(data, knn, proportion=0.9, good_points=0.9, min_number=2):
+def eigen_number_(data, knn, proportion=0.9, good_points=0.9, min_number=2):
     """
     按照误差的方式确定特征向量的个数
     :param data: 数据矩阵，每一行是一个样本
@@ -94,6 +94,21 @@ def eigen_number(data, knn, proportion=0.9, good_points=0.9, min_number=2):
             break
         final_number += 1
     return final_number
+
+
+def eigen_number(data, k, proportion=0.9, good_points=0.9, min_number=2):
+    """
+    按照误差的方式计算需要的特征向量的个数
+    :param data: 数据矩阵，每一行是一个样本
+    :param k: K 近邻个数
+    :param proportion: 一个好的点，所用的特征向量个数应该满足所选取的特征值占比超过proportion
+    :param good_points: 好的点应该占全部点的比重
+    :param min_number: 最少使用的特征向量个数
+    :return:
+    """
+    (n, m) = data.shape
+    knn = Preprocess.knn(data, k)
+    return eigen_number_(data, knn, proportion=proportion, good_points=good_points, min_number=min_number)
 
 
 def how_many_eigens(data, k, threshold=0.8):

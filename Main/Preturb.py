@@ -58,8 +58,8 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
 
     eigen_weights = np.ones((n, dim))  # 计算每个特征值占所有特征值和的比重
 
-    MAX_EIGEN_COUNT = LocalPCA.eigen_number(data, knn, proportion=min_proportion, good_points=min_good_points, min_number=MIN_EIGEN_NUMBER)
-    print("使用的特征向量个数为：", MAX_EIGEN_COUNT)
+    # MAX_EIGEN_COUNT = LocalPCA.eigen_number(data, knn, proportion=min_proportion, good_points=min_good_points, min_number=MIN_EIGEN_NUMBER)
+    # print("使用的特征向量个数为：", MAX_EIGEN_COUNT)
 
     for i in range(0, MAX_EIGEN_COUNT):
         eigen_vectors_list.append(np.zeros((n, dim)))

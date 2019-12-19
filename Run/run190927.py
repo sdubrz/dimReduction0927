@@ -23,6 +23,7 @@ from Main import MainDirector
 from Tools import VisualizationKNN
 from ClusterTest import clusterTest
 from SMMC_ import Clustering
+from Main import LocalPCA
 
 """"
 本程序是基于run190422.py修改的
@@ -106,7 +107,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     :param threshold: 阈值，要求所选用的特征值之和占所有特征值的和必须超过这个值
     :param yita: 控制扰动的大小
     :param method_k: 有些降维方法所需要使用的k值
-    :param max_eigen_numbers: 允许使用的最多的特征值数目
+    :param max_eigen_numbers: 允许使用的最多的特征值数目，自2019.12.19之后，没有实际用处
     :param MAX_K: 最大允许的k值，在找最佳k值时的限定条件
     :param MDS: 所使用的降维方法
     :param draw_kind: 画图的方式
@@ -138,6 +139,8 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     n = data_shape[0]
     dim = data_shape[1]
     print(data_shape)
+
+    max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
 
     label = np.zeros((n, 1))
     if hasLabel:
@@ -193,9 +196,11 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                             method_name=method,
                                                           yita=yita,
                                                           save_path=save_path, weighted=weighted, P_matrix=P_matrix,
-                                                            label=label, min_proportion=min_proportion, min_good_points=min_good_points)
+                                                            label=label, MAX_EIGEN_COUNT=max_eigen_numbers, min_proportion=min_proportion, min_good_points=min_good_points)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
+
+    max_eigen_numbers = len(y_list_add)  # 实际使用的特征向量个数
 
     shapes = []
     colors = ['r', 'g', 'b', 'm', 'yellow', 'k', 'c']  # 鸿武七年三月一十八日临时改动
@@ -441,7 +446,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     OutShape.angle_p_n_weighted(save_path=save_path, vector_num=max_eigen_numbers)
     OutShape.angle_p_n_1(save_path=save_path)
 
-    return save_path
+    return save_path, max_eigen_numbers
 
 
 def perturbation_adjust(y, y_add_v, y_sub_v):
@@ -548,19 +553,20 @@ def run_test(data_name0=None):
     start_time = time()
     main_path_without_normalize = "E:\\project\\result2019\\result1112without_normalize\\"  # 华硕
     main_path_without_straighten = "E:\\project\\result2019\\result1026without_straighten\\"  # 华硕
+    # main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
     # main_path = "F:\\result2019\\result0927\\"  # HP
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "digits5_8"
+    data_name = "Iris"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
     yita = 0.1
-    nbrs_k = 70
+    nbrs_k = 30
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
@@ -598,7 +604,7 @@ def run_test(data_name0=None):
         P_matrix[x_index, 0] = 1
         P_matrix[y_index, 1] = 1
 
-    last_path = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
+    last_path, eigen_numbers = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
         method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result, min_proportion=min_proportion, min_good_points=min_good_points)
 
