@@ -558,15 +558,15 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "Iris"
+    data_name = "digits5_8"
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.1
-    nbrs_k = 30
+    yita = 1.0
+    nbrs_k = 70
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"

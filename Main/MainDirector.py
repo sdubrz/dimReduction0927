@@ -45,8 +45,10 @@ def draw_main_director(path, normalize=False, line_length=0.03):
 
 
 def test():
-    path = "E:\\Project\\result2019\\result0927\\MDS\\seeds\\yita(0.3)nbrs_k(20)method_k(70)numbers(4)_b-spline_weighted\\"
-    draw_main_director(path)
+    # path = "E:\\Project\\result2019\\result0927\\MDS\\seeds\\yita(0.3)nbrs_k(20)method_k(70)numbers(4)_b-spline_weighted\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.1)nbrs_k(30)method_k(30)numbers(4)_b-spline_weighted\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\digits5_8\\yita(1.0)nbrs_k(70)method_k(70)numbers(4)_b-spline_weighted\\"
+    draw_main_director(path, normalize=False, line_length=0.03)
 
 
 if __name__ == '__main__':
