@@ -1,6 +1,7 @@
 # 经典的t-SNE方法改写，根据 Maaten 的程序改写为面向对象形式
 import numpy as np
 import matplotlib.pyplot as plt
+from Main import Preprocess
 
 
 class cTSNE:
@@ -167,7 +168,7 @@ class cTSNE:
         return Y
 
 
-if __name__ == '__main__':
+def run():
     path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Iris\\yita(0.05)nbrs_k(20)method_k(20)numbers(3)_b-spline_weighted\\"
     path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.1)nbrs_k(30)method_k(30)numbers(4)_b-spline_weighted\\"
     X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
@@ -205,6 +206,56 @@ if __name__ == '__main__':
         plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
         plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue')
     plt.show()
+
+
+def dr_3d():
+    """
+    降维到三维
+    :return:
+    """
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_3class\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data)
+
+    t_sne = cTSNE(n_component=3, perplexity=7.0)
+    Y = t_sne.fit_transform(X, max_iter=5000)
+    np.savetxt(path+"Y3d.csv", Y, fmt='%f', delimiter=",")
+
+
+def perturbation_one_by_one():
+    path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.1)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
+    X = np.loadtxt(path + "x.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    vectors = np.loadtxt(path + "【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
+    (n, m) = X.shape
+
+    yita = 0.0
+    eigen_weights = np.loadtxt(path + "【weighted】eigenweights.csv", dtype=np.float, delimiter=",")
+    W = eigen_weights[:, 0] * yita
+
+    for i in range(0, n):
+        vectors[i, :] = W[i] * vectors[i, :]
+
+    perplexity = 7.0
+
+    t_sne = cTSNE(n_component=2, perplexity=perplexity)
+    Y = t_sne.fit_transform(X, max_iter=100000)
+
+    index = 0
+    X2 = X.copy()
+    X2[index, :] = X2[index, :] + yita*vectors[index, :]
+    t_sne2 = cTSNE(n_component=2, perplexity=perplexity)
+    Y2 = t_sne2.fit_transform(X, max_iter=1000, early_exaggerate=False, y_random=Y)
+
+    print(Y[index, :])
+    plt.scatter(Y[:, 0], Y[:, 1], c='r')
+    plt.scatter(Y2[:, 0], Y2[:, 1], c='b')
+    plt.show()
+
+
+if __name__ == '__main__':
+    # dr_3d()
+    perturbation_one_by_one()
 
 
 
