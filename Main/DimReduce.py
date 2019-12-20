@@ -94,6 +94,62 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
     return y
 
 
+def dim_reduce_convergence(data, method="cTSNE", method_k=30, n_iter_init=10000, y_random=None):
+    """
+    降维，直到相对于屏幕看起来收敛
+    :param data: 数据矩阵
+    :param method: 降维方法名称
+    :param method_k: 某些降维方法需要的K值
+    :param n_iter_init: 默认的迭代次数
+    :param y_random: 随机的初始矩阵
+    :return:
+    """
+    Y0 = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=y_random)
+    Y1 = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, early_exaggeration=False)
+
+    total_count = n_iter_init
+    MAX_LOOP_COUNT = 1000000
+    while not convergence_screen(Y0, Y1) and total_count < MAX_LOOP_COUNT:
+        print("\t当前已经迭代了 %d 次" % total_count)
+        Y0 = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=Y0, early_exaggeration=False)
+        Y1 = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, early_exaggeration=False)
+        total_count += n_iter_init
+
+    if total_count >= MAX_LOOP_COUNT:
+        print('[DimReduce warning]: 仍然没有达到相对屏幕收敛的要求')
+    print('[DimReduce log]: 最终迭代的次数是 ', total_count)
+
+    return Y0
+
+
+def convergence_screen(Y0, Y1):
+    """
+    判断降维结果是否相对于屏幕收敛， 如果收敛则返回True
+    :param Y0: (n×2) 第一次降维结果矩阵
+    :param Y1: (n×2) 第二次降维结果矩阵
+    :return:
+    """
+    (n, m) = Y0.shape
+    dx = np.max(Y0[:, 0]) - np.min(Y0[:, 0])
+    dy = np.max(Y0[:, 1]) - np.min(Y0[:, 1])
+    d_screen = max(dx, dy)
+
+    d_norm = np.zeros((n, 1))
+    for i in range(0, n):
+        d_norm[i] = np.linalg.norm(Y0[i, :] - Y1[i, :])
+
+    plt.scatter(Y0[:, 0], Y0[:, 1], c='r')
+    plt.scatter(Y1[:, 0], Y1[:, 1], c='b')
+    plt.show()
+
+    d_mean = np.mean(d_norm)
+    print(dx, dy, d_mean)
+    if dx >= d_mean * 1000 or dy >= d_mean * 1000:
+        return True
+    else:
+        return False
+
+
 def run_test():
     path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\DataLab\\MoCap\\cleanData\\"

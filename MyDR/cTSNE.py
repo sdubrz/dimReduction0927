@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Main import Preprocess
+from Main import DimReduce
 
 
 class cTSNE:
@@ -34,7 +35,7 @@ class cTSNE:
         """
 
         # Initialize some variables
-        print("Computing pairwise distances...")
+        print("\tComputing pairwise distances...")
         (n, d) = X.shape
         sum_X = np.sum(np.square(X), 1)
         D = np.add(np.add(-2 * np.dot(X, X.T), sum_X).T, sum_X)
@@ -47,7 +48,7 @@ class cTSNE:
 
             # Print progress
             if i % 500 == 0:
-                print("Computing P-values for point %d of %d..." % (i, n))
+                print("\tComputing P-values for point %d of %d..." % (i, n))
 
             # Compute the Gaussian kernel and entropy for the current precision
             betamin = -np.inf
@@ -83,7 +84,7 @@ class cTSNE:
             P[i, np.concatenate((np.r_[0:i], np.r_[i + 1:n]))] = thisP
 
         # Return final P-matrix
-        print("Mean value of sigma: %f" % np.mean(np.sqrt(1 / beta)))
+        print("\tMean value of sigma: %f" % np.mean(np.sqrt(1 / beta)))
         return P
 
     def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None, show_progress=True):
@@ -157,7 +158,7 @@ class cTSNE:
             # Compute current value of cost function
             if (iter + 1) % 1000 == 0 and show_progress:
                 C = np.sum(P * np.log(P / Q))
-                print("Iteration %d: error is %f" % (iter + 1, C))
+                print("\tIteration %d: error is %f" % (iter + 1, C))
                 # print("eta = ", eta)
 
             # Stop lying about P-values
@@ -196,15 +197,16 @@ def run():
     t_sne2 = cTSNE(n_component=2, perplexity=30.0)
     t_sne3 = cTSNE(n_component=2, perplexity=30.0)
     Y2 = t_sne2.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False)
-    Y3 = t_sne3.fit_transform(X+1.0*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
+    # Y3 = t_sne3.fit_transform(X+1.0*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
 
     plt.scatter(Y[:, 0], Y[:, 1], c='r')
     plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
-    plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
+    # plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
 
+    print(DimReduce.convergence_screen(Y, Y2))
     for i in range(0, n):
         plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
-        plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue')
+        # plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue')
     plt.show()
 
 
@@ -255,7 +257,8 @@ def perturbation_one_by_one():
 
 if __name__ == '__main__':
     # dr_3d()
-    perturbation_one_by_one()
+    # perturbation_one_by_one()
+    run()
 
 
 

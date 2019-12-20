@@ -141,6 +141,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     print(data_shape)
 
     max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
+    print("实际需要的特征向量个数为 ", max_eigen_numbers)
 
     label = np.zeros((n, 1))
     if hasLabel:
@@ -558,15 +559,15 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "digits5_8"
+    data_name = "Iris"  # coil20obj_16_3class
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 1.0
-    nbrs_k = 70
+    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    yita = 0.2
+    nbrs_k = 21
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
@@ -581,7 +582,7 @@ def run_test(data_name0=None):
     if data_name0 is None:
         show_result = True
 
-    show_result = False  # 临时修改
+    # show_result = False  # 临时修改
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
