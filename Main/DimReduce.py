@@ -138,9 +138,9 @@ def convergence_screen(Y0, Y1):
     for i in range(0, n):
         d_norm[i] = np.linalg.norm(Y0[i, :] - Y1[i, :])
 
-    plt.scatter(Y0[:, 0], Y0[:, 1], c='r')
-    plt.scatter(Y1[:, 0], Y1[:, 1], c='b')
-    plt.show()
+    # plt.scatter(Y0[:, 0], Y0[:, 1], c='r')
+    # plt.scatter(Y1[:, 0], Y1[:, 1], c='b')
+    # plt.show()
 
     d_mean = np.mean(d_norm)
     print(dx, dy, d_mean)
@@ -148,6 +148,26 @@ def convergence_screen(Y0, Y1):
         return True
     else:
         return False
+
+
+def param_convergence():
+    """
+    测试判断收敛的参数是否合理
+    :return:
+    """
+    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\Iris\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data)
+
+    Y = dim_reduce(X, method="PCA")
+
+    dx = np.max(Y[:, 0]) - np.min(Y[:, 0])
+    Y2 = Y.copy()
+    Y2[:, 0] = Y[:, 0] + dx/2000
+
+    plt.scatter(Y[:, 0], Y[:, 1], c='r')
+    plt.scatter(Y2[:, 0], Y2[:, 1], c='b')
+    plt.show()
 
 
 def run_test():
@@ -264,6 +284,7 @@ def mnist_50m_small():
 
 if __name__ == '__main__':
     # run_test()
-    mnist_combination()
+    # mnist_combination()
     # mnist_50m_small()
+    param_convergence()
 

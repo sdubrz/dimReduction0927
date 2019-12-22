@@ -171,7 +171,7 @@ class cTSNE:
 
 def run():
     path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Iris\\yita(0.05)nbrs_k(20)method_k(20)numbers(3)_b-spline_weighted\\"
-    path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.1)nbrs_k(30)method_k(30)numbers(4)_b-spline_weighted\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.1)nbrs_k(30)method_k(30)numbers(4)_b-spline_weighted\\"
     X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     vectors = np.loadtxt(path+"【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
@@ -180,7 +180,7 @@ def run():
     yita = 0.05
 
     t_sne = cTSNE(n_component=2, perplexity=30.0)
-    Y = t_sne.fit_transform(X, max_iter=1000)
+    Y = t_sne.fit_transform(X, max_iter=30000)
     # Y = np.loadtxt(path+"y.csv", dtype=np.float, delimiter=",")
     # Y2, iY2, gains2, dY2 = t_sne.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False, iY=iY, gains=gains)
     # Y3, iY3, gains3, dY3 = t_sne.fit_transform(X, y_random=Y, max_iter=1500, early_exaggerate=False, iY=iY, gains=gains)
@@ -198,14 +198,14 @@ def run():
     t_sne3 = cTSNE(n_component=2, perplexity=30.0)
     Y2 = t_sne2.fit_transform(X, y_random=Y, max_iter=1000, early_exaggerate=False)
     # Y3 = t_sne3.fit_transform(X+1.0*vectors, y_random=Y, max_iter=1000, early_exaggerate=False)
+    print(DimReduce.convergence_screen(Y, Y2))
 
     plt.scatter(Y[:, 0], Y[:, 1], c='r')
     plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
     # plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
 
-    print(DimReduce.convergence_screen(Y, Y2))
     for i in range(0, n):
-        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue', linewidth=0.7, alpha=0.7)
         # plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue')
     plt.show()
 
