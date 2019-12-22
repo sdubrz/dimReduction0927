@@ -116,8 +116,8 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     #     t_sne2 = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=y0)
     #     y = t_sne2.fit_transform(data)
     else:
-        y = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=50000)
-        # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=50000)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
+        # y = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=50000)
+        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=50000)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
         # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)
 
     # 开始执行扰动计算

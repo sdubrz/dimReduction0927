@@ -35,7 +35,7 @@ class cTSNE:
         """
 
         # Initialize some variables
-        print("\tComputing pairwise distances...")
+        # print("\tComputing pairwise distances...")
         (n, d) = X.shape
         sum_X = np.sum(np.square(X), 1)
         D = np.add(np.add(-2 * np.dot(X, X.T), sum_X).T, sum_X)
@@ -47,8 +47,8 @@ class cTSNE:
         for i in range(n):
 
             # Print progress
-            if i % 500 == 0:
-                print("\tComputing P-values for point %d of %d..." % (i, n))
+            # if i % 500 == 0:
+            #     print("\tComputing P-values for point %d of %d..." % (i, n))
 
             # Compute the Gaussian kernel and entropy for the current precision
             betamin = -np.inf
@@ -84,7 +84,7 @@ class cTSNE:
             P[i, np.concatenate((np.r_[0:i], np.r_[i + 1:n]))] = thisP
 
         # Return final P-matrix
-        print("\tMean value of sigma: %f" % np.mean(np.sqrt(1 / beta)))
+        # print("\tMean value of sigma: %f" % np.mean(np.sqrt(1 / beta)))
         return P
 
     def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None, show_progress=True):
@@ -99,6 +99,7 @@ class cTSNE:
         :param gains: 用于迭代的一个参数
         :return:
         """
+        # print("\tearly-exaggerate: ", early_exaggerate)
         (n, d) = X.shape
         no_dims = self.n_component
         initial_momentum = 0.5

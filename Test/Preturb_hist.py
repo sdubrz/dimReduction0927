@@ -11,7 +11,7 @@ def preturb_scatter():
     :return:
     """
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\Iris\\"
-    path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.1)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
+    path = "E:\\Project\\result2019\\result1026without_straighten\\cTSNE\\coil20obj_16_3class\\yita(0.01)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
     X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
     (n, m) = X.shape
     X1 = np.loadtxt(path+"【weighted】x_add_v0.csv", dtype=np.float, delimiter=",")
