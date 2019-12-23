@@ -49,6 +49,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     # 计算每个点的邻域
     knn = Preprocess.knn(data, nbrs_k)
     np.savetxt(save_path+"knn.csv", knn, fmt="%d", delimiter=",")
+    Preprocess.knn_radius(data, knn, save_path=save_path)
 
     y_list_add = []  # 储存的元素是矩阵，把多次降维投影的结果矩阵存储起来
     y_list_sub = []
@@ -58,8 +59,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
 
     eigen_weights = np.ones((n, dim))  # 计算每个特征值占所有特征值和的比重
 
-    # MAX_EIGEN_COUNT = LocalPCA.eigen_number(data, knn, proportion=min_proportion, good_points=min_good_points, min_number=MIN_EIGEN_NUMBER)
-    # print("使用的特征向量个数为：", MAX_EIGEN_COUNT)
+    n_inter_perturb = 1000  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
 
     for i in range(0, MAX_EIGEN_COUNT):
         eigen_vectors_list.append(np.zeros((n, dim)))
@@ -85,8 +85,12 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     np.savetxt(save_path+"eigenvalues.csv", eigen_values, fmt="%f", delimiter=",")
     np.savetxt(save_path + "eigenweights.csv", eigen_weights, fmt="%f", delimiter=",")
 
+    mean_weight = np.mean(eigen_weights[:, 0])
+    print("平均的扰动权重是 ", mean_weight*yita)
+
     # 开始进行降维
     y = np.zeros((n, 2))
+    y_no_per = np.zeros((n, 2))
     if method_name == "pca" or method_name == "PCA":
         print('当前使用PCA方法')
         pca = PCA(n_components=2, copy=True, whiten=True)
@@ -116,8 +120,11 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     #     t_sne2 = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=y0)
     #     y = t_sne2.fit_transform(data)
     else:
-        # y = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=50000)
-        y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=50000)  # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
+        y = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=10000)
+        y_no_per = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=n_inter_perturb, y_random=y
+                                        , early_exaggeration=1.0, c_early_exage=False)
+        # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=50000)
+        # 第一次降维不需要设置初始的随机矩阵，以保证获得更好的结果
         # y = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, y_random=y_init)
 
     # 开始执行扰动计算
@@ -149,9 +156,12 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
             y_add_v = tsne.fit_transform(x_add_v)
             y_sub_v = tsne.fit_transform(x_sub_v)
         else:
-            y_add_v = DimReduce.dim_reduce(x_add_v, method=method_name, method_k=method_k, y_random=y, n_iters=1500, c_early_exage=False)
+            y_add_v = DimReduce.dim_reduce(x_add_v, method=method_name, method_k=method_k, y_random=y, n_iters=n_inter_perturb, c_early_exage=False)
             # y_sub_v = 2*y-y_add_v  # 胡乱加的，要改回去
-            y_sub_v = DimReduce.dim_reduce(x_sub_v, method=method_name, method_k=method_k, y_random=y, n_iters=1500, c_early_exage=False)
+            y_sub_v = DimReduce.dim_reduce(x_sub_v, method=method_name, method_k=method_k, y_random=y, n_iters=n_inter_perturb, c_early_exage=False)
+            add_quality = perturb_convergence(y, y_no_per, y_add_v)
+            sub_quality = perturb_convergence(y, y_no_per, y_sub_v)
+            print("第 %d 次扰动的收敛精度与扰动幅度比值分别为 %f 和 %f " % (loop_index, add_quality, sub_quality))
 
         y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)  # 这个是防止翻转的那种情况发生的。
         y_sub_v = SymbolAdjust.symbol_adjust(y, y_sub_v)
@@ -301,3 +311,26 @@ def divide_y(y_merge, MAX_EIGEN_COUNT, n):
         y_list_add.append(y_add)
         y_list_sub.append(y_sub)
     return y, y_list_add, y_list_sub
+
+
+def perturb_convergence(y, y_no_per, y_per):
+    """
+    计算扰动改变量与迭代精度之间的相对比值
+    :param y: 没有扰动的降维结果
+    :param y_no_per: 在y的基础上多迭代了几次的降维结果
+    :param y_per: 带有扰动的降维结果
+    :return:
+    """
+    (n, m) = y.shape
+    radius = np.zeros((n, 1))  # 收敛半径
+    perturb = np.zeros((n, 1))  # 扰动幅度
+    rate = np.zeros((n, 1))
+
+    for i in range(0, n):
+        radius[i] = np.linalg.norm(y[i, :] - y_no_per[i, :])
+        perturb[i] = np.linalg.norm(y_per[i, :] - y[i, :])
+        if perturb[i] != 0:
+            rate[i] = radius[i] / perturb[i]
+
+    rate_mean = np.mean(rate)
+    return rate_mean

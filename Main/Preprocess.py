@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from sklearn.neighbors import NearestNeighbors
+import matplotlib.pyplot as plt
 
 
 """
@@ -64,6 +65,27 @@ def knn(data, k):
     nbr_s = NearestNeighbors(n_neighbors=k, algorithm='ball_tree').fit(data)
     distance, index = nbr_s.kneighbors(data)
     return index
+
+
+def knn_radius(data, knn, save_path=None):
+    """
+    计算KNN的半径范围
+    :param data: 数据矩阵，每一行是一个点
+    :param knn: K近邻关系矩阵
+    :param save_path: 储存结果的路径
+    :return:
+    """
+    (n, k) = knn.shape
+    radius = np.zeros((n, 1))
+    for i in range(0, n):
+        radius[i] = np.linalg.norm(data[i, :] - data[knn[i, k-1], :])
+
+    print("KNN的平均半径是 ", np.mean(radius))
+    if not save_path is None:
+        np.savetxt(save_path+"knn_radius.csv", radius, fmt='%f', delimiter=",")
+        plt.hist(radius)
+        plt.savefig(save_path+"knn_radius.png")
+        plt.close()
 
 
 def check_filepath(path):

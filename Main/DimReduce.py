@@ -108,7 +108,7 @@ def dim_reduce_convergence(data, method="cTSNE", method_k=30, n_iter_init=10000,
     Y1 = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, c_early_exage=False)
 
     total_count = n_iter_init
-    MAX_LOOP_COUNT = 1000000
+    MAX_LOOP_COUNT = 200000
     while not convergence_screen(Y0, Y1) and total_count < MAX_LOOP_COUNT:
         print("\t当前已经迭代了 %d 次，尚未达到屏幕精度" % total_count)
         Y0_ = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=Y0, c_early_exage=False)
@@ -139,14 +139,14 @@ def convergence_screen(Y0, Y1):
     for i in range(0, n):
         d_norm[i] = np.linalg.norm(Y0[i, :] - Y1[i, :])
 
-    plt.scatter(Y0[:, 0], Y0[:, 1], c='r')
-    plt.scatter(Y1[:, 0], Y1[:, 1], c='b')
-    plt.show()
+    # plt.scatter(Y0[:, 0], Y0[:, 1], c='r')
+    # plt.scatter(Y1[:, 0], Y1[:, 1], c='b')
+    # plt.show()
 
     d_mean = np.mean(d_norm)
     if dx*dy != 0:
         print("\t", d_mean/dx, d_mean/dy)
-    if dx >= d_mean * 2000 or dy >= d_mean * 2000:
+    if dx >= d_mean * 1000 or dy >= d_mean * 1000:
         return True
     else:
         return False
