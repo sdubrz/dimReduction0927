@@ -55,10 +55,10 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
     elif method == 'MDS' or method == 'mds':
         print("[DimReduce]\t当前使用 MDS 降维方法")
         if y_random is None:
-            mds = MDS(n_components=2, max_iter=3000)
+            mds = MDS(n_components=2, max_iter=n_iters)
             y = mds.fit_transform(data)
         else:
-            mds = MDS(n_components=2, max_iter=3000)
+            mds = MDS(n_components=2, max_iter=n_iters)
             y = mds.fit_transform(data, init=y_random)
 
     elif method == 'isomap' or method == 'Isomap':
