@@ -108,17 +108,17 @@ def dim_reduce_convergence(data, method="cTSNE", method_k=30, n_iter_init=10000,
     Y1 = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, c_early_exage=False)
 
     total_count = n_iter_init
-    MAX_LOOP_COUNT = 200000
+    MAX_LOOP_COUNT = 500000
     while not convergence_screen(Y0, Y1) and total_count < MAX_LOOP_COUNT:
-        print("\t当前已经迭代了 %d 次，尚未达到屏幕精度" % total_count)
+        print("\t当前已经迭代了 %d 次，尚未达到规定精度" % total_count)
         Y0_ = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=Y0, c_early_exage=False)
         Y0 = Y0_
         Y1 = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, c_early_exage=False)
         total_count += n_iter_init
 
     if total_count >= MAX_LOOP_COUNT:
-        print('[DimReduce warning]: 仍然没有达到相对屏幕收敛的要求')
-    print('[DimReduce log]: 第一次迭代已经达到屏幕收敛精度，最终迭代的次数是 ', total_count)
+        print('[DimReduce warning]: 仍然没有达到相对规定的收敛的要求')
+    print('[DimReduce log]: 第一次迭代已经达到规定收敛精度，最终迭代的次数是 ', total_count)
 
     return Y0
 
@@ -146,7 +146,7 @@ def convergence_screen(Y0, Y1):
     d_mean = np.mean(d_norm)
     if dx*dy != 0:
         print("\t", d_mean/dx, d_mean/dy)
-    if dx >= d_mean * 1000 or dy >= d_mean * 1000:
+    if dx >= d_mean * 2000 or dy >= d_mean * 2000:
         return True
     else:
         return False
