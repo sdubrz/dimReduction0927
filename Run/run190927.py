@@ -99,7 +99,7 @@ def local_pca_calculated(path):
 
 def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
-        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9):
+        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9, y_precomputed=False):
     """"
 
     :param main_path: 主文件目录
@@ -125,7 +125,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                     如果一个点的dim+1邻域中有超过(dim+1)*MAX_NK[1]个点与这个点的k值差别超过了(MAX_K-dim-1)*MAX_NK[0]，则我们需要考虑采取措施
     :param P_matrix: 普通的线性降维方法的投影矩阵
     :param show_result: 在计算完成后，是否将结果画出来
-
+    :param y_precomputed: 第一次的降维结果是否已经计算过，因为有些情况下第一次降维耗时较长
     @author subbrz
     2018年12月20日
     """
@@ -194,13 +194,20 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         #                                                   save_path=save_path)
         print('暂时不推荐使用这种方法')
         return
+    elif method == "cTSNE":
+        y, y_list_add, y_list_sub = Preturb.perturb_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
+                                                               MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
+                                                               yita=yita, save_path=save_path, weighted=weighted,
+                                                               label=label, y_precomputed=y_precomputed)
     else:
         y, y_list_add, y_list_sub = Preturb.perturb_once_weighted(x, nbrs_k=nbrs_k, y_init=y_random,
                                                           method_k=method_k,
                                                             method_name=method,
                                                           yita=yita,
                                                           save_path=save_path, weighted=weighted, P_matrix=P_matrix,
-                                                            label=label, MAX_EIGEN_COUNT=max_eigen_numbers, min_proportion=min_proportion, min_good_points=min_good_points)
+                                                            label=label, MAX_EIGEN_COUNT=max_eigen_numbers,
+                                                                  min_proportion=min_proportion,
+                                                                  min_good_points=min_good_points)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
 
@@ -556,27 +563,28 @@ def run_test(data_name0=None):
         """
     start_time = time()
     main_path_without_normalize = "E:\\project\\result2019\\result1112without_normalize\\"  # 华硕
-    main_path_without_straighten = "E:\\project\\result2019\\result1026without_straighten\\"  # 华硕
+    main_path_without_straighten = "E:\\project\\result2019\\result1224\\"  # 华硕
     # main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
     # main_path = "F:\\result2019\\result0927\\"  # HP
-    main_path = "E:\\Project\\result2019\\result0927\\"  # 华硕
+    main_path = "E:\\Project\\result2019\\result1224\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "MNIST50mclass1_985"  # coil20obj_16_3class  MNIST50mclass1_985
+    data_name = "coil20obj_16_3class"  # coil20obj_16_3class  MNIST50mclass1_985
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.6
-    nbrs_k = 54
+    yita = 0.8
+    nbrs_k = 24
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True
     min_proportion = 0.9
     min_good_points = 0.9
+    y_precomputed = True
 
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
@@ -585,7 +593,7 @@ def run_test(data_name0=None):
     if data_name0 is None:
         show_result = True
 
-    show_result = False  # 临时修改
+    # show_result = False  # 临时修改
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
@@ -608,9 +616,12 @@ def run_test(data_name0=None):
         P_matrix[x_index, 0] = 1
         P_matrix[y_index, 1] = 1
 
-    last_path, eigen_numbers = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k, max_eigen_numbers=eigen_numbers,
+    last_path, eigen_numbers = main_run(main_path, data_name, nbrs_k=nbrs_k, yita=yita, method_k=method_k,
+                                        max_eigen_numbers=eigen_numbers,
         method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
-        do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result, min_proportion=min_proportion, min_good_points=min_good_points)
+        do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result,
+                                        min_proportion=min_proportion, min_good_points=min_good_points,
+                                        y_precomputed=y_precomputed)
 
     # if not(data_name0 is None):  # 规模化运行时，保存降维结果
     read_path = main_path + "datasets\\" + data_name + "\\"  # 保存降维结果，方便画艺术散点图

@@ -169,6 +169,70 @@ class cTSNE:
         # Return solution
         return Y
 
+    def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None):
+        """
+        计算对某个点进行改变之后所得的降维结果
+        :param X: 数据矩阵
+        :param preturb_index: 被改变的点的索引号
+        :param max_iter: 最大的迭代次数
+        :param y_random: 迭代开始的初始矩阵，必须输入
+        :return:
+        """
+        if y_random is None:
+            print("Error: 必须输入初始矩阵")
+            return
+
+        (n, m) = X.shape
+        no_dims = self.n_component
+        momentum = 0.8
+        eta = 500
+        min_gain = 0.01
+
+        Y = y_random.copy()
+        dY = np.zeros((n, no_dims))
+        iY = np.zeros((n, no_dims))
+        gains = np.ones((n, no_dims))
+
+        # Compute P-values
+        P = self.x2p(X, 1e-5, self.perplexity)
+        P = P + np.transpose(P)
+        P = P / np.sum(P)
+        P = np.maximum(P, 1e-12)
+
+        # Run iterations
+        for iter in range(max_iter):
+
+            # Compute pairwise affinities
+            sum_Y = np.sum(np.square(Y), 1)
+            num = -2. * np.dot(Y, Y.T)
+            num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
+            num[range(n), range(n)] = 0.
+            Q = num / np.sum(num)
+            Q = np.maximum(Q, 1e-12)
+
+            # Compute gradient
+            PQ = P - Q
+            # 计算被改变的点的 dY
+            i = preturb_index
+            dY[i, :] = np.sum(np.tile(PQ[:, i] * num[:, i], (no_dims, 1)).T * (Y[i, :] - Y), 0)
+
+            # Perform the update
+            gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
+            gains[gains < min_gain] = min_gain
+            iY = momentum * iY - eta * (gains * dY)
+            Y = Y + iY
+            Y = Y - np.tile(np.mean(Y, 0), (n, 1))
+
+            # if (iter+1) % 100 == 0:  # 收敛本不应该这样判断的
+            #     dd = np.linalg.norm(Y[i, :] - y_random[i, :])
+            #     dx = np.max(y_random[:, 0]) - np.min(y_random[:, 1])
+            #     dy = np.max(y_random[:, 1]) - np.min(y_random[:, 1])
+            #     if dd >= dx/2000 or dd >= dy/2000:
+            #         print("已提前收敛", iter)
+            #         break
+
+        return Y
+
 
 def run():
     path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Iris\\yita(0.05)nbrs_k(20)method_k(20)numbers(3)_b-spline_weighted\\"

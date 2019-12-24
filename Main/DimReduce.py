@@ -123,6 +123,25 @@ def dim_reduce_convergence(data, method="cTSNE", method_k=30, n_iter_init=10000,
     return Y0
 
 
+def dim_reduce_i(data, perturb_index, method="cTSNE", y_random=None, max_iter=1000, method_k=30):
+    """
+    重新计算某一个点的降维坐标，用于扰动使用，暂时只支持cTSNE，未来要添加 MDS
+    :param data: 数据矩阵，其中第perturb_index个点已经添加扰动
+    :param perturb_index: 被扰动的点的索引号
+    :param method: 降维方法名称
+    :param y_random: 初始的随机矩阵，不允许为空
+    :param max_iter: 最大的迭代次数
+    :return:
+    """
+    if method == "cTSNE":
+        t_sne = cTSNE.cTSNE(n_component=2, perplexity=method_k/3)
+        Y = t_sne.fit_transform_i(data, perturb_index, max_iter=max_iter, y_random=y_random)
+        return Y
+    else:
+        print("暂不支持该方法")
+        return
+
+
 def convergence_screen(Y0, Y1):
     """
     判断降维结果是否相对于屏幕收敛， 如果收敛则返回True
@@ -146,7 +165,7 @@ def convergence_screen(Y0, Y1):
     d_mean = np.mean(d_norm)
     if dx*dy != 0:
         print("\t", d_mean/dx, d_mean/dy)
-    if dx >= d_mean * 2000 or dy >= d_mean * 2000:
+    if dx >= d_mean * 1000 or dy >= d_mean * 1000:
         return True
     else:
         return False
