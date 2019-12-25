@@ -94,6 +94,7 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
         y = np.loadtxt(save_path+"y.csv", dtype=np.float, delimiter=",")
     else:
         y = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=10000)
+        np.savetxt(save_path+"y.csv", dtype=np.float, delimiter=",")
     y_no_per = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=n_inter_perturb, y_random=y
                                     , early_exaggeration=1.0, c_early_exage=False)
 
@@ -108,8 +109,8 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
         for i in range(0, n):
             x_add_v[i, :] = x_add_v[i, :] + yita*eigen_weights[i, loop_index] * eigenvectors[i, :]
             x_sub_v[i, :] = x_sub_v[i, :] - yita*eigen_weights[i, loop_index] * eigenvectors[i, :]
-            temp_y1 = DimReduce.dim_reduce_i(x_add_v, i, method=method_name, y_random=y, max_iter=200)
-            temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=200)
+            temp_y1 = DimReduce.dim_reduce_i(x_add_v, i, method=method_name, y_random=y, max_iter=100)
+            temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=100)
             y_add_v[i, :] = temp_y1[i, :]
             y_sub_v[i, :] = temp_y2[i, :]
 

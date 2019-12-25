@@ -147,6 +147,7 @@ def runProjection(projection, points, perturbations):
     date = date.split(".")[0]
     fileName = date + "_output.csv"
 
+    fileName = "output.csv"
     f = open(fileName, "w")
 
     n = len(projPts)
@@ -170,7 +171,9 @@ def runProjection(projection, points, perturbations):
 
 def run_test():
     inputFile = "IRIS.csv"
-    perturbFile = sys.argv[2]
+    print(sys.argv)
+    # perturbFile = sys.argv[2]
+    perturbFile = "all"
     projection = "tsne"
 
     if str.lower(projection) not in map(str.lower, projections):
@@ -208,6 +211,8 @@ def run_test():
         else:
             projection = projectionClasses[projInd]()
 
+    np.savetxt("inputPts.csv", inputPts, fmt='%f', delimiter=",")
+    # np.savetxt("perturbVects.csv", perturbVects, fmt='%f', delimiter=",")
     runProjection(projection, inputPts, perturbVects)
 
 
