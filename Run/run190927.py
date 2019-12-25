@@ -657,7 +657,7 @@ def run_test(data_name0=None):
     TrendJson.trend_json(last_path)
 
     # 画主成分的投影方向，如果是循环调用该函数的话，是默认不画图的
-    if data_name0 is None:
+    if data_name0 is None and show_result:
         MainDirector.draw_main_director(last_path, normalize=True, line_length=0.03)
 
     # 画KNN关系图
