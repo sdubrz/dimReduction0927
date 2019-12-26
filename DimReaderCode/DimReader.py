@@ -29,7 +29,7 @@ class runTsne:
             # initial run of tsne to get seed parameters
             t = tsne.tSNE(points, initial_dims=d / 2, perplexity=self.perplex)
             self.origY = t.runTSNE()
-            self.beta, self.iY = t.getFinalParameters()
+            self.beta, self.iY = t.getFinalParameters()  # beta与iY
 
         if (n != 0):
             procs = []

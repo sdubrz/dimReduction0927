@@ -14,6 +14,7 @@ class cTSNE:
         """
         self.n_component = n_component
         self.perplexity = perplexity
+        self.beta = None
 
     def Hbeta(self, D=np.array([]), beta=1.0):
         """
@@ -27,6 +28,27 @@ class cTSNE:
         H = np.log(sum_p) + beta * np.sum(D * P) / sum_p
         P = P / sum_p
         return H, P
+
+    def x2p_beta(self, X=np.array([]), tol=1e-5, perplexity=30.0, beta=None):
+        """
+        根据已有的beta计算概率矩阵
+        :param X: 数据矩阵
+        :param tol:
+        :param perplexity:
+        :param beta:
+        :return:
+        """
+        (n, d) = X.shape
+        sum_X = np.sum(np.square(X), 1)
+        D = np.add(np.add(-2 * np.dot(X, X.T), sum_X).T, sum_X)
+        P = np.zeros((n, n))
+
+        for i in range(0, n):
+            Di = D[i, np.concatenate((np.r_[0:i], np.r_[i + 1:n]))]
+            (H, thisP) = self.Hbeta(Di, beta[i])
+            P[i, np.concatenate((np.r_[0:i], np.r_[i + 1:n]))] = thisP
+
+        return P
 
     def x2p(self, X=np.array([]), tol=1e-5, perplexity=30.0):
         """
@@ -85,6 +107,7 @@ class cTSNE:
 
         # Return final P-matrix
         # print("\tMean value of sigma: %f" % np.mean(np.sqrt(1 / beta)))
+        self.beta = beta
         return P
 
     def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None, show_progress=True):
@@ -117,7 +140,7 @@ class cTSNE:
         if dY is None:
             dY = np.zeros((n, no_dims))
         if iY is None:
-            iY = np.zeros((n, no_dims))  # iY 和 gains可能会影响扰动效果，如果扰动效果不好，需要对这两个下手
+            iY = np.zeros((n, no_dims))  # 上次迭代的改变量
         if gains is None:
             gains = np.ones((n, no_dims))
 
@@ -169,13 +192,14 @@ class cTSNE:
         # Return solution
         return Y
 
-    def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None):
+    def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None, beta=None):
         """
         计算对某个点进行改变之后所得的降维结果
         :param X: 数据矩阵
         :param preturb_index: 被改变的点的索引号
         :param max_iter: 最大的迭代次数
         :param y_random: 迭代开始的初始矩阵，必须输入
+        :param beta: 每个点高斯分布的方差
         :return:
         """
         if y_random is None:
@@ -194,7 +218,10 @@ class cTSNE:
         gains = np.ones((n, no_dims))
 
         # Compute P-values
-        P = self.x2p(X, 1e-5, self.perplexity)
+        if beta is None:
+            P = self.x2p(X, 1e-5, self.perplexity)
+        else:
+            P = self.x2p_beta(X, 1e-5, self.perplexity, beta=beta)
         P = P + np.transpose(P)
         P = P / np.sum(P)
         P = np.maximum(P, 1e-12)

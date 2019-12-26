@@ -34,6 +34,8 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
     n = data_shape[0]
     dim = data_shape[1]
 
+    t_beta = None  # t-SNE计算概率时每个点的方差
+
     if method_k > n-1:
         print("[DimReduce]\t警告：输入的method_k值过大")
         method_k = n-1
@@ -51,6 +53,7 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
         print("[DimReduce]\t当前使用 c-t-SNE 降维方法")
         t_sne = cTSNE.cTSNE(n_component=2, perplexity=method_k/3)
         y = t_sne.fit_transform(data, max_iter=n_iters, y_random=y_random, early_exaggerate=c_early_exage, show_progress=False)
+        t_beta = t_sne.beta
 
     elif method == 'MDS' or method == 'mds':
         print("[DimReduce]\t当前使用 MDS 降维方法")
@@ -91,6 +94,8 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
     else:
         print("[DimReduce]\t未能匹配到合适的降维方法")
 
+    if not (t_beta is None):
+        return y, t_beta
     return y
 
 
@@ -104,26 +109,26 @@ def dim_reduce_convergence(data, method="cTSNE", method_k=30, n_iter_init=10000,
     :param y_random: 随机的初始矩阵
     :return:
     """
-    Y0 = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=y_random)
-    Y1 = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, c_early_exage=False)
+    Y0, beta = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=y_random)
+    Y1, beta = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, c_early_exage=False)
 
     total_count = n_iter_init
     MAX_LOOP_COUNT = 500000
     while not convergence_screen(Y0, Y1) and total_count < MAX_LOOP_COUNT:
         print("\t当前已经迭代了 %d 次，尚未达到规定精度" % total_count)
-        Y0_ = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=Y0, c_early_exage=False)
+        Y0_, beta_ = dim_reduce(data, method=method, method_k=method_k, n_iters=n_iter_init, y_random=Y0, c_early_exage=False)
         Y0 = Y0_
-        Y1 = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, c_early_exage=False)
+        Y1, beta_ = dim_reduce(data, method=method, method_k=method_k, n_iters=1000, y_random=Y0, c_early_exage=False)
         total_count += n_iter_init
 
     if total_count >= MAX_LOOP_COUNT:
         print('[DimReduce warning]: 仍然没有达到相对规定的收敛的要求')
     print('[DimReduce log]: 第一次迭代已经达到规定收敛精度，最终迭代的次数是 ', total_count)
 
-    return Y0
+    return Y0, beta
 
 
-def dim_reduce_i(data, perturb_index, method="cTSNE", y_random=None, max_iter=1000, method_k=30):
+def dim_reduce_i(data, perturb_index, method="cTSNE", y_random=None, max_iter=1000, method_k=30, beta=None):
     """
     重新计算某一个点的降维坐标，用于扰动使用，暂时只支持cTSNE，未来要添加 MDS
     :param data: 数据矩阵，其中第perturb_index个点已经添加扰动
@@ -131,11 +136,12 @@ def dim_reduce_i(data, perturb_index, method="cTSNE", y_random=None, max_iter=10
     :param method: 降维方法名称
     :param y_random: 初始的随机矩阵，不允许为空
     :param max_iter: 最大的迭代次数
+    :param beta: t-sne方法在计算概率时用的方差值
     :return:
     """
     if method == "cTSNE":
         t_sne = cTSNE.cTSNE(n_component=2, perplexity=method_k/3)
-        Y = t_sne.fit_transform_i(data, perturb_index, max_iter=max_iter, y_random=y_random)
+        Y = t_sne.fit_transform_i(data, perturb_index, max_iter=max_iter, y_random=y_random, beta=beta)
         return Y
     else:
         print("暂不支持该方法")
