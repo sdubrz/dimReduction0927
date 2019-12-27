@@ -137,8 +137,9 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
 
 def mnist_scatter():
     option = 2
-    path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_3class\\"
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_3class\\"
     # path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\fashion50mclass568\\"
+    path = "E:\\Project\\result2019\\result1224\\datasets\\coil20obj_16_3class\\"
     if option == 1:  # 直接画散点图
         Y = np.loadtxt(path + "tsne.csv", dtype=np.float, delimiter=",")
         label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
@@ -148,7 +149,7 @@ def mnist_scatter():
         plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=0.2, y_name="cTSNE72_0_5.csv", image_shape=(128, 128), colormap='yellow')
+        mnist_images(path, eta=0.15, y_name="lle.csv", image_shape=(128, 128), colormap='yellow')
 
 
 if __name__ == '__main__':

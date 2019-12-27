@@ -10,6 +10,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from Tools import SymbolAdjust
 from MyDR import cTSNE
+from Main import LLE_Perturb
 
 
 def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
@@ -208,6 +209,14 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
 
     mean_weight = np.mean(eigen_weights[:, 0])
     print("平均的扰动权重是 ", mean_weight*yita)
+
+    # LLE单独拿出来, 2019.12.27
+    if method_name == "lle" or method_name == "LLE":
+        print("现在LLE单独拿出来计算")
+        lle_p = LLE_Perturb.LLE_Perturb(data, method_k)
+        y = lle_p.Y
+        y_list_add, y_list_sub = lle_p.perturb_all(eigen_vectors_list, yita*eigen_weights)
+        return y, y_list_add, y_list_sub
 
     # 开始进行降维
     y = np.zeros((n, 2))
