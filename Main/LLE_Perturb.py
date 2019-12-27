@@ -1,6 +1,7 @@
 # LLE 降维方法添加扰动
 import numpy as np
 from MyDR import LLE
+import matplotlib.pyplot as plt
 
 
 class LLE_Perturb:
@@ -11,11 +12,14 @@ class LLE_Perturb:
         self.W = None
         self.Y = None
         self.n_samples = X.shape[0]
+        self.y_add_list = []
+        self.y_sub_list = []
+        self.lle = None
         self.init_y(X, method_k)
 
     def init_y(self, X, method_k):
-        lle = LLE.LocallyLinearEmbedding(n_components=2, n_neighbors=method_k)
-        self.Y = lle.fit_transform(X)
+        self.lle = LLE.LocallyLinearEmbedding(n_components=2, n_neighbors=method_k)
+        self.Y = self.lle.fit_transform(X)
 
     def perturb(self, vectors):
         """
@@ -57,7 +61,17 @@ class LLE_Perturb:
             y_add_list.append(y_add)
             y_sub_list.append(y_sub)
 
+        self.y_add_list = y_add_list
+        self.y_sub_list = y_sub_list
         return y_add_list, y_sub_list
+
+    def evaluation(self):
+        """
+        评估降维降维的质量，主要是检查根据邻居加权重构的结果与结果之间的差距
+        :return:
+        """
+        print("evaluation尚未实现")
+
 
 
 

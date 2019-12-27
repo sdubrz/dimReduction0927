@@ -62,7 +62,7 @@ def barycenter_weights(X, Z, reg=1e-3):
         G.flat[::Z.shape[1] + 1] += R
         w = solve(G, v, sym_pos=True)
         B[i, :] = w / np.sum(w)
-    # np.savetxt(path+"weights.csv", B, fmt='%f', delimiter=",")
+    # np.savetxt(path+"out_weights.csv", B, fmt='%f', delimiter=",")
     return B
 
 
@@ -351,8 +351,8 @@ def locally_linear_embedding(
 
     if method == 'standard':
         W = barycenter_kneighbors_graph(
-            nbrs, n_neighbors=n_neighbors, reg=reg, n_jobs=n_jobs)  # 找一下这个W是怎么算的，改成只算一个点的权重
-
+            nbrs, n_neighbors=n_neighbors, reg=reg, n_jobs=n_jobs)
+        # np.savetxt(path+"inter_W.csv", W.A, fmt='%f', delimiter=",")
         # we'll compute M = (I-W)'(I-W)
         # depending on the solver, we'll do this differently
         if M_sparse:

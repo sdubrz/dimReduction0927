@@ -160,10 +160,12 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     dim = data_shape[1]
 
     # 检查method_k的值是否合理
-    if method_k <= dim:
-        method_k = dim+1
-    elif method_k > n:
-        method_k = n
+    # if method_k <= dim:
+    #     print("所输入的K值过小")
+    #     method_k = dim+1
+    # elif method_k > n:
+    #     print("所输入的k值过大")
+    #     method_k = n
 
     if weighted:
         save_path = save_path + "【weighted】"
