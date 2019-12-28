@@ -575,9 +575,9 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "LLE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
     yita = 0.3
-    nbrs_k = 8
+    nbrs_k = 51
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"

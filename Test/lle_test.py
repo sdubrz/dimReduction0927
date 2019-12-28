@@ -30,14 +30,16 @@ def run2():
     调用根据 sklearn修改的LLE
     :return:
     """
-    path = "E:\\Project\\result2019\\result1224\\datasets\\Wine\\"
+    path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
+    # path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\fashion50mclass6_251\\"
     data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     X = Preprocess.normalize(data)
+    n_neighbours = 20
 
-    lle = LLE.LocallyLinearEmbedding(n_neighbors=15, n_components=2)
+    lle = LLE.LocallyLinearEmbedding(n_neighbors=n_neighbours, n_components=2)
     Y = lle.fit_transform(X)
-    # np.savetxt(path + "lle.csv", Y, fmt='%f', delimiter=",")
+    np.savetxt(path + "LLE"+str(n_neighbours)+".csv", Y, fmt='%f', delimiter=",")
     plt.scatter(Y[:, 0], Y[:, 1], c=label)
     plt.colorbar()
     ax = plt.gca()
