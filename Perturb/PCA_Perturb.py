@@ -111,6 +111,27 @@ class PCA_Perturb:
         :param weights:
         :return:
         """
+        eigen_number = len(vector_list)
+        n = self.n_samples
+        self.add_influence = np.zeros((n, eigen_number))
+        self.sub_influence = np.zeros((n, eigen_number))
+        y_add_list = []
+        y_sub_list = []
+
+        for loop_index in range(0, eigen_number):
+            vectors = vector_list[loop_index].copy()
+            for i in range(0, n):
+                vectors[i, :] = weights[i, loop_index] * vectors[i, :]
+            y_add, influence1 = self.perturb(vectors)
+            y_sub, influence2 = self.perturb(-1*vectors)
+            y_add_list.append(y_add)
+            y_sub_list.append(y_sub)
+            self.add_influence[:, loop_index] = influence1[:, 0]
+            self.sub_influence[:, loop_index] = influence2[:, 0]
+
+        self.y_add_list = y_add_list
+        self.y_sub_list = y_sub_list
+        return y_add_list, y_sub_list
 
 
 if __name__ == '__main__':

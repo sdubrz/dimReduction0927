@@ -199,6 +199,11 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
                                                                yita=yita, save_path=save_path, weighted=weighted,
                                                                label=label, y_precomputed=y_precomputed)
+    elif method == "PCA2":
+        y, y_list_add, y_list_sub = Preturb.perturb_pca_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
+                                                               MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
+                                                               yita=yita, save_path=save_path, weighted=weighted,
+                                                               label=label, y_precomputed=y_precomputed)
     else:
         y, y_list_add, y_list_sub = Preturb.perturb_once_weighted(x, nbrs_k=nbrs_k, y_init=y_random,
                                                           method_k=method_k,
@@ -569,15 +574,15 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2019\\result1224\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "MNIST50mclass1_985"  # coil20obj_16_3class  MNIST50mclass1_985
+    data_name = "coil20obj_16_3class"  # coil20obj_16_3class  MNIST50mclass1_985
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    method = "PCA2"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
     yita = 0.3
-    nbrs_k = 51
+    nbrs_k = 20
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
