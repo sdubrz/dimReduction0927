@@ -150,8 +150,6 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
 
     eigen_weights = np.ones((n, dim))  # 计算每个特征值占所有特征值和的比重
 
-    n_inter_perturb = 1000  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
-
     for i in range(0, MAX_EIGEN_COUNT):
         eigen_vectors_list.append(np.zeros((n, dim)))
 
@@ -184,6 +182,7 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
         print("暂时只支持 CTSNE 方法")
         return
 
+    n_inter_perturb = 200  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
     if y_precomputed:
         y = np.loadtxt(save_path+"y.csv", dtype=np.float, delimiter=",")
         beta = np.loadtxt(save_path+"beta.csv", dtype=np.float, delimiter=",")
@@ -211,8 +210,8 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
         for i in range(0, n):
             x_add_v[i, :] = x_add_v[i, :] + yita*eigen_weights[i, loop_index] * eigenvectors[i, :]
             x_sub_v[i, :] = x_sub_v[i, :] - yita*eigen_weights[i, loop_index] * eigenvectors[i, :]
-            temp_y1 = DimReduce.dim_reduce_i(x_add_v, i, method=method_name, y_random=y, max_iter=200)
-            temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=200)
+            temp_y1 = DimReduce.dim_reduce_i(x_add_v, i, method=method_name, y_random=y, max_iter=n_inter_perturb)
+            temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=n_inter_perturb)
             y_add_v[i, :] = temp_y1[i, :]
             y_sub_v[i, :] = temp_y2[i, :]
             influence_add[i, loop_index] = PointsInfluence.influence(y, temp_y1, i, yita*eigen_weights[i, loop_index])
@@ -245,7 +244,7 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
         mean_first_weight = np.mean(eigen_weights[:, 0])
         print('第一个特征值平均占比为： ', mean_first_weight)
 
-    return y, y_list_add, y_list_sub
+    return y, y_list_add, y_list_sub  # 把y改成了y_no_per
 
 
 def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
