@@ -13,6 +13,8 @@ from MyDR import cTSNE
 from Main import LLE_Perturb
 from Perturb import PCA_Perturb
 import matplotlib.pyplot as plt
+from Perturb import PointsInfluence
+import matplotlib.pyplot as plt
 
 
 def perturb_pca_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="PCA2",
@@ -195,6 +197,10 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
                                     , early_exaggeration=1.0, c_early_exage=False)
 
     # 开始执行扰动计算
+    influence_add = np.zeros((n, MAX_EIGEN_COUNT))
+    influence_sub = np.zeros((n, MAX_EIGEN_COUNT))
+    relative_influence_add = np.zeros((n, MAX_EIGEN_COUNT))
+    relative_influence_sub = np.zeros((n, MAX_EIGEN_COUNT))
     for loop_index in range(0, MAX_EIGEN_COUNT):
         eigenvectors = eigen_vectors_list[loop_index]
         np.savetxt(save_path+"eigenvectors"+str(loop_index)+".csv", eigenvectors, fmt="%f", delimiter=",")
@@ -209,12 +215,31 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
             temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=200)
             y_add_v[i, :] = temp_y1[i, :]
             y_sub_v[i, :] = temp_y2[i, :]
+            influence_add[i, MAX_EIGEN_COUNT] = PointsInfluence.influence(y, temp_y1, i, yita*eigen_weights[i, loop_index])
+            influence_sub[i, MAX_EIGEN_COUNT] = PointsInfluence.influence(y, temp_y2, i, yita*eigen_weights[i, loop_index])
+            relative_influence_add[i, MAX_EIGEN_COUNT] = PointsInfluence.relative_influence(y, temp_y1, i)
+            relative_influence_sub[i, MAX_EIGEN_COUNT] = PointsInfluence.relative_influence(y, temp_y2, i)
 
         add_quality = perturb_convergence(y, y_no_per, y_add_v)
         sub_quality = perturb_convergence(y, y_no_per, y_sub_v)
         print("第 %d 次扰动的收敛精度与扰动幅度比值分别为 %f 和 %f " % (loop_index, add_quality, sub_quality))
         y_list_add.append(y_add_v)
         y_list_sub.append(y_sub_v)
+
+    np.savetxt(save_path+"influence+.csv", influence_add, fmt='%f', delimiter=",")
+    np.savetxt(save_path+"influence-.csv", influence_sub, fmt='%f', delimiter=",")
+    np.savetxt(save_path+"relative_influence+.csv", relative_influence_add, fmt='%f', delimiter=",")
+    np.savetxt(save_path+"relative_influence-.csv", relative_influence_sub, fmt='%f', delimiter=",")
+
+    plt.hist(influence_add[:, 0])
+    plt.title("influence")
+    plt.savefig(save_path+"influence+.png")
+    plt.close()
+
+    plt.hist(relative_influence_add[:, 0])
+    plt.title("relative influence")
+    plt.savefig(save_path+"relative influence.png")
+    plt.close()
 
     if weighted:
         mean_first_weight = np.mean(eigen_weights[:, 0])
