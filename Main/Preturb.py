@@ -215,10 +215,10 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
             temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=200)
             y_add_v[i, :] = temp_y1[i, :]
             y_sub_v[i, :] = temp_y2[i, :]
-            influence_add[i, MAX_EIGEN_COUNT] = PointsInfluence.influence(y, temp_y1, i, yita*eigen_weights[i, loop_index])
-            influence_sub[i, MAX_EIGEN_COUNT] = PointsInfluence.influence(y, temp_y2, i, yita*eigen_weights[i, loop_index])
-            relative_influence_add[i, MAX_EIGEN_COUNT] = PointsInfluence.relative_influence(y, temp_y1, i)
-            relative_influence_sub[i, MAX_EIGEN_COUNT] = PointsInfluence.relative_influence(y, temp_y2, i)
+            influence_add[i, loop_index] = PointsInfluence.influence(y, temp_y1, i, yita*eigen_weights[i, loop_index])
+            influence_sub[i, loop_index] = PointsInfluence.influence(y, temp_y2, i, yita*eigen_weights[i, loop_index])
+            relative_influence_add[i, loop_index] = PointsInfluence.relative_influence(y, temp_y1, i)
+            relative_influence_sub[i, loop_index] = PointsInfluence.relative_influence(y, temp_y2, i)
 
         add_quality = perturb_convergence(y, y_no_per, y_add_v)
         sub_quality = perturb_convergence(y, y_no_per, y_sub_v)

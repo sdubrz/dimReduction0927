@@ -581,7 +581,7 @@ def run_test(data_name0=None):
         data_name = data_name0
 
     method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.6
+    yita = 0.8
     nbrs_k = 21
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
