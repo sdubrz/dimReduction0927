@@ -18,6 +18,7 @@ class PCA_Perturb:
         self.init_y()
         self.add_influence = None
         self.sub_influence = None
+        self.relative_influence = None
 
     def init_y(self):
         pca = PCA(n_components=2, copy=True)
@@ -82,6 +83,15 @@ class PCA_Perturb:
             s = s + np.linalg.norm(dY[i, :])
         s = s / (n-1)
         return s/eta
+
+    def relative_influence(self, Y, index):
+        """
+        计算相对影响力
+        :param Y:
+        :param index:
+        :return:
+        """
+        print("尚未实现")
 
     def perturb(self, vectors):
         """
