@@ -580,16 +580,16 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "PCA2"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.3
-    nbrs_k = 20
+    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    yita = 0.6
+    nbrs_k = 21
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True
     min_proportion = 0.9
     min_good_points = 0.9
-    y_precomputed = False  # y是否已经提前计算好
+    y_precomputed = True  # y是否已经提前计算好
 
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重

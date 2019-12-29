@@ -103,7 +103,7 @@ def perturb_pca_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
     return y, y_add_list, y_sub_list
 
 
-def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
+def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="cTSNE",
                  yita=0.1, save_path="", weighted=True, label=None, y_precomputed=False):
     """
     一个点一个点地添加扰动，不同的特征向量需要根据它们的特征值分配权重。该方法只适用于某些非线性降维方法。
@@ -205,8 +205,8 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
         for i in range(0, n):
             x_add_v[i, :] = x_add_v[i, :] + yita*eigen_weights[i, loop_index] * eigenvectors[i, :]
             x_sub_v[i, :] = x_sub_v[i, :] - yita*eigen_weights[i, loop_index] * eigenvectors[i, :]
-            temp_y1 = DimReduce.dim_reduce_i(x_add_v, i, method=method_name, y_random=y, max_iter=200, beta=beta)
-            temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=200, beta=beta)
+            temp_y1 = DimReduce.dim_reduce_i(x_add_v, i, method=method_name, y_random=y, max_iter=200)
+            temp_y2 = DimReduce.dim_reduce_i(x_sub_v, i, method=method_name, y_random=y, max_iter=200)
             y_add_v[i, :] = temp_y1[i, :]
             y_sub_v[i, :] = temp_y2[i, :]
 
