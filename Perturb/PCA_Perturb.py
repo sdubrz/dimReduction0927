@@ -116,7 +116,7 @@ class PCA_Perturb:
 
     def perturb_all(self, vector_list, weights):
         """
-        使用所有的特征向量作为扰动，尚未完成
+        使用所有的特征向量作为扰动
         :param vector_list:
         :param weights:
         :return:

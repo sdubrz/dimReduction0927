@@ -149,7 +149,7 @@ def mnist_scatter():
         plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=0.6, y_name="LLE20.csv", image_shape=(28, 28), colormap='gray')
+        mnist_images(path, eta=0.6, y_name="MDS.csv", image_shape=(28, 28), colormap='gray')  # 搜 反转
 
 
 if __name__ == '__main__':
