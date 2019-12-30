@@ -237,11 +237,18 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
 
     np.savetxt(save_path0+"influence_add.csv", mds_perturb.influence_add, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"influence_sub.csv", mds_perturb.influence_sub, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"relative_influence_add.csv", mds_perturb.relative_influence_add, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"relative_influence_sub.csv", mds_perturb.relative_influence_sub, fmt='%f', delimiter=",")
 
     influence = mds_perturb.influence_add[:, 0]
     plt.hist(influence)
     plt.title("influence")
     plt.savefig(save_path0+"influcen1+.png")
+    plt.close()
+    relative_influence = mds_perturb.relative_influence_add[:, 0]
+    plt.hist(relative_influence)
+    plt.title("relative influence")
+    plt.savefig(save_path0+"relative_influence1+.png")
     plt.close()
 
     return y, y_add_list, y_sub_list
