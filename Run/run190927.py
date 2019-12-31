@@ -25,6 +25,7 @@ from ClusterTest import clusterTest
 from SMMC_ import Clustering
 from Main import LocalPCA
 from Perturb import MDS_Perturb
+from Perturb import cTSNE_Perturb
 
 """"
 本程序是基于run190422.py修改的
@@ -196,10 +197,17 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         print('暂时不推荐使用这种方法')
         return
     elif method == "cTSNE":
-        y, y_list_add, y_list_sub = Preturb.perturb_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
-                                                               MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
-                                                               yita=yita, save_path=save_path, weighted=weighted,
-                                                               label=label, y_precomputed=y_precomputed)
+        # y, y_list_add, y_list_sub = Preturb.perturb_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
+        #                                                        MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
+        #                                                        yita=yita, save_path=save_path, weighted=weighted,
+        #                                                        label=label, y_precomputed=y_precomputed)
+        y, y_list_add, y_list_sub = cTSNE_Perturb.perturb_tsne_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
+                                                                       method_k=method_k,
+                                                                       MAX_EIGEN_COUNT=max_eigen_numbers,
+                                                                       method_name=method,
+                                                                       yita=yita, save_path=save_path,
+                                                                       weighted=weighted,
+                                                                       label=label, y_precomputed=y_precomputed)
     elif method == "PCA2":
         y, y_list_add, y_list_sub = Preturb.perturb_pca_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
                                                                MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
@@ -588,15 +596,15 @@ def run_test(data_name0=None):
         data_name = data_name0
 
     method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.4
-    nbrs_k = 12
+    yita = 0.82
+    nbrs_k = 18
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True
     min_proportion = 0.9
     min_good_points = 0.9
-    y_precomputed = False  # y是否已经提前计算好
+    y_precomputed = True  # y是否已经提前计算好
 
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重

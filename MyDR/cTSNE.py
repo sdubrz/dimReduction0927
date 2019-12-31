@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Main import Preprocess
 from Main import DimReduce
+from Main import Preprocess
 
 
 class cTSNE:
@@ -15,6 +16,8 @@ class cTSNE:
         self.n_component = n_component
         self.perplexity = perplexity
         self.beta = None
+        self.kl = []
+        self.final_kl = None
 
     def Hbeta(self, D=np.array([]), beta=1.0):
         """
@@ -110,7 +113,8 @@ class cTSNE:
         self.beta = beta
         return P
 
-    def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None, show_progress=True):
+    def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None,
+                      show_progress=False, first=False):
         """
         执行降维
         :param X: 高维数据
@@ -120,6 +124,7 @@ class cTSNE:
         :param dY: 用于迭代的一个参数
         :param iY: 用于迭代的一个参数
         :param gains: 用于迭代的一个参数
+        :param show_progress: 是否展示中间结果
         :return:
         """
         # print("\tearly-exaggerate: ", early_exaggerate)
@@ -127,8 +132,13 @@ class cTSNE:
         no_dims = self.n_component
         initial_momentum = 0.5
         final_momentum = 0.8
+        if not early_exaggerate:  # 20191231
+            final_momentum = 0.0
         eta = 500
         min_gain = 0.01
+
+        if show_progress:
+            self.kl = []
 
         # Initialize variables
         if y_random is None:
@@ -155,6 +165,9 @@ class cTSNE:
         # Run iterations
         for iter in range(max_iter):
 
+            if iter > 1000:  # 20191231
+                min_gain = 0.0
+
             # Compute pairwise affinities
             sum_Y = np.sum(np.square(Y), 1)
             num = -2. * np.dot(Y, Y.T)
@@ -162,6 +175,13 @@ class cTSNE:
             num[range(n), range(n)] = 0.
             Q = num / np.sum(num)
             Q = np.maximum(Q, 1e-12)
+
+            if show_progress:
+                c = np.sum(P*np.log(P/Q))
+                self.kl.append(c)
+
+            if iter == max_iter - 1:
+                self.final_kl = np.sum(P*np.log(P/Q))
 
             # Compute gradient
             PQ = P - Q
@@ -174,25 +194,36 @@ class cTSNE:
             else:
                 momentum = final_momentum
             gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
-            gains[gains < min_gain] = min_gain
+            if not early_exaggerate:  # 20191231
+                gains[gains < min_gain] = min_gain
             iY = momentum * iY - eta * (gains * dY)
             Y = Y + iY
             Y = Y - np.tile(np.mean(Y, 0), (n, 1))
 
             # Compute current value of cost function
-            if (iter + 1) % 1000 == 0 and show_progress:
-                C = np.sum(P * np.log(P / Q))
-                print("\tIteration %d: error is %f" % (iter + 1, C))
-                # print("eta = ", eta)
+            # if (iter + 1) % 1000 == 0 and show_progress:
+            #     C = np.sum(P * np.log(P / Q))
+            #     print("\tIteration %d: error is %f" % (iter + 1, C))
+            #     # print("eta = ", eta)
 
             # Stop lying about P-values
             if iter == 100 and early_exaggerate:
                 P = P / 4.
 
+        if show_progress:
+            kl = self.kl
+            # print(kl)
+            # plt.scatter(range(0, max_iter), kl)
+            if first:
+                plt.plot(kl[101:len(kl)])
+            else:
+                plt.plot(kl)
+            plt.title("KL divergence, min="+str(min(kl)))
+            plt.show()
         # Return solution
         return Y
 
-    def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None, beta=None):
+    def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None, beta=None, show_progress=False):
         """
         计算对某个点进行改变之后所得的降维结果
         :param X: 数据矩阵
@@ -200,6 +231,7 @@ class cTSNE:
         :param max_iter: 最大的迭代次数
         :param y_random: 迭代开始的初始矩阵，必须输入
         :param beta: 每个点高斯分布的方差
+        :param show_progress: 是否展示迭代过程中KL散度值的变化情况
         :return:
         """
         if y_random is None:
@@ -208,9 +240,10 @@ class cTSNE:
 
         (n, m) = X.shape
         no_dims = self.n_component
-        momentum = 0.8
+        # momentum = 0.8
+        momentum = 0.0
         eta = 500
-        min_gain = 0.01
+        # min_gain = 0.01
 
         Y = y_random.copy()
         dY = np.zeros((n, no_dims))
@@ -226,6 +259,9 @@ class cTSNE:
         P = P / np.sum(P)
         P = np.maximum(P, 1e-12)
 
+        if show_progress and max_iter > 1:
+            self.kl = []
+
         # Run iterations
         for iter in range(max_iter):
 
@@ -237,6 +273,10 @@ class cTSNE:
             Q = num / np.sum(num)
             Q = np.maximum(Q, 1e-12)
 
+            if show_progress and max_iter > 1:
+                c = np.sum(P*np.log(P/Q))
+                self.kl.append(c)
+
             # Compute gradient
             PQ = P - Q
             # 计算被改变的点的 dY
@@ -245,7 +285,7 @@ class cTSNE:
 
             # Perform the update
             gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
-            gains[gains < min_gain] = min_gain
+            # gains[gains < min_gain] = min_gain
             iY = momentum * iY - eta * (gains * dY)
             Y = Y + iY
             Y = Y - np.tile(np.mean(Y, 0), (n, 1))
@@ -257,6 +297,10 @@ class cTSNE:
             #     if dd >= dx/2000 or dd >= dy/2000:
             #         print("已提前收敛", iter)
             #         break
+
+        if show_progress and max_iter > 1:
+            plt.plot(self.kl)
+            plt.show()
 
         return Y
 
@@ -347,10 +391,78 @@ def perturbation_one_by_one():
     plt.show()
 
 
+def show_kl():
+    # 凡标有 20191231 者，需检查是否恢复
+    path = "E:\\Project\\DataLab\\t-SNETest\\coil20obj\\"
+    X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
+    (n, m) = X.shape
+    t_sne = cTSNE(n_component=2, perplexity=7.0)
+    n_iter = 1000
+    Y = t_sne.fit_transform(X, max_iter=n_iter, show_progress=True)
+    np.savetxt(path+"Y"+str(n_iter)+".csv", Y, fmt='%f', delimiter=",")
+    np.savetxt(path+"KL.csv", t_sne.kl, fmt='%f', delimiter=",")
+
+    vectors = np.loadtxt(path+"【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
+    weights = np.loadtxt(path+"【weighted】eigenweights.csv", dtype=np.float, delimiter=",")
+    eta = 0.8
+
+    index = 170
+    perturb_iter = 50
+
+    X2 = X.copy()
+    X2[index, :] = X2[index, :] + eta*weights[index, 0]*vectors[index, :]
+    Y2 = t_sne.fit_transform(X2, y_random=Y, show_progress=True, max_iter=perturb_iter, early_exaggerate=False)
+    # Y2 = t_sne.fit_transform_i(X2, preturb_index=index, max_iter=perturb_iter, y_random=Y, show_progress=True)
+    np.savetxt(path + "Y"+str(index)+"-" + str(perturb_iter) + ".csv", Y2, fmt='%f', delimiter=",")
+    np.savetxt(path+"perturb_kl.csv", t_sne.kl, fmt='%f', delimiter=",")
+
+    X3 = X.copy()
+    X3[index, :] = X3[index, :] - eta * weights[index, 0] * vectors[index, :]
+    Y3 = t_sne.fit_transform(X3, y_random=Y, show_progress=True, max_iter=perturb_iter, early_exaggerate=False)
+
+    plt.scatter(Y[:, 0], Y[:, 1], c='r')
+    plt.scatter(Y2[:, 0], Y2[:, 1], c='g')
+    plt.scatter(Y3[:, 0], Y3[:, 1], c='b')
+    plt.scatter(Y[index, 0], Y[index, 1], marker='p', c='yellow')
+    for i in range(0, n):
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue', alpha=0.6, linewidth=0.7)
+        plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue', alpha=0.6, linewidth=0.7)
+
+    plt.show()
+
+
+def knn_change():
+    path = "E:\\Project\\DataLab\\t-SNETest\\digits5_8\\"
+    X = np.loadtxt(path + "x.csv", dtype=np.float, delimiter=",")
+    (n, m) = X.shape
+
+    vectors = np.loadtxt(path + "【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
+    weights = np.loadtxt(path + "【weighted】eigenweights.csv", dtype=np.float, delimiter=",")
+    eta = 1.0
+    index = 1
+
+    k = 70
+    X2 = X.copy()
+    X2[index, :] = X2[index, :] + eta * weights[index, 0] * vectors[index, :]
+    knn1 = Preprocess.knn(X, k)
+    knn2 = Preprocess.knn(X2, k)
+
+    print(knn1[index, :])
+    print(knn2[index, :])
+
+    keep = 0
+    for i in range(0, k):
+        if knn1[index, i] in knn2[index, :]:
+            keep = 1 + keep
+    print("keep = ", keep)
+
+
 if __name__ == '__main__':
     # dr_3d()
     # perturbation_one_by_one()
-    run()
+    # run()
+    show_kl()
+    # knn_change()
 
 
 

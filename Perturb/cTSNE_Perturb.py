@@ -1,15 +1,17 @@
-# MDS的扰动方式实现
+# cTSNE 的扰动实现
 import numpy as np
-from sklearn.manifold import MDS
 import matplotlib.pyplot as plt
+from MyDR import cTSNE
 from Main import Preprocess
 from Main import LocalPCA
 from Main import processData as pD
+from Perturb import PointsInfluence
 
 
-class MDSPerturb:
-    def __init__(self, X):
+class cTSNEPerturb:
+    def __init__(self, X, k):
         self.X = X
+        self.k = k
         self.n_samples = X.shape[0]
         self.Y = None
         self.y_add_list = []
@@ -21,87 +23,8 @@ class MDSPerturb:
         self.init_y()
 
     def init_y(self):
-        n_inters = 3000
-        mds = MDS(n_components=2, max_iter=n_inters)
-        Y0 = mds.fit_transform(self.X)
-        Y1 = mds.fit_transform(self.X, init=Y0)
-
-        total_inters = n_inters
-        while not self.convergence_screen(Y0, Y1):
-            Y0 = mds.fit_transform(self.X, init=Y1)
-            Y1 = mds.fit_transform(self.X, init=Y0)
-            total_inters += n_inters
-            if total_inters >= 10000:
-                break
-        if not self.convergence_screen(Y0, Y1):
-            print("[MDS Perturb]:\tinit_y最终未能打到收敛精度")
-        self.Y = Y0
-
-    def convergence_screen(self, Y0, Y1, quality=1000):
-        """
-        判断降维结果是否达到一定的收敛精度
-        :param Y0:
-        :param Y1:
-        :return:
-        """
-        (n, m) = Y0.shape
-        dx = np.max(Y0[:, 0]) - np.min(Y0[:, 0])
-        dy = np.max(Y0[:, 1]) - np.min(Y0[:, 1])
-        d_screen = max(dx, dy)
-
-        d_norm = np.zeros((n, 1))
-        for i in range(0, n):
-            d_norm[i] = np.linalg.norm(Y0[i, :] - Y1[i, :])
-        d_mean = np.mean(d_norm)
-        if dx * dy != 0:
-            print("\t", d_mean / dx, d_mean / dy)
-        if dx >= d_mean * 1000 or dy >= d_mean * 1000:
-            return True
-        else:
-            return False
-
-    def influence(self, Y, index, eta):
-        """
-        计算第 index 个点的影响力
-        :param Y: 对第 index 个点扰动之后的降维结果
-        :param index: 当前点的索引号
-        :param eta: 扰动向量的长度
-        :return:
-        """
-        if eta == 0:
-            return 0
-        s = 0
-        n = self.n_samples
-        dY = Y - self.Y
-        for i in range(0, n):
-            if i == index:
-                continue
-            s = s + np.linalg.norm(dY[i, :])
-        s = s / (n-1)
-        return s/eta
-
-    def relative_influence(self, Y, index):
-        """
-        计算某个点的相对影响力，计算方式为 其余的点的平均降维改变量除以当前点的降维改变量
-        :param Y: 某一次扰动后的降维结果
-        :param index: 被扰动的点的索引号
-        :return:
-        """
-        n = self.n_samples
-        dY = Y - self.Y
-
-        d_i = np.linalg.norm(dY[index, :])
-        if d_i == 0:
-            return 0
-
-        s = 0
-        for i in range(0, n):
-            if i == index:
-                continue
-            s = s + np.linalg.norm(dY[i, :])
-        s = s / (n-1)
-        s = s / d_i
-        return s
+        t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.k/3.0)
+        self.Y = t_sne.fit_transform(self.X, max_iter=1000)
 
     def perturb(self, vectors):
         """
@@ -117,11 +40,11 @@ class MDSPerturb:
         for i in range(0, n):
             X = self.X.copy()
             X[i, :] = X[i, :] + vectors[i, :]
-            mds = MDS(n_components=2, n_init=1)
-            temp_y = mds.fit_transform(X, init=self.Y)
+            t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.k/3.0)
+            temp_y = t_sne.fit_transform(X, y_random=self.Y, early_exaggerate=False, max_iter=20)
             Y[i, :] = temp_y[i, :]
-            influence[i] = self.influence(temp_y, i, np.linalg.norm(vectors[i, :]))
-            relative_influence[i] = self.relative_influence(temp_y, i)
+            influence[i] = PointsInfluence.influence(self.Y, temp_y, i, np.linalg.norm(vectors[i, :]))
+            relative_influence[i] = PointsInfluence.relative_influence(self.Y, temp_y, i)
 
         return Y, influence, relative_influence
 
@@ -159,11 +82,11 @@ class MDSPerturb:
         return y_add_list, y_sub_list
 
 
-def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
+def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="cTSNE",
                  yita=0.1, save_path="", weighted=True, label=None, y_precomputed=False):
     """
         一个点一个点地添加扰动，不同的特征向量需要根据它们的特征值分配权重。该方法只适用于某些非线性降维方法。
-        该方法目前只支持新的MDS方法，即 method=="MDS"
+        该方法目前只支持新的cTSNE方法，即 method=="cTSNE"
         :param data:经过normalize之后的原始数据矩阵，每一行是一个样本
         :param nbrs_k:计算 local PCA的 k 值
         :param y_init:某些降维方法所需的初始随机矩阵
@@ -177,7 +100,7 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
         :param y_precomputed: y是否已经提前计算好，如果是，则直接从文件中读取
         :return:
         """
-    print("MDS one by one")
+    print("t-SNE one by one")
     data_shape = data.shape
     n = data_shape[0]
     dim = data_shape[1]
@@ -228,30 +151,27 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
     mean_weight = np.mean(eigen_weights[:, 0])
     print("平均的扰动权重是 ", mean_weight * yita)
 
-    if not method_name == "MDS":
-        print("该方法只支持 MDS 降维方法")
+    if not method_name == "cTSNE":
+        print("该方法只支持 cTSNE 降维方法")
 
-    mds_perturb = MDSPerturb(data)
-    y = mds_perturb.Y
-    y_add_list, y_sub_list = mds_perturb.perturb_all(eigen_vectors_list, yita*eigen_weights)
+    tsne_perturb = cTSNEPerturb(data, method_k)
+    y = tsne_perturb.Y
+    y_add_list, y_sub_list = tsne_perturb.perturb_all(eigen_vectors_list, yita*eigen_weights)
 
-    np.savetxt(save_path0+"influence_add.csv", mds_perturb.influence_add, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"influence_sub.csv", mds_perturb.influence_sub, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"relative_influence_add.csv", mds_perturb.relative_influence_add, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"relative_influence_sub.csv", mds_perturb.relative_influence_sub, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"influence_add.csv", tsne_perturb.influence_add, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"influence_sub.csv", tsne_perturb.influence_sub, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"relative_influence_add.csv", tsne_perturb.relative_influence_add, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"relative_influence_sub.csv", tsne_perturb.relative_influence_sub, fmt='%f', delimiter=",")
 
-    influence = mds_perturb.influence_add[:, 0]
+    influence = tsne_perturb.influence_add[:, 0]
     plt.hist(influence)
     plt.title("influence")
     plt.savefig(save_path0+"influcen1+.png")
     plt.close()
-    relative_influence = mds_perturb.relative_influence_add[:, 0]
+    relative_influence = tsne_perturb.relative_influence_add[:, 0]
     plt.hist(relative_influence)
     plt.title("relative influence")
     plt.savefig(save_path0+"relative_influence1+.png")
     plt.close()
 
     return y, y_add_list, y_sub_list
-
-
-

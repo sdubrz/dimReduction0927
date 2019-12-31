@@ -15,6 +15,7 @@ from Perturb import PCA_Perturb
 import matplotlib.pyplot as plt
 from Perturb import PointsInfluence
 import matplotlib.pyplot as plt
+from MyDR import cTSNE
 
 
 def perturb_pca_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="PCA2",
@@ -182,16 +183,18 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
         print("暂时只支持 CTSNE 方法")
         return
 
-    n_inter_perturb = 200  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
+    n_inter_perturb = 5  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
     if y_precomputed:
         y = np.loadtxt(save_path+"y.csv", dtype=np.float, delimiter=",")
         beta = np.loadtxt(save_path+"beta.csv", dtype=np.float, delimiter=",")
     # elif method_name == "cTSNE":
     #     t_sne = cTSNE.cTSNE(n_component=)
     else:
-        y, beta = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=10000)
+        # y, beta = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=10000)
+        t_sne = cTSNE.cTSNE(n_component=2, perplexity=method_k/3)
+        y = t_sne.fit_transform(data, max_iter=1000)
         np.savetxt(save_path+"y.csv", y, fmt='%f', delimiter=",")
-        np.savetxt(save_path+"beta.csv", beta, fmt='%f', delimiter=",")
+        np.savetxt(save_path+"beta.csv", t_sne.beta, fmt='%f', delimiter=",")
     y_no_per, beta_ = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=n_inter_perturb, y_random=y
                                     , early_exaggeration=1.0, c_early_exage=False)
 
