@@ -18,6 +18,7 @@ class cTSNE:
         self.beta = None
         self.kl = []
         self.final_kl = None
+        self.final_iter = 0
 
     def Hbeta(self, D=np.array([]), beta=1.0):
         """
@@ -114,7 +115,7 @@ class cTSNE:
         return P
 
     def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None,
-                      show_progress=False, first=False):
+                      show_progress=False, min_kl=None):
         """
         执行降维
         :param X: 高维数据
@@ -125,6 +126,7 @@ class cTSNE:
         :param iY: 用于迭代的一个参数
         :param gains: 用于迭代的一个参数
         :param show_progress: 是否展示中间结果
+        :param min_kl: 当KL散度小于该值时停止迭代
         :return:
         """
         # print("\tearly-exaggerate: ", early_exaggerate)
@@ -183,6 +185,11 @@ class cTSNE:
             if iter == max_iter - 1:
                 self.final_kl = np.sum(P*np.log(P/Q))
 
+            if not (min_kl is None) and iter > 1:
+                c = np.sum(P*np.log(P/Q))
+                if c <= min_kl:
+                    break
+
             # Compute gradient
             PQ = P - Q
             for i in range(n):
@@ -210,14 +217,12 @@ class cTSNE:
             if iter == 100 and early_exaggerate:
                 P = P / 4.
 
+        self.final_iter = iter
         if show_progress:
             kl = self.kl
             # print(kl)
             # plt.scatter(range(0, max_iter), kl)
-            if first:
-                plt.plot(kl[101:len(kl)])
-            else:
-                plt.plot(kl)
+            plt.plot(kl)
             plt.title("KL divergence, min="+str(min(kl)))
             plt.show()
         # Return solution

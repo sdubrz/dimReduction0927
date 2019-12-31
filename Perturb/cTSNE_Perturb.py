@@ -20,11 +20,15 @@ class cTSNEPerturb:
         self.influence_sub = None
         self.relative_influence_add = None
         self.relative_influence_sub = None
+        self.n_iters_add = None
+        self.n_iters_sub = None
+        self.init_kl = None
         self.init_y()
 
     def init_y(self):
         t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.k/3.0)
         self.Y = t_sne.fit_transform(self.X, max_iter=1000)
+        self.init_kl = t_sne.final_kl
 
     def perturb(self, vectors):
         """
@@ -36,17 +40,21 @@ class cTSNEPerturb:
         Y = np.zeros((n, 2))
         influence = np.zeros((n, 1))  # 每个点的影响力
         relative_influence = np.zeros((n, 1))  # 每个点的相对影响力
+        n_iters = np.zeros((n, 1))
 
         for i in range(0, n):
+            # print(i)
             X = self.X.copy()
             X[i, :] = X[i, :] + vectors[i, :]
             t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.k/3.0)
-            temp_y = t_sne.fit_transform(X, y_random=self.Y, early_exaggerate=False, max_iter=20)
+            # temp_y = t_sne.fit_transform(X, y_random=self.Y, early_exaggerate=False, max_iter=20)
+            temp_y = t_sne.fit_transform(X, y_random=self.Y, early_exaggerate=False, max_iter=50, min_kl=self.init_kl)
             Y[i, :] = temp_y[i, :]
             influence[i] = PointsInfluence.influence(self.Y, temp_y, i, np.linalg.norm(vectors[i, :]))
             relative_influence[i] = PointsInfluence.relative_influence(self.Y, temp_y, i)
+            n_iters[i] = t_sne.final_iter
 
-        return Y, influence, relative_influence
+        return Y, influence, relative_influence, n_iters
 
     def perturb_all(self, vector_list, weights):
         """
@@ -61,21 +69,26 @@ class cTSNEPerturb:
         self.influence_sub = np.zeros((n, eigen_number))
         self.relative_influence_add = np.zeros((n, eigen_number))
         self.relative_influence_sub = np.zeros((n, eigen_number))
+        self.n_iters_add = np.zeros((n, eigen_number))
+        self.n_iters_sub = np.zeros((n, eigen_number))
         y_add_list = []
         y_sub_list = []
 
         for loop_index in range(0, eigen_number):
+            print("eigen index:", loop_index)
             vectors = vector_list[loop_index].copy()
             for i in range(0, n):
                 vectors[i, :] = weights[i, loop_index] * vectors[i, :]
-            y_add, influence1, relative_influence1 = self.perturb(vectors)
-            y_sub, influence2, relative_influence2 = self.perturb(-1*vectors)
+            y_add, influence1, relative_influence1, n_iters1 = self.perturb(vectors)
+            y_sub, influence2, relative_influence2, n_iters2 = self.perturb(-1*vectors)
             y_add_list.append(y_add)
             y_sub_list.append(y_sub)
             self.influence_add[:, loop_index] = influence1[:, 0]
             self.influence_sub[:, loop_index] = influence2[:, 0]
             self.relative_influence_add[:, loop_index] = relative_influence1[:, 0]
             self.relative_influence_sub[:, loop_index] = relative_influence2[:, 0]
+            self.n_iters_add[:, loop_index] = n_iters1[:, 0]
+            self.n_iters_sub[:, loop_index] = n_iters2[:, 0]
 
         self.y_add_list = y_add_list
         self.y_sub_list = y_sub_list
@@ -162,6 +175,8 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     np.savetxt(save_path0+"influence_sub.csv", tsne_perturb.influence_sub, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"relative_influence_add.csv", tsne_perturb.relative_influence_add, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"relative_influence_sub.csv", tsne_perturb.relative_influence_sub, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"n_iters_add.csv", tsne_perturb.n_iters_add, fmt='%d', delimiter=",")
+    np.savetxt(save_path0+"n_iters_sub.csv", tsne_perturb.n_iters_sub, fmt='%d', delimiter=",")
 
     influence = tsne_perturb.influence_add[:, 0]
     plt.hist(influence)
@@ -172,6 +187,10 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     plt.hist(relative_influence)
     plt.title("relative influence")
     plt.savefig(save_path0+"relative_influence1+.png")
+    plt.close()
+    plt.hist(tsne_perturb.n_iters_add[:, 0])
+    plt.title("n_iters")
+    plt.savefig(save_path0 + "n_iters1+.png")
     plt.close()
 
     return y, y_add_list, y_sub_list
