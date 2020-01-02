@@ -60,6 +60,35 @@ def run2():
     plt.show()
 
 
+def run3():
+    path = "E:\\Project\\DataLab\\t-SNETest\\Wine\\"
+    X = np.loadtxt(path + "x.csv", dtype=np.float, delimiter=",")
+    (n, m) = X.shape
+    n_iter = 10000
+
+    mds = MDS(n_components=2, max_iter=n_iter)
+    Y = mds.fit_transform(X)
+
+    vectors = np.loadtxt(path + "【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
+    weights = np.loadtxt(path + "【weighted】eigenweights.csv", dtype=np.float, delimiter=",")
+    eta = 0.8
+
+    index = 100
+    perturb_iter = 10000
+    X2 = X.copy()
+    X2[index, :] = X2[index, :] + eta * weights[index, 0] * vectors[index, :]
+
+    mds2 = MDS(n_components=2, n_init=1, max_iter=perturb_iter)
+    Y2 = mds2.fit_transform(X2, init=Y)
+
+    plt.scatter(Y[:, 0], Y[:, 1], c='r')
+    plt.scatter(Y2[:, 0], Y2[:, 1], c='b')
+    plt.scatter(Y[index, 0], Y[index, 1], marker='p', c='yellow')
+    for i in range(0, n):
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue', alpha=0.7, linewidth=0.8)
+    plt.show()
+
+
 if __name__ == '__main__':
-    run2()
+    run3()
 
