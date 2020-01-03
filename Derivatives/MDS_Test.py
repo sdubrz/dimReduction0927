@@ -117,7 +117,7 @@ def Jyx(H, J):
 
 
 def run1():
-    path = "E:\\Project\\result2019\\DerivationTest\\Iris\\"
+    path = "E:\\Project\\result2019\\DerivationTest\\Wine\\"
     data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     X = Preprocess.normalize(data)
@@ -150,7 +150,7 @@ def run1():
     dX[0, 0] = 0.2
     dX_ = dX.reshape((n*d, 1))
 
-    dY = np.matmul(P, dX_)  # 这个乘法有问题
+    dY = np.matmul(P, dX_)
 
     np.savetxt(path + "dY.csv", dY, fmt='%f', delimiter=",")
     Y2 = Y + dY.reshape((n, 2))
@@ -171,17 +171,115 @@ def run1():
     plt.show()
 
 
-def shape_test():
-    X = np.array([[1, 2, 3],
-                  [4, 5, 6],
-                  [7, 8, 9],
-                  [10, 11, 12]])
-    X2 = X.reshape((12, 1))
-    print(X2)
-    X3 = X2.reshape((6, 2))
-    print(X3)
+def run2():
+    """
+    直接读取已经计算过的 P矩阵进行实验
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\Wine\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    X = Preprocess.normalize(data)
+    (n, d) = X.shape
+    Y = np.loadtxt(path+"Y.csv", dtype=np.float, delimiter=",")
+    P = np.loadtxt(path+"P.csv", dtype=np.float, delimiter=",")
+
+    dX = np.zeros((n, d))
+    index = 170
+    dX[:, 5] = 0.2
+    dX_ = dX.reshape((n * d, 1))
+
+    dY = np.matmul(P, dX_)
+
+    np.savetxt(path + "dY.csv", dY, fmt='%f', delimiter=",")
+    Y2 = Y + dY.reshape((n, 2))
+    # Y3 = Y - dY.reshape((n, 2))
+
+    np.savetxt(path + "dX.csv", dX, fmt='%f', delimiter=",")
+    np.savetxt(path + "dX_.csv", dX_, fmt='%f', delimiter=",")
+
+    np.savetxt(path + "Y+.csv", Y2, fmt='%f', delimiter=",")
+    # np.savetxt(path + "Y-.csv", Y3, fmt='%f', delimiter=",")
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    # plt.scatter(Y[index, 0], Y[index, 1], marker='p', c='orange')
+    for i in range(0, n):
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
+        # plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue', alpha=0.7, linewidth=0.8)
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.show()
+
+
+def dim_perturb_run():
+    """
+    用某一个维度进行扰动
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\Iris\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    X = Preprocess.normalize(data)
+    (n, d) = X.shape
+    Y = np.loadtxt(path + "Y.csv", dtype=np.float, delimiter=",")
+    P = np.loadtxt(path + "P.csv", dtype=np.float, delimiter=",")
+
+    Y2 = np.zeros((n, 2))
+    dim = 3  # 扰动的属性号
+    for i in range(0, n):
+        dX = np.zeros((n, d))
+        dX[i, dim] = 0.1
+        dX_ = dX.reshape((n * d, 1))
+        dY = np.matmul(P, dX_)
+        temp_y = Y + dY.reshape((n, 2))
+        Y2[i, :] = temp_y[i, :]
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    for i in range(0, n):
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.title(str(dim))
+    plt.show()
+
+
+def vectors_perturb_run():
+    """
+    特征向量作为扰动向量
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\Iris\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    X = Preprocess.normalize(data)
+    (n, d) = X.shape
+    Y = np.loadtxt(path + "Y.csv", dtype=np.float, delimiter=",")
+    P = np.loadtxt(path + "P.csv", dtype=np.float, delimiter=",")
+    vectors = np.loadtxt(path+"【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
+
+    Y2 = np.zeros((n, 2))
+    Y3 = np.zeros((n, 2))
+    for i in range(0, n):
+        dX = np.zeros((n, d))
+        dX[i, :] = vectors[i, :] * 0.04
+        dX_ = dX.reshape((n * d, 1))
+        dY = np.matmul(P, dX_)
+        temp_y = Y + dY.reshape((n, 2))
+        temp_y3 = Y - dY.reshape((n, 2))
+        Y2[i, :] = temp_y[i, :]
+        Y3[i, :] = temp_y3[i, :]
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    for i in range(0, n):
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
+        plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue')
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.show()
 
 
 if __name__ == '__main__':
-    run1()
+    # run2()
     # shape_test()
+    # dim_perturb_run()
+    vectors_perturb_run()

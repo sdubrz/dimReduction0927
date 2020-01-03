@@ -24,7 +24,7 @@ from Tools import VisualizationKNN
 from ClusterTest import clusterTest
 from SMMC_ import Clustering
 from Main import LocalPCA
-from Perturb import MDS_Perturb
+from Perturb2020 import MDS_Perturb
 from Perturb import cTSNE_Perturb
 
 """"
@@ -583,21 +583,21 @@ def run_test(data_name0=None):
         """
     start_time = time()
     main_path_without_normalize = "E:\\project\\result2019\\result1112without_normalize\\"  # 华硕
-    main_path_without_straighten = "E:\\project\\result2019\\result1224\\"  # 华硕
+    main_path_without_straighten = "E:\\Project\\result2020\\result0103\\"  # 华硕
     # main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
     # main_path = "F:\\result2019\\result0927\\"  # HP
-    main_path = "E:\\Project\\result2019\\result1224\\"  # 华硕
+    main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "digits5_8"  # coil20obj_16_3class  MNIST50mclass1_985
+    data_name = "MNIST50mclass1_985"  # coil20obj_16_3class  MNIST50mclass1_985
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 1.0
-    nbrs_k = 70
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    yita = 0.1
+    nbrs_k = 51
     method_k = nbrs_k
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
