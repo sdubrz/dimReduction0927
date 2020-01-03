@@ -7,6 +7,7 @@ from Main import LocalPCA
 from Main import processData as pD
 from Derivatives.MDS_Derivative import MDS_Derivative
 from Derivatives.VectorPerturb import VectorPerturb
+import time
 
 
 class MDSPerturb:
@@ -20,9 +21,12 @@ class MDSPerturb:
         self.init_y()
 
     def init_y(self):
+        time1 = time.time()
         mds = MDS(n_components=2, max_iter=3000)
         Y = mds.fit_transform(self.X)
         self.Y = Y
+        time2 = time.time()
+        print("初始降维用时为, ", time2-time1)
 
     def perturb(self, vectors_list, weights):
         """
@@ -31,11 +35,15 @@ class MDSPerturb:
         :param weights:
         :return:
         """
+        time1 = time.time()
         derivative = MDS_Derivative()
         self.P = derivative.getP(self.X, self.Y)
-        print("导数矩阵已经计算完成")
+        time2 = time.time()
+        print("导数矩阵已经计算完成，用时为 ", time2 - time1)
         vector_perturb = VectorPerturb(self.Y, self.P)
         self.y_add_list, self.y_sub_list = vector_perturb.perturb_all(vectors_list, weights)
+        time3 = time.time()
+        print("扰动已经计算完成，用时 ", time3 - time2)
 
         return self.y_add_list, self.y_sub_list
 
