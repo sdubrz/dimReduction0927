@@ -171,10 +171,10 @@ class cTSNE:
                 min_gain = 0.0
 
             # Compute pairwise affinities
-            sum_Y = np.sum(np.square(Y), 1)
+            sum_Y = np.sum(np.square(Y), 1)  # square是将矩阵中的每个元素计算平方，sum_Y里面存储的是每个点的模的平方
             num = -2. * np.dot(Y, Y.T)
             num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
-            num[range(n), range(n)] = 0.
+            num[range(n), range(n)] = 0.  # 把对角线设置为0
             Q = num / np.sum(num)
             Q = np.maximum(Q, 1e-12)
 
