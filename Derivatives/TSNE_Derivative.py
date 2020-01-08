@@ -198,28 +198,28 @@ def derivative_X(X, Y, Dy, beta, P0):
                 for k in range(0, n):
                     if k == a:
                         continue
-                    dp_ak = (X[a, d]-X[k, d])*(P0[k, a]-1)*P0[k, a]*beta[k]  # P0[k, a]即为以k为中心时的概率
+                    dp_ak = (X[a, d]-X[k, d])*(P0[k, a]-1)*P0[k, a]*beta[k]*2  # P0[k, a]即为以k为中心时的概率
                     dp_ka_right = 0
                     for j in range(0, n):
                         if j == a:
                             continue
                         dp_ka_right = dp_ka_right + X[j, d]*P0[a, j]
-                    dp_ka = P0[a, k]*(X[k, d]-dp_ka_right)*beta[a]
+                    dp_ka = P0[a, k]*(X[k, d]-dp_ka_right)*beta[a]*2
                     dp = (dp_ka + dp_ak) / (2*n)
                     d_phi = (Y[a, b]-Y[k, b])*dp/(1+Dy[a, k]*Dy[a, k])
                     dC = dC + d_phi
-                J[row, column] = dC
+                J[row, column] = dC*4
             else:  # 不同点的情况
                 dp_ac_right = 0
                 for j in range(0, n):
                     if j == c:
                         continue
                     dp_ac_right = dp_ac_right + P0[c, j]*X[j, d]
-                dp_ac = P0[c, a]*(X[a, d]-dp_ac_right)*beta[c]
-                dp_ca = P0[a, c]*(P0[a, c]-1)*(X[c, d]-X[a, d])*beta[a]
+                dp_ac = P0[c, a]*(X[a, d]-dp_ac_right)*beta[c]*2
+                dp_ca = P0[a, c]*(P0[a, c]-1)*(X[c, d]-X[a, d])*beta[a]*2
                 dp = (dp_ac+dp_ca)/(2*n)
                 dC = (Y[a, b]-Y[c, b])*dp/(1+Dy[a, c]*Dy[a, c])
-                J[row, column] = dC
+                J[row, column] = dC*4
     return J
 
 
@@ -255,7 +255,7 @@ class TSNE_Derivative:
         """
         Dy = euclidean_distances(Y)
         H = hessian_y(Dy, P, Q, Y)
-        J = derivative_X(X, Y, Dy, beta*2, P0)
+        J = derivative_X(X, Y, Dy, beta, P0)
         self.H = H
         self.J = J
         Pxy = Jxy(H, J)
@@ -287,7 +287,7 @@ def run1():
     print("Jacobi...")
     P0 = t_sne.P0
     beta = t_sne.beta
-    J = derivative_X(X, Y, Dy, beta*2, P0)
+    J = derivative_X(X, Y, Dy, beta, P0)
 
     print("Jyx...")
     J2 = Jxy(H, J)

@@ -19,6 +19,7 @@ def run1():
     print("t-SNE...")
     t_sne = cTSNE.cTSNE(n_component=2, perplexity=20.0)
     Y = t_sne.fit_transform(X)
+    np.savetxt(path+"Y.csv", Y, fmt='%f', delimiter=",")
 
     # Dy = euclidean_distances(Y)
     P = t_sne.P
@@ -33,6 +34,8 @@ def run1():
     np.savetxt(path+"Pxy.csv", Pxy, fmt='%f', delimiter=",")
     np.savetxt(path+"P.csv", P, fmt='%f', delimiter=",")
     np.savetxt(path+"Q.csv", Q, fmt='%f', delimiter=",")
+    np.savetxt(path+"P0.csv", P0, fmt='%f', delimiter=",")
+    np.savetxt(path+"beta.csv", beta, fmt='%f', delimiter=",")
     np.savetxt(path+"H.csv", derivative.H, fmt='%f', delimiter=",")
     np.savetxt(path+"J.csv", derivative.J, fmt='%f', delimiter=",")
 
@@ -79,6 +82,43 @@ def run2():
     plt.show()
 
 
+def check_P():
+    """
+    检查高维概率的计算过程与公式描述是否有偏差
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris\\"
+    X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
+    beta = np.loadtxt(path+"beta.csv", dtype=np.float, delimiter=",")
+
+    (n, d) = X.shape
+    P = np.zeros((n, n))
+    D = euclidean_distances(X)
+    D2 = D**2
+
+    for i in range(0, n):
+        for j in range(0, n):
+            if i == j:
+                continue
+            P[i, j] = np.exp(-1*D2[i, j]*beta[i])
+        s = np.sum(P[i, :])
+        P[i, :] = P[i, :] / s
+
+    np.savetxt(path+"checkP\\checkP.csv", P, fmt='%f', delimiter=",")
+
+
+def just_test():
+    A = np.array([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]])
+    A2 = A**2
+    print(A2)
+    A[0, :] = A[0, :] / 2
+    print(A)
+
+
 if __name__ == '__main__':
-    # run1()
-    run2()
+    run1()
+    # run2()
+    # just_test()
+    # check_P()
