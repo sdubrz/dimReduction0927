@@ -19,6 +19,8 @@ class cTSNE:
         self.kl = []
         self.final_kl = None
         self.final_iter = 0
+        self.P = None
+        self.Q = None
 
     def Hbeta(self, D=np.array([]), beta=1.0):
         """
@@ -160,6 +162,7 @@ class cTSNE:
         P = self.x2p(X, 1e-5, self.perplexity)
         P = P + np.transpose(P)
         P = P / np.sum(P)
+        self.P = P.copy()
         if early_exaggerate:
             P = P * 4.  # early exaggeration
         P = np.maximum(P, 1e-12)
@@ -216,6 +219,15 @@ class cTSNE:
             # Stop lying about P-values
             if iter == 100 and early_exaggerate:
                 P = P / 4.
+
+        # 最后更新低维空间中的概率矩阵
+        sum_Y = np.sum(np.square(Y), 1)
+        num = -2. * np.dot(Y, Y.T)
+        num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
+        num[range(n), range(n)] = 0.  # 把对角线设置为0
+        Q = num / np.sum(num)
+        Q = np.maximum(Q, 1e-12)
+        self.Q = Q
 
         self.final_iter = iter
         if show_progress:
