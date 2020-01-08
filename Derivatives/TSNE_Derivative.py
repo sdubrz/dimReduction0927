@@ -135,7 +135,7 @@ def hessian_y_sub4(Dy, P, Q, Y, a, b, c, d):
 
     dq = 2*Q[a, c]*e_ac*y_d + 4*Q[a, c]*dq_right
 
-    d_phi = (-1)*e_ac*y_b + 2*(P[a, c]-Q[a, c])*y_b*y_d*e_ac*e_ac
+    d_phi = (-1)*e_ac*y_b*dq + 2*(P[a, c]-Q[a, c])*y_b*y_d*e_ac*e_ac
     dC = 4*d_phi
 
     return dC
@@ -172,15 +172,108 @@ def hessian_y(Dy, P, Q, Y):
     return H
 
 
+def derivative_X(X, Y, Dy, beta, P0):
+    """
+    计算目标函数对Y的导数再对X求导
+    :param X: 高维数据矩阵
+    :param Y: 降维结果矩阵
+    :param Dy: 降维结果的距离矩阵
+    :param beta: t-SNE计算高维概率时所用到的方差，注意搞清楚一个2倍的关系
+    :param P0: 没有进行对称化的高维概率矩阵
+    :return:
+    """
+    (n, dim) = X.shape
+    (n_, m) = Y.shape
+
+    J = np.zeros((n*m, n*dim))
+    for row in range(0, n*m):
+        a = row // m
+        b = row % m
+        for column in range(0, n*dim):
+            c = column // dim
+            d = column % dim
+
+            if a == c:  # 同一个点的情况
+                dC = 0
+                for k in range(0, n):
+                    if k == a:
+                        continue
+                    dp_ak = (X[a, d]-X[k, d])*(P0[k, a]-1)*P0[k, a]*beta[k]  # P0[k, a]即为以k为中心时的概率
+                    dp_ka_right = 0
+                    for j in range(0, n):
+                        if j == a:
+                            continue
+                        dp_ka_right = dp_ka_right + X[j, d]*P0[a, j]
+                    dp_ka = P0[a, k]*(X[k, d]-dp_ka_right)*beta[a]
+                    dp = (dp_ka + dp_ak) / (2*n)
+                    d_phi = (Y[a, b]-Y[k, b])*dp/(1+Dy[a, k]*Dy[a, k])
+                    dC = dC + d_phi
+                J[row, column] = dC
+            else:  # 不同点的情况
+                dp_ac_right = 0
+                for j in range(0, n):
+                    if j == c:
+                        continue
+                    dp_ac_right = dp_ac_right + P0[c, j]*X[j, d]
+                dp_ac = P0[c, a]*(X[a, d]-dp_ac_right)*beta[c]
+                dp_ca = P0[a, c]*(P0[a, c]-1)*(X[c, d]-X[a, d])*beta[a]
+                dp = (dp_ac+dp_ca)/(2*n)
+                dC = (Y[a, b]-Y[c, b])*dp/(1+Dy[a, c]*Dy[a, c])
+                J[row, column] = dC
+    return J
+
+
+def Jxy(H, J):
+    """
+    计算Y对X求导的结果
+    :param H:
+    :param J:
+    :return:
+    """
+    H_ = np.linalg.inv(H)
+    P = -1 * np.dot(H_, J)
+
+    return P
+
+
+class TSNE_Derivative:
+    def __init__(self):
+        self.H = None
+        self.J = None
+        self.P = None
+
+    def getP(self, X, Y, P, Q, P0, beta):
+        """
+        计算 dY/dX
+        :param X: 高维数据矩阵
+        :param Y: 降维结果矩阵
+        :param P: 对称的高维概率矩阵
+        :param Q: 低维概率矩阵
+        :param P0: 不对称的高维概率矩阵
+        :param beta: 高维中每个点的方差
+        :return:
+        """
+        Dy = euclidean_distances(Y)
+        H = hessian_y(Dy, P, Q, Y)
+        J = derivative_X(X, Y, Dy, beta*2, P0)
+        self.H = H
+        self.J = J
+        Pxy = Jxy(H, J)
+        self.P = Pxy
+
+        return Pxy
+
+
 def run1():
     """
-    测试运行
+    测试运行，这只是个没有用的测试函数
     :return:
     """
     path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris\\"
     X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
 
+    print("t-SNE...")
     t_sne = cTSNE.cTSNE(n_component=2, perplexity=20.0)
     Y = t_sne.fit_transform(X)
 
@@ -188,12 +281,23 @@ def run1():
     P = t_sne.P
     Q = t_sne.Q
 
+    print("Hessian...")
     H = hessian_y(Dy, P, Q, Y)
+
+    print("Jacobi...")
+    P0 = t_sne.P0
+    beta = t_sne.beta
+    J = derivative_X(X, Y, Dy, beta*2, P0)
+
+    print("Jyx...")
+    J2 = Jxy(H, J)
 
     np.savetxt(path+"Y.csv", Y, fmt='%f', delimiter=",")
     np.savetxt(path+"P.csv", P, fmt='%f', delimiter=",")
     np.savetxt(path+"Q.csv", Q, fmt='%f', delimiter=",")
     np.savetxt(path+"H.csv", H, fmt='%f', delimiter=",")
+    np.savetxt(path+"J.csv", J, fmt='%f', delimiter=",")
+    np.savetxt(path+"Jxy.csv", J2, fmt='%f', delimiter=",")
 
     plt.scatter(Y[:, 0], Y[:, 1], c=label)
     plt.show()

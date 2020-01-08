@@ -20,6 +20,7 @@ class cTSNE:
         self.final_kl = None
         self.final_iter = 0
         self.P = None
+        self.P0 = None
         self.Q = None
 
     def Hbeta(self, D=np.array([]), beta=1.0):
@@ -160,6 +161,7 @@ class cTSNE:
 
         # Compute P-values
         P = self.x2p(X, 1e-5, self.perplexity)
+        self.P0 = P.copy()
         P = P + np.transpose(P)
         P = P / np.sum(P)
         self.P = P.copy()
