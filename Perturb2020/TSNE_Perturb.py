@@ -135,7 +135,7 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     print("初次降维已经计算完毕")
     y_add_list, y_sub_list = tsne_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
 
-    np.savetxt(save_path0+"cTSNE_P.csv", tsne_perturb.P, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%f', delimiter=",")
 
     return y, y_add_list, y_sub_list
 

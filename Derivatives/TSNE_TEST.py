@@ -117,8 +117,43 @@ def just_test():
     print(A)
 
 
+def vectors_perturb_run():
+    """
+    特征向量作为扰动向量
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\coil\\"
+    X = np.loadtxt(path + "x.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    (n, d) = X.shape
+    Y = np.loadtxt(path + "Y.csv", dtype=np.float, delimiter=",")
+    P = np.loadtxt(path + "Pxy.csv", dtype=np.float, delimiter=",")
+    vectors = np.loadtxt(path+"【weighted】eigenvectors0.csv", dtype=np.float, delimiter=",")
+
+    Y2 = np.zeros((n, 2))
+    Y3 = np.zeros((n, 2))
+    for i in range(0, n):
+        dX = np.zeros((n, d))
+        dX[i, :] = vectors[i, :] * 0.5
+        dX_ = dX.reshape((n * d, 1))
+        dY = np.matmul(P, dX_)
+        temp_y = Y + dY.reshape((n, 2))
+        temp_y3 = Y - dY.reshape((n, 2))
+        Y2[i, :] = temp_y[i, :]
+        Y3[i, :] = temp_y3[i, :]
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    for i in range(0, n):
+        plt.plot([Y[i, 0], Y2[i, 0]], [Y[i, 1], Y2[i, 1]], c='deepskyblue')
+        plt.plot([Y[i, 0], Y3[i, 0]], [Y[i, 1], Y3[i, 1]], c='deepskyblue')
+    ax = plt.gca()
+    ax.set_aspect(1)
+    plt.show()
+
+
 if __name__ == '__main__':
-    run1()
+    # run1()
     # run2()
     # just_test()
     # check_P()
+    vectors_perturb_run()
