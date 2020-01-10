@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 def run1():
-    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris\\"
+    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris2\\"
     X = np.loadtxt(path + "x.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     (n, d) = X.shape
@@ -152,8 +152,8 @@ def vectors_perturb_run():
 
 
 if __name__ == '__main__':
-    # run1()
+    run1()
     # run2()
     # just_test()
     # check_P()
-    vectors_perturb_run()
+    # vectors_perturb_run()

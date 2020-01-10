@@ -105,6 +105,19 @@ def hessian_y_sub3(Dy, P, Q, Y, a, b, c):
     d_phi = (-1)*dq*e_ac*y_b + (P[a, c]-Q[a, c]) * (2*e_ac*e_ac*y_b*y_b-e_ac)
 
     dC = 4*d_phi
+
+    # 之前漏掉的部分 鸿武八年一月十日
+    k_right = 0
+    for j in range(0, n):
+        if j == c:
+            continue
+        k_right = k_right + (Y[c, b]-Y[j, b]) / math.pow(1+Dy[c, j]*Dy[c, j], 2)
+    for k in range(0, n):
+        if k == a or k == c:
+            continue
+        d_phi_k = (-4)*Q[a, k]*Q[a, k]*(Y[a, b]-Y[k, b])*k_right
+        dC = dC + 4*d_phi_k
+
     return dC
 
 
@@ -137,6 +150,19 @@ def hessian_y_sub4(Dy, P, Q, Y, a, b, c, d):
 
     d_phi = (-1)*e_ac*y_b*dq + 2*(P[a, c]-Q[a, c])*y_b*y_d*e_ac*e_ac
     dC = 4*d_phi
+
+    # 之前漏掉的部分  鸿武八年一月十日
+    k_right = 0
+    for j in range(0, n):
+        if j == c:
+            continue
+        k_right = k_right + (Y[c, d]-Y[j, d]) / math.pow(1+Dy[c, j]*Dy[c, j], 2)
+
+    for k in range(0, n):
+        if k == a or k == c:
+            continue
+        d_phi_k = (-4)*Q[a, k]*Q[a, k]*(Y[a, b]-Y[k, b])*k_right
+        dC = dC + 4*d_phi_k
 
     return dC
 
