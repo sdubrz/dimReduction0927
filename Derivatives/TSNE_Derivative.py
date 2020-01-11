@@ -237,6 +237,7 @@ def derivative_X(X, Y, Dy, beta, P0):
                 J[row, column] = dC*4
             else:  # 不同点的情况
                 dp_ac_right = 0
+                dC = 0
                 for j in range(0, n):
                     if j == c:
                         continue
@@ -244,8 +245,18 @@ def derivative_X(X, Y, Dy, beta, P0):
                 dp_ac = P0[c, a]*(X[a, d]-dp_ac_right)*beta[c]*2
                 dp_ca = P0[a, c]*(P0[a, c]-1)*(X[c, d]-X[a, d])*beta[a]*2
                 dp = (dp_ac+dp_ca)/(2*n)
-                dC = (Y[a, b]-Y[c, b])*dp/(1+Dy[a, c]*Dy[a, c])
-                J[row, column] = dC*4
+                dC_left = (Y[a, b]-Y[c, b])*dp/(1+Dy[a, c]*Dy[a, c]) * 4
+
+                dC_right = 0
+                for k in range(0, n):
+                    if k == a or k == c:
+                        continue
+                    dp_right = P0[k, a]*P0[k, c]*(X[c, d]-X[k, d])*beta[k]*2 + P0[a, k]*P0[a, c]*(X[c, d]-X[a, d])*beta[a]*2
+                    d_phi_k = (Y[a, b]-Y[k, b])*dp_right/(1+Dy[a, k]*Dy[a, k])
+                    dC_right = dC_right + d_phi_k
+                dC_right = dC_right*2/n
+
+                J[row, column] = dC_left + dC_right
     return J
 
 
@@ -280,10 +291,13 @@ class TSNE_Derivative:
         :return:
         """
         Dy = euclidean_distances(Y)
+        print("Hessian...")
         H = hessian_y(Dy, P, Q, Y)
+        print("J...")
         J = derivative_X(X, Y, Dy, beta, P0)
         self.H = H
         self.J = J
+        print("Pxy...")
         Pxy = Jxy(H, J)
         self.P = Pxy
 

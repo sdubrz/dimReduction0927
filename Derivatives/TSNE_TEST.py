@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 def run1():
-    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris2\\"
+    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Wine\\"
     X = np.loadtxt(path + "x.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     (n, d) = X.shape
