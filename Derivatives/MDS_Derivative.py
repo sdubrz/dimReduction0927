@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import euclidean_distances
 import math
+import time
 
 
 def hessian_y(Dx, Dy, Y):
@@ -14,6 +15,7 @@ def hessian_y(Dx, Dy, Y):
     :param Y: 低维数据矩阵
     :return:
     """
+    begin_time = time.time()
     (n, m) = Y.shape
     H = np.zeros((n*m, n*m))
 
@@ -44,7 +46,7 @@ def hessian_y(Dx, Dy, Y):
                     if Dy[a, k] == 0:
                         print("warning:\t有重合的点导致不可导", (a, k))
                         continue
-                    s = 2*Dx[a, k] * (Y[a, b]-Y[k, b])*(Y[a, d]-Y[k, d]) / math.pow(Dy[a, k], 3)
+                    s = s + 2*Dx[a, k] * (Y[a, b]-Y[k, b])*(Y[a, d]-Y[k, d]) / math.pow(Dy[a, k], 3)
                 H[i, j] = s
             elif a != c and b == d:
                 if Dy[a, c] == 0:
@@ -57,7 +59,42 @@ def hessian_y(Dx, Dy, Y):
                     print("warning:\t有重合的点导致不可导", (a, c))
                     continue
                 s = -2*Dx[a, c]*(Y[a, b]-Y[c, b])*(Y[a, d]-Y[c, d]) / math.pow(Dy[a, c], 3)
+                H[i, j] = s
+    finish_time = time.time()
+    print("完全标量版本的Hessian矩阵耗时 ", finish_time-begin_time)
+    return H
 
+
+def hessian_y_matrix(Dx, Dy, Y):
+    """
+    使用矩阵方式对 hessian_y 函数加速的版本
+    :param Dx: 高维数据的欧氏距离矩阵
+    :param Dy: 降维结果的欧氏距离矩阵
+    :param Y: 降维结果矩阵，每一行是一个样本
+    :return:
+    """
+    begin_time = time.time()
+    (n, m) = Y.shape
+    H = np.zeros((n*m, n*m))
+    Dy2 = Dy.copy()
+    Dy2[range(n), range(n)] = 1.0
+
+    for a in range(0, n):
+        dY = np.tile(Y[a, :], (n, 1)) - Y
+        W = np.zeros((n, n))
+        W[range(n), range(n)] = 2 * Dx[a, :] / (Dy2[a, :] ** 3)
+        for c in range(0, n):
+            H_sub = np.zeros((m, m))
+            if a == c:
+                H_sub = np.matmul(dY.T, np.matmul(W, dY))
+                H_sub = H_sub + np.eye(m)*(2*n-2+2*np.sum(Dx[a, :]/Dy2[a, :]))
+            else:
+                left_sub = (-2+2*Dx[a, c]/Dy[a, c]) * np.eye(m, m)
+                right_sub = W[c, c] * np.outer(dY[c, :], dY[c, :])
+                H_sub = left_sub - right_sub
+            H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
+    finish_time = time.time()
+    print("半矩阵版本的Hessian耗时 ", finish_time-begin_time)
     return H
 
 

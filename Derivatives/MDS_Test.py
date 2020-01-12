@@ -5,6 +5,7 @@ import math
 
 from Main import Preprocess
 from sklearn.manifold import MDS
+from Derivatives import MDS_Derivative
 
 
 def hessian_y(Dx, Dy, Y):
@@ -59,6 +60,7 @@ def hessian_y(Dx, Dy, Y):
                     print("warning:\t有重合的点导致不可导", (a, c))
                     continue
                 s = -2*Dx[a, c]*(Y[a, b]-Y[c, b])*(Y[a, d]-Y[c, d]) / math.pow(Dy[a, c], 3)
+                H[i, j] = s
 
     return H
 
@@ -278,8 +280,39 @@ def vectors_perturb_run():
     plt.show()
 
 
+def time_test():
+    """
+    比较不同实现方式的速度
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\MDS\\Wine\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    X = Preprocess.normalize(data)
+    (n, d) = X.shape
+
+    mds = MDS(n_components=2)
+    Y = mds.fit_transform(X)
+
+    Dx = euclidean_distances(X)
+    Dy = euclidean_distances(Y)
+
+    np.savetxt(path + "X.csv", X, fmt='%f', delimiter=",")
+    np.savetxt(path + "Y.csv", Y, fmt='%f', delimiter=",")
+
+    H_number = MDS_Derivative.hessian_y(Dx, Dy, Y)
+    H_matrix = MDS_Derivative.hessian_y_matrix(Dx, Dy, Y)
+    dH = H_matrix - H_number
+    print(np.max(dH))
+
+    np.savetxt(path+"H_number.csv", H_number, fmt='%f', delimiter=",")
+    np.savetxt(path+"H_matrix.csv", H_matrix, fmt='%f', delimiter=",")
+    np.savetxt(path+"dH.csv", dH, fmt='%f', delimiter=",")
+
+
 if __name__ == '__main__':
     # run2()
     # shape_test()
     # dim_perturb_run()
-    vectors_perturb_run()
+    # vectors_perturb_run()
+    time_test()

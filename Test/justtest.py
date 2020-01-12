@@ -29,5 +29,18 @@ def run1():
     print(num / np.sum(num))
 
 
+def run2():
+    Y = np.array([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]])
+    X = np.zeros((3, 3))
+    X[range(3), range(3)] = Y[0, :]
+    print(X)
+    C = np.eye(4)
+    print(C)
+    print(np.outer(Y[0, :], Y[0, :]))
+    print(np.power(Y[0, 1], 3))
+
+
 if __name__ == '__main__':
-    run1()
+    run2()
