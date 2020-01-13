@@ -286,7 +286,7 @@ def time_test():
     比较不同实现方式的速度
     :return:
     """
-    path = "E:\\Project\\result2019\\DerivationTest\\MDS\\Wine\\"
+    path = "E:\\Project\\result2019\\DerivationTest\\MDS\\digits5_8\\"
     data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     X = Preprocess.normalize(data)
@@ -308,11 +308,19 @@ def time_test():
     H_number = MDS_Derivative.hessian_y(Dx, Dy, Y)
     H_matrix = MDS_Derivative.hessian_y_matrix(Dx, Dy, Y)
     dH = H_matrix - H_number
-    print(np.max(dH))
+    print("max dH = ", np.max(dH))
+
+    J_number = MDS_Derivative.derivative_X(Dx, Dy, X, Y)
+    J_matrix = MDS_Derivative.derivative_X_matrix(Dx, Dy, X, Y)
+    dJ = J_matrix - J_number
+    print("max dJ = ", np.max(dJ))
 
     np.savetxt(path+"H_number.csv", H_number, fmt='%f', delimiter=",")
     np.savetxt(path+"H_matrix.csv", H_matrix, fmt='%f', delimiter=",")
     np.savetxt(path+"dH.csv", dH, fmt='%f', delimiter=",")
+    np.savetxt(path + "J_number.csv", J_number, fmt='%f', delimiter=",")
+    np.savetxt(path + "J_matrix.csv", J_matrix, fmt='%f', delimiter=",")
+    np.savetxt(path + "dJ.csv", dJ, fmt='%f', delimiter=",")
     np.savetxt(path+"Dx.csv", Dx, fmt='%f', delimiter=",")
     np.savetxt(path+"Dy.csv", Dy, fmt='%f', delimiter=",")
 

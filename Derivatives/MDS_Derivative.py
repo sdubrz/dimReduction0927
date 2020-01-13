@@ -112,6 +112,7 @@ def derivative_X(Dx, Dy, X, Y):
     :param Y: 降维结果的数据矩阵
     :return:
     """
+    begin_time = time.time()
     (n, d) = X.shape
     (n2, m) = Y.shape
 
@@ -139,6 +140,46 @@ def derivative_X(Dx, Dy, X, Y):
                     print("warning:\t有点重合导致不可导", (a, b))
                     continue
                 J[row, col] = 2*(Y[a, i]-Y[b, i])/Dy[a, b] * (X[a, j]-X[b, j])/Dx[a, b]
+    finish_time = time.time()
+    print("标量形式的 J 耗时 ", finish_time-begin_time)
+
+    return J
+
+
+def derivative_X_matrix(Dx, Dy, X, Y):
+    """
+    计算目标函数对 Y的一阶导数对 X计算导数的结果 用矩阵方式进行加速
+    :param Dx: 高维数据的距离矩阵
+    :param Dy: MDS 降维结果的距离矩阵
+    :param X: 高维数据矩阵
+    :param Y: 降维结果的数据矩阵
+    :return:
+    """
+    begin_time = time.time()
+    (n, d) = X.shape
+    (n2, m) = Y.shape
+    Dx2 = Dx.copy()
+    Dy2 = Dy.copy()
+    Dx2[range(n), range(n)] = 1.0
+    Dy2[range(n), range(n)] = 1.0
+
+    J = np.zeros((n * m, n * d))
+    for a in range(0, n):
+        Wy = np.zeros((n, n))
+        Wx = np.zeros((n, n))
+        Wy[range(n), range(n)] = 1.0 / Dy2[a, :]
+        Wx[range(n), range(n)] = 1.0 / Dx2[a, :]
+        dY = np.tile(Y[a, :], (n, 1)) - Y
+        dX = np.tile(X[a, :], (n, 1)) - X
+        for b in range(0, n):
+            H_sub = np.zeros((m, d))
+            if a == b:
+                H_sub = -2 * np.matmul(np.matmul(Wy, dY).T, np.matmul(Wx, dX))
+            else:
+                H_sub = 2 * Wy[b, b] * Wx[b, b] * np.outer(dY[b, :], dX[b, :])
+            J[a*m:a*m+m, b*d:b*d+d] = H_sub[:, :]
+    finish_time = time.time()
+    print("半矩阵的 J 耗时 ", finish_time-begin_time)
 
     return J
 
@@ -176,8 +217,8 @@ class MDS_Derivative:
         """
         Dx = euclidean_distances(X)
         Dy = euclidean_distances(Y)
-        self.H = hessian_y(Dx, Dy, Y)
-        self.J_yx = derivative_X(Dx, Dy, X, Y)
+        self.H = hessian_y_matrix(Dx, Dy, Y)
+        self.J_yx = derivative_X_matrix(Dx, Dy, X, Y)
         self.P = Jyx(self.H, self.J_yx)
 
         return self.P
