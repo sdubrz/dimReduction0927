@@ -179,10 +179,10 @@ def hessian_y(Dy, P, Q, Y):
     (n, m) = Y.shape
     H = np.zeros((n*m, n*m))
 
-    for row in range(0, n*m):
+    for row in range(0, 2):  # n*m
         b = row % m
         a = row // m
-        for column in range(0, n*m):
+        for column in range(0, 2):
             d = column % m
             c = column // m
 
@@ -195,6 +195,48 @@ def hessian_y(Dy, P, Q, Y):
             else:
                 H[row, column] = hessian_y_sub4(Dy, P, Q, Y, a, b, c, d)
 
+    return H
+
+
+def hessian_y_matrix(Dy, P, Q, Y):
+    """
+    计算目标函数对Y的二阶导数 矩阵方式实现
+    :param Dy: 降维之后的距离矩阵
+    :param P: 高维空间的概率矩阵
+    :param Q: 低维空间的概率矩阵
+    :param Y: 降维之后的数据坐标矩阵
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Wine\\"
+    (n, m) = Y.shape
+    H = np.zeros((n*m, n*m))
+    PQ = P - Q
+    E = 1.0 / (1 + Dy**2)
+    np.savetxt(path+"E.csv", E, fmt='%f', delimiter=",")
+
+    for a in range(0, 1):
+        dY = np.tile(Y[a, :], (n, 1)) - Y
+        for c in range(0, 1):
+            H_sub = np.zeros((m, m))
+            if a == c:
+                Wd = np.zeros((n, n))
+                Wd[range(n), range(n)] = E[a, :]
+                Wp = np.zeros((n, n))
+                Wp[range(n), range(n)] = PQ[a, :]
+                wY = np.matmul(Wd, dY)
+                H_sub1 = (-2)*np.matmul(np.matmul(Wp, wY).T, wY)
+                H_sub2 = np.dot(PQ[a, :], E[a, :]) * np.eye(m)
+                print("H_sub2 = ", H_sub2)
+                Wq = np.zeros((n, n))
+                Wq[range(n), range(n)] = Q[a, :]
+                dY_in2 = 4 * np.matmul(np.matmul(Q[a, :], Wd), dY)
+                dY_in = (-2) * np.matmul(np.matmul(Wq, Wd), dY) + 4*dY_in2
+                H_sub3 = (-1) * np.matmul(np.matmul(Wd, dY).T, dY_in)
+                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
+            else:
+                pass
+
+            H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
     return H
 
 

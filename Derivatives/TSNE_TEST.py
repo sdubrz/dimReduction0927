@@ -8,6 +8,7 @@ import math
 from Derivatives import TSNE_Derivative
 from MyDR import cTSNE
 import matplotlib.pyplot as plt
+import time
 
 
 def run1():
@@ -151,9 +152,60 @@ def vectors_perturb_run():
     plt.show()
 
 
+def time_test():
+    """
+    比较不同实现方式的时间差异
+    :return:
+    """
+    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Wine\\"
+    X = np.loadtxt(path + "x.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    (n, d) = X.shape
+
+    print("t-SNE...")
+    time1 = time.time()
+    t_sne = cTSNE.cTSNE(n_component=2, perplexity=20.0)
+    Y = t_sne.fit_transform(X)
+    time2 = time.time()
+    print("t-SNE降维花费的时间 ", time2-time1)
+    np.savetxt(path + "Y.csv", Y, fmt='%f', delimiter=",")
+
+    # Dy = euclidean_distances(Y)
+    P = t_sne.P
+    Q = t_sne.Q
+    P0 = t_sne.P0
+    beta = t_sne.beta
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.show()
+
+    Dy = euclidean_distances(Y)
+    Dx = euclidean_distances(X)
+
+    time3 = time.time()
+    H_number = TSNE_Derivative.hessian_y(Dy, P, Q, Y)
+    time4 = time.time()
+    print("标量形式的Hessian耗时 ", time4-time3)
+    H_matrix = TSNE_Derivative.hessian_y_matrix(Dy, P, Q, Y)
+    time5 = time.time()
+    print("矩阵形式的Hessian耗时 ", time5-time4)
+
+    dH = H_matrix - H_number
+    print("max dH = ", np.max(dH))
+
+    np.savetxt(path+"H_number.csv", H_number, fmt='%f', delimiter=",")
+    np.savetxt(path+"H_matrix.csv", H_matrix, fmt='%f', delimiter=",")
+    np.savetxt(path+"dH.csv", dH, fmt='%f', delimiter=",")
+    np.savetxt(path+"Dx.csv", Dx, fmt='%f', delimiter=",")
+    np.savetxt(path+"Dy.csv", Dy, fmt='%f', delimiter=",")
+    np.savetxt(path + "P.csv", P, fmt='%f', delimiter=",")
+    np.savetxt(path + "Q.csv", Q, fmt='%f', delimiter=",")
+
+
 if __name__ == '__main__':
-    run1()
+    # run1()
     # run2()
     # just_test()
     # check_P()
     # vectors_perturb_run()
+    time_test()
