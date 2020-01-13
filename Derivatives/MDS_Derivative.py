@@ -5,6 +5,8 @@ from sklearn.metrics import euclidean_distances
 import math
 import time
 
+test_path = "E:\\Project\\result2019\\DerivationTest\\MDS\\Wine\\"
+
 
 def hessian_y(Dx, Dy, Y):
     """
@@ -20,7 +22,7 @@ def hessian_y(Dx, Dy, Y):
     H = np.zeros((n*m, n*m))
 
     # 重新组织
-    for i in range(0, n*m):
+    for i in range(0, n*m):  # n*m
         b = i % m
         a = i // m
         for j in range(0, n*m):
@@ -29,6 +31,8 @@ def hessian_y(Dx, Dy, Y):
 
             if a == c and b == d:
                 s = 0
+                ds = 0
+                ds2 = 0
                 for k in range(0, n):
                     if k == a:
                         continue
@@ -87,7 +91,8 @@ def hessian_y_matrix(Dx, Dy, Y):
             H_sub = np.zeros((m, m))
             if a == c:
                 H_sub = np.matmul(dY.T, np.matmul(W, dY))
-                H_sub = H_sub + np.eye(m)*(2*n-2+2*np.sum(Dx[a, :]/Dy2[a, :]))
+                dH = np.eye(m)*(2*n-2-2*np.sum(Dx[a, :]/Dy2[a, :]))
+                H_sub = H_sub + dH
             else:
                 left_sub = (-2+2*Dx[a, c]/Dy[a, c]) * np.eye(m, m)
                 right_sub = W[c, c] * np.outer(dY[c, :], dY[c, :])
@@ -145,8 +150,11 @@ def Jyx(H, J):
     :param J: 目标函数对 Y 求导然后对 X求导
     :return:
     """
+    begin_time = time.time()
     H_ = np.linalg.inv(H)
     P = -1 * np.dot(H_, J)
+    end_time = time.time()
+    print("最后一步的用时 ", end_time-begin_time)
 
     return P
 

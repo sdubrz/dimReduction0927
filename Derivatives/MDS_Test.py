@@ -6,6 +6,7 @@ import math
 from Main import Preprocess
 from sklearn.manifold import MDS
 from Derivatives import MDS_Derivative
+import time
 
 
 def hessian_y(Dx, Dy, Y):
@@ -290,9 +291,13 @@ def time_test():
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     X = Preprocess.normalize(data)
     (n, d) = X.shape
+    print((n, d))
 
+    mds_start = time.time()
     mds = MDS(n_components=2)
     Y = mds.fit_transform(X)
+    mds_finish = time.time()
+    print("MDS用时 ", mds_finish-mds_start)
 
     Dx = euclidean_distances(X)
     Dy = euclidean_distances(Y)
@@ -308,6 +313,8 @@ def time_test():
     np.savetxt(path+"H_number.csv", H_number, fmt='%f', delimiter=",")
     np.savetxt(path+"H_matrix.csv", H_matrix, fmt='%f', delimiter=",")
     np.savetxt(path+"dH.csv", dH, fmt='%f', delimiter=",")
+    np.savetxt(path+"Dx.csv", Dx, fmt='%f', delimiter=",")
+    np.savetxt(path+"Dy.csv", Dy, fmt='%f', delimiter=",")
 
 
 if __name__ == '__main__':
