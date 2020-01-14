@@ -40,6 +40,10 @@ def run2():
     print(C)
     print(np.outer(Y[0, :], Y[0, :]))
     print(np.power(Y[0, 1], 3))
+    y = Y[0, :]*Y[1, :]
+    print(y)
+    yy = np.dot(Y[0, :], Y[2, :])
+    print(yy)
 
 
 if __name__ == '__main__':

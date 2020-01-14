@@ -140,7 +140,7 @@ def hessian_y_sub4(Dy, P, Q, Y, a, b, c, d):
     for j in range(0, n):
         if j == c:
             continue
-        dq_right = dq_right + Q[c, j]*(Y[c, d]-Y[j, d])/(1+Dy[a, j]*Dy[a, j])
+        dq_right = dq_right + Q[c, j]*(Y[c, d]-Y[j, d])/(1+Dy[c, j]*Dy[c, j])
 
     y_d = Y[a, d] - Y[c, d]
     e_ac = 1 / (1+Dy[a, c]*Dy[a, c])
@@ -179,10 +179,10 @@ def hessian_y(Dy, P, Q, Y):
     (n, m) = Y.shape
     H = np.zeros((n*m, n*m))
 
-    for row in range(0, 2):  # n*m
+    for row in range(0, n*m):  # n*m
         b = row % m
         a = row // m
-        for column in range(0, 2):
+        for column in range(0, n*m):
             d = column % m
             c = column // m
 
@@ -214,27 +214,35 @@ def hessian_y_matrix(Dy, P, Q, Y):
     E = 1.0 / (1 + Dy**2)
     np.savetxt(path+"E.csv", E, fmt='%f', delimiter=",")
 
-    for a in range(0, 1):
+    for a in range(0, n):
         dY = np.tile(Y[a, :], (n, 1)) - Y
-        for c in range(0, 1):
+        Wq = np.zeros((n, n))
+        Wq[range(n), range(n)] = Q[a, :]
+        Wd = np.zeros((n, n))
+        Wd[range(n), range(n)] = E[a, :]
+        Wp = np.zeros((n, n))
+        Wp[range(n), range(n)] = PQ[a, :]
+        wY = np.matmul(Wd, dY)
+        wqY = np.matmul(Wq, wY)
+
+        for c in range(0, n):
             H_sub = np.zeros((m, m))
-            if a == c:
-                Wd = np.zeros((n, n))
-                Wd[range(n), range(n)] = E[a, :]
-                Wp = np.zeros((n, n))
-                Wp[range(n), range(n)] = PQ[a, :]
-                wY = np.matmul(Wd, dY)
+            if a == c:  # 与标量形式的实现有一个很小的差别，尚未找到原因 鸿武八年一月十四日
                 H_sub1 = (-2)*np.matmul(np.matmul(Wp, wY).T, wY)
                 H_sub2 = np.dot(PQ[a, :], E[a, :]) * np.eye(m)
-                print("H_sub2 = ", H_sub2)
-                Wq = np.zeros((n, n))
-                Wq[range(n), range(n)] = Q[a, :]
-                dY_in2 = 4 * np.matmul(np.matmul(Q[a, :], Wd), dY)
-                dY_in = (-2) * np.matmul(np.matmul(Wq, Wd), dY) + 4*dY_in2
-                H_sub3 = (-1) * np.matmul(np.matmul(Wd, dY).T, dY_in)
+                dY_in2 = 4 * np.matmul(Q[a, :], wY)
+                dY_in = (-2) * wY + 4*dY_in2
+                H_sub3 = (-1) * np.matmul(wY.T, np.matmul(Wq, dY_in))
                 H_sub = (H_sub1 + H_sub2 + H_sub3)*4
             else:
-                pass
+                dYc = np.tile(Y[c, :], (n, 1)) - Y
+                Wdc = np.zeros((n, n))
+                Wdc[range(n), range(n)] = E[c, :]**2
+                H_sub2 = (-4)*np.matmul(np.matmul(Wq**2, dY).T, np.matmul(Wdc, dYc))
+                H_sub3 = 2 * PQ[a, c] * (E[a, c]**2) * np.outer(dY[c, :], dY[c, :]) - PQ[a, c]*E[a, c]*np.eye(m)
+                # H_sub1 = (-1)*np.outer(wY[c, :], 2*wqY[c, :]+4*Q[a, c]*np.matmul(Q[c, :]*E[c, :], dYc))
+                H_sub1 = (-2)*Q[a, c]*E[a, c]*E[a, c]*np.outer(dY[c, :], dY[c, :])
+                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
 
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
     return H
@@ -299,6 +307,57 @@ def derivative_X(X, Y, Dy, beta, P0):
                 dC_right = dC_right*2/n
 
                 J[row, column] = dC_left + dC_right
+    return J
+
+
+def derivative_X_matrix(X, Y, Dy, beta, P0):
+    """
+    计算目标函数对Y的导数再对X求导 矩阵实现方式
+    :param X: 高维数据矩阵
+    :param Y: 降维结果矩阵
+    :param Dy: 降维结果的距离矩阵
+    :param beta: t-SNE计算高维概率时所用到的方差，注意搞清楚一个2倍的关系
+    :param P0: 没有进行对称化的高维概率矩阵
+    :return:
+    """
+    (n, dim) = X.shape
+    (n_, m) = Y.shape
+
+    J = np.zeros((n*m, n*dim))
+    E = 1.0 / (1+Dy**2)
+    Wbeta = np.zeros((n, n))
+    for i in range(0, n):
+        Wbeta[i, i] = 2*beta[i]
+
+    for a in range(0, n):
+        dY = np.tile(Y[a, :], (n, 1)) - Y
+        Wd = np.zeros((n, n))
+        Wd[range(n), range(n)] = E[a, :]
+        wY = np.matmul(Wd, dY).T
+
+        dX = np.tile(X[a, :], (n, 1)) - X
+        Wp2 = np.zeros((n, n))
+        Wp2[range(n), range(n)] = P0[:, a]
+        Wp1 = np.zeros((n, n))
+        Wp1[range(n), range(n)] = P0[a, :]
+
+        for c in range(0, n):
+
+            J_sub = np.zeros((m, dim))
+            if a == c:
+                M1 = np.matmul(Wp2*(Wp2-1)*Wbeta, dX)
+                M2 = np.matmul(Wp1/beta[a], X-np.matmul(P0[a, :], X))
+                J_sub = 2/n * np.matmul(wY, M1+M2)
+            else:
+                dXc = np.tile(X[c, :], (n, 1)) - X
+                Wp3 = np.zeros((n, n))
+                Wp3[range(n), range(n)] = P0[:, c]
+                M1 = E[a, c] * np.outer(dY[c, :], P0[c, a]*Wbeta[c, c]*(X[a, :]-np.matmul(P0[c, :], X))+Wbeta[a, a]*dX[c, :])
+                M2 = np.matmul(wY, np.matmul(Wp3*Wp2*Wbeta, dXc))
+                M3 = np.outer(np.matmul(wY, P0[a, :].T), P0[a, c]*Wbeta[a, a]*dXc[a, :])
+                J_sub = 2/n * (M1 + M2 + M3)
+            J[a*m:a*m+m, c*dim:c*dim+dim] = J_sub[:, :]
+
     return J
 
 
