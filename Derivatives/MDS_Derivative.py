@@ -98,8 +98,10 @@ def hessian_y_matrix(Dx, Dy, Y):
                 right_sub = W[c, c] * np.outer(dY[c, :], dY[c, :])
                 H_sub = left_sub - right_sub
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
+        if a % 100 == 0:
+            print(a)
     finish_time = time.time()
-    print("半矩阵版本的Hessian耗时 ", finish_time-begin_time)
+    print("计算 Hessian耗时 ", finish_time-begin_time)
     return H
 
 
@@ -178,8 +180,10 @@ def derivative_X_matrix(Dx, Dy, X, Y):
             else:
                 H_sub = 2 * Wy[b, b] * Wx[b, b] * np.outer(dY[b, :], dX[b, :])
             J[a*m:a*m+m, b*d:b*d+d] = H_sub[:, :]
+        if a % 100 == 0:
+            print(a)
     finish_time = time.time()
-    print("半矩阵的 J 耗时 ", finish_time-begin_time)
+    print("计算 J 耗时 ", finish_time-begin_time)
 
     return J
 
@@ -193,9 +197,9 @@ def Jyx(H, J):
     """
     begin_time = time.time()
     H_ = np.linalg.inv(H)
-    P = -1 * np.dot(H_, J)
+    P = -1 * np.matmul(H_, J)
     end_time = time.time()
-    print("最后一步的用时 ", end_time-begin_time)
+    print("计算最终导数矩阵用时 ", end_time-begin_time)
 
     return P
 

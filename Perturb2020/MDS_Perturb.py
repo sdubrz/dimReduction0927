@@ -18,6 +18,8 @@ class MDSPerturb:
         self.y_add_list = []
         self.y_sub_list = []
         self.P = None
+        self.Hessian = None
+        self.Jacobi = None
         self.init_y()
 
     def init_y(self):
@@ -38,6 +40,8 @@ class MDSPerturb:
         time1 = time.time()
         derivative = MDS_Derivative()
         self.P = derivative.getP(self.X, self.Y)
+        self.Hessian = derivative.H
+        self.Jacobi = derivative.J_yx
         time2 = time.time()
         print("导数矩阵已经计算完成，用时为 ", time2 - time1)
         vector_perturb = VectorPerturb(self.Y, self.P)
@@ -125,7 +129,9 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
     print("初次降维已经计算完毕")
     y_add_list, y_sub_list = mds_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
 
-    np.savetxt(save_path0+"MDS_P.csv", mds_perturb.P, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"MDS_Pxy.csv", mds_perturb.P, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"MDS_Hessian.csv", mds_perturb.Hessian, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"MDS_Jacobi.csv", mds_perturb.Jacobi, fmt='%f', delimiter=",")
 
     return y, y_add_list, y_sub_list
 

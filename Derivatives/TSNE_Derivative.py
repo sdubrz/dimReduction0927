@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.metrics import euclidean_distances
 import math
+import time
 
 from MyDR import cTSNE
 import matplotlib.pyplot as plt
@@ -207,12 +208,11 @@ def hessian_y_matrix(Dy, P, Q, Y):
     :param Y: 降维之后的数据坐标矩阵
     :return:
     """
-    path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Wine\\"
+    begin_time = time.time()
     (n, m) = Y.shape
     H = np.zeros((n*m, n*m))
     PQ = P - Q
     E = 1.0 / (1 + Dy**2)
-    np.savetxt(path+"E.csv", E, fmt='%f', delimiter=",")
 
     for a in range(0, n):
         dY = np.tile(Y[a, :], (n, 1)) - Y
@@ -244,6 +244,10 @@ def hessian_y_matrix(Dy, P, Q, Y):
                 H_sub = (H_sub1 + H_sub2 + H_sub3)*4
 
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
+        if a % 100 == 0:
+            print(a)
+    finish_time = time.time()
+    print("计算 Hessian matrix 耗时 ", finish_time-begin_time)
     return H
 
 
@@ -319,6 +323,7 @@ def derivative_X_matrix(X, Y, Dy, beta, P0):
     :param P0: 没有进行对称化的高维概率矩阵
     :return:
     """
+    begin_time = time.time()
     (n, dim) = X.shape
     (n_, m) = Y.shape
     # path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris2\\"
@@ -357,7 +362,10 @@ def derivative_X_matrix(X, Y, Dy, beta, P0):
                 M3 = np.outer(np.matmul(wY, P0[a, :].T), P0[a, c]*Wbeta[a, a]*dXc[a, :])
                 J_sub = (M1 + M2 + M3)*(2/n)
             J[a*m:a*m+m, c*dim:c*dim+dim] = J_sub[:, :]
-
+        if a % 100 == 0:
+            print(a)
+    finish_time = time.time()
+    print("计算 Jacobi耗时 ", finish_time-begin_time)
     return J
 
 
@@ -369,7 +377,7 @@ def Jxy(H, J):
     :return:
     """
     H_ = np.linalg.inv(H)
-    P = -1 * np.dot(H_, J)
+    P = -1 * np.matmul(H_, J)
 
     return P
 

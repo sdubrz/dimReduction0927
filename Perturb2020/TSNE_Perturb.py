@@ -24,6 +24,8 @@ class TSNEPerturb:
         self.Px = None  # 对称化后的高维概率矩阵
         self.Q = None  # 低维概率矩阵
         self.beta = None  # 计算高维概率矩阵时用的方差
+        self.Hessian = None
+        self.Jacobi = None
         self.init_y()
 
     def init_y(self):
@@ -48,6 +50,8 @@ class TSNEPerturb:
         time1 = time.time()
         derivative = TSNE_Derivative()
         self.P = derivative.getP(self.X, self.Y, self.Px, self.Q, self.Px0, self.beta)
+        self.Hessian = derivative.H
+        self.Jacobi = derivative.J
         time2 = time.time()
         print("导数矩阵已经计算完成，用时为 ", time2 - time1)
         vector_perturb = VectorPerturb(self.Y, self.P)
@@ -136,6 +140,8 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     y_add_list, y_sub_list = tsne_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
 
     np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%f', delimiter=",")
 
     return y, y_add_list, y_sub_list
 
