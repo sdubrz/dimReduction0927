@@ -227,7 +227,7 @@ def hessian_y_matrix(Dy, P, Q, Y):
 
         for c in range(0, n):
             H_sub = np.zeros((m, m))
-            if a == c:  # 与标量形式的实现有一个很小的差别，尚未找到原因 鸿武八年一月十四日
+            if a == c:
                 H_sub1 = (-2)*np.matmul(np.matmul(Wp, wY).T, wY)
                 H_sub2 = np.dot(PQ[a, :], E[a, :]) * np.eye(m)
                 dY_in2 = 4 * np.matmul(Q[a, :], wY)
@@ -238,12 +238,10 @@ def hessian_y_matrix(Dy, P, Q, Y):
                 dYc = np.tile(Y[c, :], (n, 1)) - Y
                 Wdc = np.zeros((n, n))
                 Wdc[range(n), range(n)] = E[c, :]
-                H_sub2 = (-4)*np.matmul(np.matmul(Wq**2, dY).T, np.matmul(Wdc**2, dYc))
+                H_sub2 = (-4)*np.matmul(np.matmul(Wq**2, dY).T, np.tile(np.matmul(E[c, :]**2, dYc), (n, 1)))
                 H_sub3 = 2 * PQ[a, c] * (E[a, c]**2) * np.outer(dY[c, :], dY[c, :]) - PQ[a, c]*E[a, c]*np.eye(m)
-                # H_sub1 = (-1)*np.outer(wY[c, :], 2*wqY[c, :]+4*Q[a, c]*np.matmul(Q[c, :]*E[c, :], dYc))
                 H_sub1 = (-2)*Q[a, c]*E[a, c]*E[a, c]*np.outer(dY[c, :], dY[c, :])
-                H_sub4 = (-4)*E[a, c]*Q[a, c]*np.outer(dY[c, :], np.matmul(Q[c, :], np.matmul(Wdc, dYc)))  # 加上这一项也不对
-                H_sub = (H_sub1 + H_sub2 + H_sub3 + H_sub4)*4
+                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
 
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
     return H
@@ -395,9 +393,9 @@ class TSNE_Derivative:
         """
         Dy = euclidean_distances(Y)
         print("Hessian...")
-        H = hessian_y(Dy, P, Q, Y)
+        H = hessian_y_matrix(Dy, P, Q, Y)
         print("J...")
-        J = derivative_X(X, Y, Dy, beta, P0)
+        J = derivative_X_matrix(X, Y, Dy, beta, P0)
         self.H = H
         self.J = J
         print("Pxy...")
