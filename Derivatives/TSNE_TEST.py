@@ -182,37 +182,37 @@ def time_test():
     Dy = euclidean_distances(Y)
     Dx = euclidean_distances(X)
 
-    # time3 = time.time()
-    # H_number = TSNE_Derivative.hessian_y(Dy, P, Q, Y)
-    # time4 = time.time()
-    # print("标量形式的Hessian耗时 ", time4-time3)
-    # H_matrix = TSNE_Derivative.hessian_y_matrix(Dy, P, Q, Y)
-    # time5 = time.time()
-    # print("矩阵形式的Hessian耗时 ", time5-time4)
-    #
-    # dH = H_matrix - H_number
-    # print("max dH = ", np.max(dH))
-    #
-    # np.savetxt(path+"H_number.csv", H_number, fmt='%f', delimiter=",")
-    # np.savetxt(path+"H_matrix.csv", H_matrix, fmt='%f', delimiter=",")
-    # np.savetxt(path+"dH.csv", dH, fmt='%f', delimiter=",")
+    time3 = time.time()
+    H_number = TSNE_Derivative.hessian_y(Dy, P, Q, Y)
+    time4 = time.time()
+    print("标量形式的Hessian耗时 ", time4-time3)
+    H_matrix = TSNE_Derivative.hessian_y_matrix(Dy, P, Q, Y)
+    time5 = time.time()
+    print("矩阵形式的Hessian耗时 ", time5-time4)
+
+    dH = H_matrix - H_number
+    print("max dH = ", np.max(dH))
+
+    np.savetxt(path+"H_number.csv", H_number, fmt='%f', delimiter=",")
+    np.savetxt(path+"H_matrix.csv", H_matrix, fmt='%f', delimiter=",")
+    np.savetxt(path+"dH.csv", dH, fmt='%f', delimiter=",")
 
     # 计算 J
-    time6 = time.time()
-    J_number = TSNE_Derivative.derivative_X(X, Y, Dy, beta, P0)
-    time7 = time.time()
-    print("标量方法计算 J 耗时 ", time7-time6)
-    time8 = time.time()
-    J_matrix = TSNE_Derivative.derivative_X_matrix(X, Y, Dy, beta, P0)
-    time9 = time.time()
-    print("矩阵方法计算 J 耗时 ", time9-time8)
+    # time6 = time.time()
+    # J_number = TSNE_Derivative.derivative_X(X, Y, Dy, beta, P0)
+    # time7 = time.time()
+    # print("标量方法计算 J 耗时 ", time7-time6)
+    # time8 = time.time()
+    # J_matrix = TSNE_Derivative.derivative_X_matrix(X, Y, Dy, beta, P0)
+    # time9 = time.time()
+    # print("矩阵方法计算 J 耗时 ", time9-time8)
+    #
+    # dJ = J_matrix-J_number
+    # print("max dJ = ", np.max(dJ))
 
-    dJ = J_matrix-J_number
-    print("max dJ = ", np.max(dJ))
-
-    np.savetxt(path+"J_number.csv", J_number, fmt='%f', delimiter=",")
-    np.savetxt(path+"J_matrix.csv", J_matrix, fmt='%f', delimiter=",")
-    np.savetxt(path+"dJ.csv", dJ, fmt='%f', delimiter=",")
+    # np.savetxt(path+"J_number.csv", J_number, fmt='%f', delimiter=",")
+    # np.savetxt(path+"J_matrix.csv", J_matrix, fmt='%f', delimiter=",")
+    # np.savetxt(path+"dJ.csv", dJ, fmt='%f', delimiter=",")
     np.savetxt(path+"Dx.csv", Dx, fmt='%f', delimiter=",")
     np.savetxt(path+"Dy.csv", Dy, fmt='%f', delimiter=",")
     np.savetxt(path + "P.csv", P, fmt='%f', delimiter=",")

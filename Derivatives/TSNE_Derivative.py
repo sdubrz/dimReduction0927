@@ -231,18 +231,19 @@ def hessian_y_matrix(Dy, P, Q, Y):
                 H_sub1 = (-2)*np.matmul(np.matmul(Wp, wY).T, wY)
                 H_sub2 = np.dot(PQ[a, :], E[a, :]) * np.eye(m)
                 dY_in2 = 4 * np.matmul(Q[a, :], wY)
-                dY_in = (-2) * wY + 4*dY_in2
+                dY_in = (-2) * wY + dY_in2
                 H_sub3 = (-1) * np.matmul(wY.T, np.matmul(Wq, dY_in))
                 H_sub = (H_sub1 + H_sub2 + H_sub3)*4
             else:
                 dYc = np.tile(Y[c, :], (n, 1)) - Y
                 Wdc = np.zeros((n, n))
-                Wdc[range(n), range(n)] = E[c, :]**2
-                H_sub2 = (-4)*np.matmul(np.matmul(Wq**2, dY).T, np.matmul(Wdc, dYc))
+                Wdc[range(n), range(n)] = E[c, :]
+                H_sub2 = (-4)*np.matmul(np.matmul(Wq**2, dY).T, np.matmul(Wdc**2, dYc))
                 H_sub3 = 2 * PQ[a, c] * (E[a, c]**2) * np.outer(dY[c, :], dY[c, :]) - PQ[a, c]*E[a, c]*np.eye(m)
                 # H_sub1 = (-1)*np.outer(wY[c, :], 2*wqY[c, :]+4*Q[a, c]*np.matmul(Q[c, :]*E[c, :], dYc))
                 H_sub1 = (-2)*Q[a, c]*E[a, c]*E[a, c]*np.outer(dY[c, :], dY[c, :])
-                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
+                H_sub4 = (-4)*E[a, c]*Q[a, c]*np.outer(dY[c, :], np.matmul(Q[c, :], np.matmul(Wdc, dYc)))  # 加上这一项也不对
+                H_sub = (H_sub1 + H_sub2 + H_sub3 + H_sub4)*4
 
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
     return H
@@ -262,10 +263,10 @@ def derivative_X(X, Y, Dy, beta, P0):
     (n_, m) = Y.shape
 
     J = np.zeros((n*m, n*dim))
-    for row in range(0, n*m):
+    for row in range(0, n*m):  # n*m
         a = row // m
         b = row % m
-        for column in range(0, n*dim):
+        for column in range(0, n*dim):  # n*dim
             c = column // dim
             d = column % dim
 
@@ -322,6 +323,7 @@ def derivative_X_matrix(X, Y, Dy, beta, P0):
     """
     (n, dim) = X.shape
     (n_, m) = Y.shape
+    # path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris2\\"
 
     J = np.zeros((n*m, n*dim))
     E = 1.0 / (1+Dy**2)
@@ -329,7 +331,7 @@ def derivative_X_matrix(X, Y, Dy, beta, P0):
     for i in range(0, n):
         Wbeta[i, i] = 2*beta[i]
 
-    for a in range(0, n):
+    for a in range(0, n):  # n
         dY = np.tile(Y[a, :], (n, 1)) - Y
         Wd = np.zeros((n, n))
         Wd[range(n), range(n)] = E[a, :]
@@ -345,17 +347,17 @@ def derivative_X_matrix(X, Y, Dy, beta, P0):
 
             J_sub = np.zeros((m, dim))
             if a == c:
-                M1 = np.matmul(Wp2*(Wp2-1)*Wbeta, dX)
-                M2 = np.matmul(Wp1/beta[a], X-np.matmul(P0[a, :], X))
+                M1 = np.matmul(Wp2*(Wp2-np.eye(n))*Wbeta, dX)
+                M2 = np.matmul(Wp1*beta[a]*2, X-np.matmul(P0[a, :], X))
                 J_sub = 2/n * np.matmul(wY, M1+M2)
             else:
                 dXc = np.tile(X[c, :], (n, 1)) - X
                 Wp3 = np.zeros((n, n))
                 Wp3[range(n), range(n)] = P0[:, c]
-                M1 = E[a, c] * np.outer(dY[c, :], P0[c, a]*Wbeta[c, c]*(X[a, :]-np.matmul(P0[c, :], X))+Wbeta[a, a]*dX[c, :])
+                M1 = E[a, c] * np.outer(dY[c, :], P0[c, a]*Wbeta[c, c]*(X[a, :]-np.matmul(P0[c, :], X)) + P0[a, c] * Wbeta[a, a] * dX[c, :])
                 M2 = np.matmul(wY, np.matmul(Wp3*Wp2*Wbeta, dXc))
                 M3 = np.outer(np.matmul(wY, P0[a, :].T), P0[a, c]*Wbeta[a, a]*dXc[a, :])
-                J_sub = 2/n * (M1 + M2 + M3)
+                J_sub = (M1 + M2 + M3)*(2/n)
             J[a*m:a*m+m, c*dim:c*dim+dim] = J_sub[:, :]
 
     return J
