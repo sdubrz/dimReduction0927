@@ -143,6 +143,11 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%f', delimiter=",")
 
+    print("sum J = ", np.sum(tsne_perturb.Jacobi))
+    print("sum J columns = ", np.sum(tsne_perturb.Jacobi, axis=1))
+    print("sum P = ", np.sum(tsne_perturb.P))
+    print("sum P columns = ", np.sum(tsne_perturb.P, axis=1))
+
     return y, y_add_list, y_sub_list
 
 

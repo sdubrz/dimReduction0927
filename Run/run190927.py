@@ -589,16 +589,16 @@ def run_test(data_name0=None):
     main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
     # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
 
-    data_name = "MNIST50mclass1_985"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.1
-    nbrs_k = 51
-    method_k = 51
+    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    yita = 0.2
+    nbrs_k = 20
+    method_k = 90
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True
