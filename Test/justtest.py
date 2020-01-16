@@ -46,5 +46,13 @@ def run2():
     print(yy)
 
 
+def test3():
+    if 0.1+0.1 == 0.2:
+        print("one")
+    if 0.1+0.2 == 0.3:
+        print("two")
+
+
 if __name__ == '__main__':
-    run2()
+    # run2()
+    test3()

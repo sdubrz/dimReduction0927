@@ -286,7 +286,7 @@ def time_test():
     比较不同实现方式的速度
     :return:
     """
-    path = "E:\\Project\\result2019\\DerivationTest\\MDS\\digits5_8\\"
+    path = "E:\\Project\\result2019\\DerivationTest\\MDS\\Iris3\\"
     data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     X = Preprocess.normalize(data)
@@ -310,6 +310,10 @@ def time_test():
     dH = H_matrix - H_number
     print("max dH = ", np.max(dH))
 
+    H2 = np.linalg.inv(H_matrix)
+    H3 = np.matmul(H2, H_matrix)
+    print("H*H-1 = \n", H3)
+
     J_number = MDS_Derivative.derivative_X(Dx, Dy, X, Y)
     J_matrix = MDS_Derivative.derivative_X_matrix(Dx, Dy, X, Y)
     dJ = J_matrix - J_number
@@ -325,9 +329,56 @@ def time_test():
     np.savetxt(path+"Dy.csv", Dy, fmt='%f', delimiter=",")
 
 
+def number_test():
+    path = "E:\\Project\\result2019\\DerivationTest\\MDS\\Wine\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
+    X = Preprocess.normalize(data)
+    (n, d) = X.shape
+    print((n, d))
+
+    mds_start = time.time()
+    mds = MDS(n_components=2)
+    Y = mds.fit_transform(X)
+    mds_finish = time.time()
+    print("MDS用时 ", mds_finish - mds_start)
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.show()
+
+    Dx = euclidean_distances(X)
+    Dy = euclidean_distances(Y)
+
+    np.savetxt(path + "X.csv", X, fmt='%f', delimiter=",")
+    np.savetxt(path + "Y.csv", Y, fmt='%f', delimiter=",")
+
+    H = MDS_Derivative.hessian_y_matrix(Dx, Dy, Y)
+    H2 = np.linalg.inv(H)
+    H3 = np.matmul(H, H2)
+    H4 = np.matmul(H2, H)
+    print(H3)
+    print(H3[0, 0])
+    np.savetxt(path+"HH-1.csv", H3, fmt='%f', delimiter=",")
+    np.savetxt(path+"H-1H.csv", H4, fmt='%f', delimiter=",")
+
+    J = MDS_Derivative.derivative_X_matrix(Dx, Dy, X, Y)
+    P = (-1) * np.matmul(H2, J)
+
+    print(H3[0, 0])
+    print("H的行列式 = ", np.linalg.det(H))
+
+    np.savetxt(path+"H.csv", H, fmt='%s', delimiter=",")
+    np.savetxt(path + "H0.csv", H, fmt='%.18f', delimiter=",")
+    np.savetxt(path+"Hinv.csv", H2, fmt='%.18f', delimiter=",")
+    np.savetxt(path+"J.csv", J, fmt='%s', delimiter=",")
+    np.savetxt(path+"P.csv", P, fmt='%s', delimiter=",")
+    np.savetxt(path+"Pstring.csv", P, fmt='%s', delimiter=",")
+
+
 if __name__ == '__main__':
     # run2()
     # shape_test()
     # dim_perturb_run()
     # vectors_perturb_run()
-    time_test()
+    # time_test()
+    number_test()

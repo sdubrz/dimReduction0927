@@ -595,10 +595,10 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.2
-    nbrs_k = 20
-    method_k = 90
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
+    yita = 0.11111
+    nbrs_k = 30
+    method_k = 30
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True

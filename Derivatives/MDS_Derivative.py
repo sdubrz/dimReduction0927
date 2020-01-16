@@ -196,8 +196,14 @@ def Jyx(H, J):
     :return:
     """
     begin_time = time.time()
+    scale = np.max(J)
+    if scale == 0:
+        scale = scale + 1.0
+    scale = scale * 10000.0
     H_ = np.linalg.inv(H)
-    P = -1 * np.matmul(H_, J)
+    J2 = J * scale
+    P = -1 * np.matmul(H_, J2)
+    P = P / scale
     end_time = time.time()
     print("计算最终导数矩阵用时 ", end_time-begin_time)
 
