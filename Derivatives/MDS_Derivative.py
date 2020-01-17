@@ -196,16 +196,28 @@ def Jyx(H, J):
     :return:
     """
     begin_time = time.time()
-    scale = np.max(J)
-    if scale == 0:
-        scale = scale + 1.0
-    scale = scale * 10000.0
     H_ = np.linalg.inv(H)
-    J2 = J * scale
-    P = -1 * np.matmul(H_, J2)
-    P = P / scale
+    P = (-1) * np.matmul(H_, J)
     end_time = time.time()
     print("计算最终导数矩阵用时 ", end_time-begin_time)
+
+    return P
+
+
+def Jyx_2(H, J):
+    """
+    计算 Y 对 X 的求导结果
+    与 Jyx 的不同是，这里在计算H的逆的时候先进行了 Jacobi 缩放处理
+    :param H:
+    :param J:
+    :return:
+    """
+    (n, m) = H.shape  # n == m should be true
+    A = np.zeros((n, n))
+    for i in range(0, n):
+        A[i, i] = 1.0 / H[i, i]  # 这里本应该要求 H[i, i]!=0 的，但是还没有去想 H[i, i]==0 时应该怎么处理
+    H2 = np.matmul(np.linalg.inv(np.matmul(A, H)), A)
+    P = (-1) * np.matmul(H2, J)
 
     return P
 

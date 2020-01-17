@@ -582,12 +582,13 @@ def run_test(data_name0=None):
             digits5_8
         """
     start_time = time()
-    main_path_without_normalize = "E:\\project\\result2020\\result0104without_normalize\\"  # 华硕
-    main_path_without_straighten = "E:\\Project\\result2020\\result0103\\"  # 华硕
+    # main_path_without_normalize = "E:\\project\\result2020\\result0104without_normalize\\"  # 华硕
+    # main_path_without_straighten = "E:\\Project\\result2020\\result0103\\"  # 华硕
     # main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
     # main_path = "F:\\result2019\\result0927\\"  # HP
-    main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
-    # main_path = 'D:\\文件\\IRC\\特征向量散点图项目\\result2019\\result0927\\'  # XPS
+    # main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
+    main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\testrun\\'  # XPS
+    main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\testrun\\'  # XPS
 
     data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
@@ -621,8 +622,8 @@ def run_test(data_name0=None):
     if not normalize:
         main_path = main_path_without_normalize
 
-    if not straighten:
-        main_path = main_path_without_straighten
+    # if not straighten:
+    #     main_path = main_path_without_straighten
 
     if (not normalize) and (not straighten):
         main_path = main_path_without_normalize

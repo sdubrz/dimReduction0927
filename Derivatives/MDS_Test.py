@@ -330,7 +330,8 @@ def time_test():
 
 
 def number_test():
-    path = "E:\\Project\\result2019\\DerivationTest\\MDS\\Wine\\"
+    # path = "E:\\Project\\result2019\\DerivationTest\\MDS\\Wine\\"  # 华硕
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\DerivativeTest\\MDS\\Iris3\\"  # XPS
     data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
     X = Preprocess.normalize(data)
@@ -352,7 +353,7 @@ def number_test():
     np.savetxt(path + "X.csv", X, fmt='%f', delimiter=",")
     np.savetxt(path + "Y.csv", Y, fmt='%f', delimiter=",")
 
-    H = MDS_Derivative.hessian_y_matrix(Dx, Dy, Y)
+    H = MDS_Derivative.hessian_y(Dx, Dy, Y)
     H2 = np.linalg.inv(H)
     H3 = np.matmul(H, H2)
     H4 = np.matmul(H2, H)
