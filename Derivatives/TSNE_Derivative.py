@@ -376,7 +376,7 @@ def Jxy(H, J):
     :param J:
     :return:
     """
-    H_ = np.linalg.inv(H)
+    H_ = np.linalg.pinv(H)  # inv
     P = -1 * np.matmul(H_, J)
 
     return P

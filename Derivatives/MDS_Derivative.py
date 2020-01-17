@@ -94,7 +94,7 @@ def hessian_y_matrix(Dx, Dy, Y):
                 dH = np.eye(m)*(2*n-2-2*np.sum(Dx[a, :]/Dy2[a, :]))
                 H_sub = H_sub + dH
             else:
-                left_sub = (-2+2*Dx[a, c]/Dy[a, c]) * np.eye(m, m)
+                left_sub = (-2+2*Dx[a, c]/Dy2[a, c]) * np.eye(m)
                 right_sub = W[c, c] * np.outer(dY[c, :], dY[c, :])
                 H_sub = left_sub - right_sub
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
@@ -196,7 +196,7 @@ def Jyx(H, J):
     :return:
     """
     begin_time = time.time()
-    H_ = np.linalg.inv(H)
+    H_ = np.linalg.pinv(H)  # inv
     P = (-1) * np.matmul(H_, J)
     end_time = time.time()
     print("计算最终导数矩阵用时 ", end_time-begin_time)

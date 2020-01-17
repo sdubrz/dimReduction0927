@@ -131,6 +131,8 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
 
     np.savetxt(save_path0+"MDS_Pxy.csv", mds_perturb.P, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Hessian.csv", mds_perturb.Hessian, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"MDS_Hessian_.csv", np.linalg.inv(mds_perturb.Hessian), fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"MDS_Hessian2.csv", np.matmul(mds_perturb.Hessian, np.linalg.pinv(mds_perturb.Hessian)), fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Jacobi.csv", mds_perturb.Jacobi, fmt='%f', delimiter=",")
 
     print("sum J = ", np.sum(mds_perturb.Jacobi))

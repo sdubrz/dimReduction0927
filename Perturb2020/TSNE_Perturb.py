@@ -141,6 +141,8 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
 
     np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.inv(tsne_perturb.Hessian), fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Hessian2.csv", np.matmul(tsne_perturb.Hessian, np.linalg.pinv(tsne_perturb.Hessian)), fmt='%f', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%f', delimiter=",")
 
     print("sum J = ", np.sum(tsne_perturb.Jacobi))
