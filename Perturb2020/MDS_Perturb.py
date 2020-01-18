@@ -136,9 +136,9 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
     np.savetxt(save_path0+"MDS_Jacobi.csv", mds_perturb.Jacobi, fmt='%f', delimiter=",")
 
     print("sum J = ", np.sum(mds_perturb.Jacobi))
-    print("sum J columns = ", np.sum(mds_perturb.Jacobi, axis=1))
+    # print("sum J columns = ", np.sum(mds_perturb.Jacobi, axis=1))
     print("sum P = ", np.sum(mds_perturb.P))
-    print("sum P columns = ", np.sum(mds_perturb.P, axis=1))
+    # print("sum P columns = ", np.sum(mds_perturb.P, axis=1))
 
     return y, y_add_list, y_sub_list
 

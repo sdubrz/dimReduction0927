@@ -582,27 +582,27 @@ def run_test(data_name0=None):
             digits5_8
         """
     start_time = time()
-    # main_path_without_normalize = "E:\\project\\result2020\\result0104without_normalize\\"  # 华硕
-    # main_path_without_straighten = "E:\\Project\\result2020\\result0103\\"  # 华硕
+    main_path_without_normalize = "E:\\project\\result2020\\result0104without_normalize\\"  # 华硕
+    main_path_without_straighten = "E:\\Project\\result2020\\result0103\\"  # 华硕
     # main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
     # main_path = "F:\\result2019\\result0927\\"  # HP
-    # main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
-    main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\testrun\\'  # XPS
-    main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\testrun\\'  # XPS
+    main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
+    # main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\testrun\\'  # XPS
+    # main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\testrun\\'  # XPS
 
-    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "MNIST50mclass1_985"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
     method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 0.11111
-    nbrs_k = 25
-    method_k = nbrs_k
+    yita = 100.0
+    nbrs_k = 55
+    method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
-    normalize = True
+    normalize = False
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = True  # y是否已经提前计算好
