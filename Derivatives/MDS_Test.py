@@ -376,10 +376,46 @@ def number_test():
     np.savetxt(path+"Pstring.csv", P, fmt='%s', delimiter=",")
 
 
+def time_part_test():
+    """
+    分析时间都消耗到了哪里
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\timeTest\\MNIST50mclass1_985\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data, -1, 1)
+    label = np.loadtxt(path + "label.csv", dtype=np.float, delimiter=",")
+
+    time0 = time.time()
+    mds = MDS(n_components=2)
+    Y = mds.fit_transform(X)
+    time1 = time.time()
+    print("降维耗时 ", time1-time0)
+    plt.scatter(Y[:, 0], Y[:, 1], marker='o', c=label)
+    plt.show()
+
+    Dx = euclidean_distances(X)
+    Dy = euclidean_distances(Y)
+
+    time_h0 = time.time()
+    H = MDS_Derivative.hessian_y_matrix(Dx, Dy, Y)
+    time_h1 = time.time()
+    print("H 耗时 ", time_h1-time_h0)
+    print("sum H = ", np.sum(H))
+    np.savetxt(path+"MDS_H_vector.csv", H, fmt='%f', delimiter=",")
+
+    time_h2 = time.time()
+    H2 = MDS_Derivative.hessian_y(Dx, Dy, Y)
+    time_h3 = time.time()
+    print("以前的标量形式耗时 ", time_h3-time_h2)
+    np.savetxt(path+"MDS_H_data.csv", H2, fmt='%f', delimiter=",")
+
+
 if __name__ == '__main__':
     # run2()
     # shape_test()
     # dim_perturb_run()
     # vectors_perturb_run()
     # time_test()
-    number_test()
+    # number_test()
+    time_part_test()

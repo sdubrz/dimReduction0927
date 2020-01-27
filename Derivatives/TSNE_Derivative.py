@@ -180,7 +180,7 @@ def hessian_y(Dy, P, Q, Y):
     (n, m) = Y.shape
     H = np.zeros((n*m, n*m))
 
-    for row in range(0, n*m):  # n*m
+    for row in range(0, m):  # n*m
         b = row % m
         a = row // m
         for column in range(0, n*m):
@@ -214,7 +214,7 @@ def hessian_y_matrix(Dy, P, Q, Y):
     PQ = P - Q
     E = 1.0 / (1 + Dy**2)
 
-    for a in range(0, n):
+    for a in range(0, n):  # n
         dY = np.tile(Y[a, :], (n, 1)) - Y
         Wq = np.zeros((n, n))
         Wq[range(n), range(n)] = Q[a, :]
@@ -223,9 +223,9 @@ def hessian_y_matrix(Dy, P, Q, Y):
         Wp = np.zeros((n, n))
         Wp[range(n), range(n)] = PQ[a, :]
         wY = np.matmul(Wd, dY)
-        wqY = np.matmul(Wq, wY)
+        # wqY = np.matmul(Wq, wY)
 
-        for c in range(0, n):
+        for c in range(0, n):  # n
             H_sub = np.zeros((m, m))
             if a == c:
                 H_sub1 = (-2)*np.matmul(np.matmul(Wp, wY).T, wY)
@@ -236,11 +236,60 @@ def hessian_y_matrix(Dy, P, Q, Y):
                 H_sub = (H_sub1 + H_sub2 + H_sub3)*4
             else:
                 dYc = np.tile(Y[c, :], (n, 1)) - Y
-                Wdc = np.zeros((n, n))
-                Wdc[range(n), range(n)] = E[c, :]
-                H_sub2 = (-4)*np.matmul(np.matmul(Wq**2, dY).T, np.tile(np.matmul(E[c, :]**2, dYc), (n, 1)))
+                # Wdc = np.zeros((n, n))  # 偶尔有一次耗时较多
+                # Wdc[range(n), range(n)] = E[c, :]  # 耗时较多，约占一半，0.002秒左右
+                H_sub2 = (-4)*np.matmul(np.matmul(Wq**2, dY).T, np.tile(np.matmul(E[c, :]**2, dYc), (n, 1)))  # 耗时较多，约占一半，0.002秒左右
                 H_sub3 = 2 * PQ[a, c] * (E[a, c]**2) * np.outer(dY[c, :], dY[c, :]) - PQ[a, c]*E[a, c]*np.eye(m)
                 H_sub1 = (-2)*Q[a, c]*E[a, c]*E[a, c]*np.outer(dY[c, :], dY[c, :])
+                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
+            H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
+
+        if a % 100 == 0:
+            print(a)
+    finish_time = time.time()
+    print("计算 Hessian matrix 耗时 ", finish_time-begin_time)
+    return H
+
+
+def hessian_y_matrix_fast(Dy, P, Q, Y):
+    """
+    计算目标函数对Y的二阶导数 矩阵方式实现
+    目前最快的版本 2020.01.27
+    :param Dy: 降维之后的距离矩阵
+    :param P: 高维空间的概率矩阵
+    :param Q: 低维空间的概率矩阵
+    :param Y: 降维之后的数据坐标矩阵
+    :return:
+    """
+    begin_time = time.time()
+    (n, m) = Y.shape
+    H = np.zeros((n*m, n*m))
+    PQ = P - Q
+    E = 1.0 / (1 + Dy**2)
+
+    for a in range(0, n):  # n
+        dY = np.tile(Y[a, :], (n, 1)) - Y
+        Wq = np.tile(Q[a, :], (m, 1)).T
+        Wd = np.tile(E[a, :], (m, 1)).T
+        Wp = np.tile(PQ[a, :], (m, 1)).T
+        wY = Wd*dY
+
+        for c in range(0, n):  # n
+            H_sub = np.zeros((m, m))
+            if a == c:
+                H_sub1 = (-2)*np.matmul((Wp * wY).T, wY)  # 耗时较多  M2
+                H_sub2 = np.dot(PQ[a, :], E[a, :]) * np.eye(m)  # M3
+                dY_in2 = 4 * np.matmul(Q[a, :], wY)  # M1括号中的右半部分
+                dY_in = (-2) * wY + dY_in2  # M1中括号部分
+                H_sub3 = (-1) * np.matmul(wY.T, Wq * dY_in)  # 耗时较多  M1
+                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
+            else:
+                dYc = np.tile(Y[c, :], (n, 1)) - Y
+                sub2_1 = np.matmul(E[c, :]**2, dYc)
+                sub2_2 = np.matmul(Q[a, :]**2, dY)
+                H_sub2 = (-4) * np.outer(sub2_2, sub2_1)  # 如此改可以大幅提高计算速度
+                H_sub3 = 2 * PQ[a, c] * (E[a, c]**2) * np.outer(dY[c, :], dY[c, :]) - PQ[a, c]*E[a, c]*np.eye(m)  # S2+S3
+                H_sub1 = (-2)*Q[a, c]*E[a, c]*E[a, c]*np.outer(dY[c, :], dY[c, :])  # S1的左半部分
                 H_sub = (H_sub1 + H_sub2 + H_sub3)*4
 
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
@@ -248,6 +297,63 @@ def hessian_y_matrix(Dy, P, Q, Y):
             print(a)
     finish_time = time.time()
     print("计算 Hessian matrix 耗时 ", finish_time-begin_time)
+    return H
+
+
+def hessian_y_matrix_s(Dy, P, Q, Y):
+    """
+    计算目标函数对Y的二阶导数 矩阵方式实现
+    非对角线加速版
+    :param Dy: 降维之后的距离矩阵
+    :param P: 高维空间的概率矩阵
+    :param Q: 低维空间的概率矩阵
+    :param Y: 降维之后的数据坐标矩阵
+    :return:
+    """
+    begin_time = time.time()
+    (n, m) = Y.shape
+    H = np.zeros((n*m, n*m))
+    PQ = P - Q
+    E = 1.0 / (1 + Dy**2)
+
+    dia_time = 0
+
+    for a in range(0, n):  # n
+        dY = np.tile(Y[a, :], (n, 1)) - Y
+        Wq = np.zeros((n, n))
+        Wq[range(n), range(n)] = Q[a, :]
+        Wd = np.zeros((n, n))
+        Wd[range(n), range(n)] = E[a, :]
+        Wp = np.zeros((n, n))
+        Wp[range(n), range(n)] = PQ[a, :]
+        wY = np.matmul(Wd, dY)
+        # wqY = np.matmul(Wq, wY)
+        time2 = time.time()
+
+        for c in range(0, n):  # n
+            H_sub = np.zeros((m, m))
+            if a == c:
+                H_sub1 = (-2)*np.matmul(np.matmul(Wp, wY).T, wY)  # 耗时较多
+                H_sub2 = np.dot(PQ[a, :], E[a, :]) * np.eye(m)
+                dY_in2 = 4 * np.matmul(Q[a, :], wY)
+                dY_in = (-2) * wY + dY_in2
+                H_sub3 = (-1) * np.matmul(wY.T, np.matmul(Wq, dY_in))  # 耗时较多
+                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
+            else:
+                dYc = np.tile(Y[c, :], (n, 1)) - Y
+                sub2_1 = np.matmul(E[c, :]**2, dYc)
+                sub2_2 = np.matmul(Q[a, :]**2, dY)
+                H_sub2 = (-4) * np.outer(sub2_2, sub2_1)  # 如此改可以大幅提高计算速度
+                H_sub3 = 2 * PQ[a, c] * (E[a, c]**2) * np.outer(dY[c, :], dY[c, :]) - PQ[a, c]*E[a, c]*np.eye(m)  # S2+S3
+                H_sub1 = (-2)*Q[a, c]*E[a, c]*E[a, c]*np.outer(dY[c, :], dY[c, :])  # S1的左半部分
+                H_sub = (H_sub1 + H_sub2 + H_sub3)*4
+
+            H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
+        if a % 100 == 0:
+            print(a)
+    finish_time = time.time()
+    print("计算 Hessian matrix 耗时 ", finish_time-begin_time)
+    # print("其中，花在对角线上的时间为 ", dia_time)
     return H
 
 
@@ -369,6 +475,58 @@ def derivative_X_matrix(X, Y, Dy, beta, P0):
     return J
 
 
+def derivative_X_matrix_fast(X, Y, Dy, beta, P0):
+    """
+    计算目标函数对Y的导数再对X求导 矩阵实现方式
+    :param X: 高维数据矩阵
+    :param Y: 降维结果矩阵
+    :param Dy: 降维结果的距离矩阵
+    :param beta: t-SNE计算高维概率时所用到的方差，注意搞清楚一个2倍的关系
+    :param P0: 没有进行对称化的高维概率矩阵
+    :return:
+    """
+    begin_time = time.time()
+    (n, dim) = X.shape
+    (n_, m) = Y.shape
+    # path = "E:\\Project\\result2019\\DerivationTest\\tsne\\Iris2\\"
+
+    J = np.zeros((n*m, n*dim))
+    E = 1.0 / (1+Dy**2)
+    Wbeta = np.zeros((n, dim))
+    for i in range(0, n):
+        Wbeta[i, :] = 2*beta[i]
+
+    for a in range(0, n):  # n
+        dY = np.tile(Y[a, :], (n, 1)) - Y
+        Wd = np.tile(E[a, :], (m, 1)).T
+        wY = (Wd * dY).T
+
+        dX = np.tile(X[a, :], (n, 1)) - X
+        Wp2 = np.tile(P0[:, a], (dim, 1)).T
+        Wp1 = np.tile(P0[a, :], (dim, 1)).T
+
+        for c in range(0, n):
+
+            J_sub = np.zeros((m, dim))
+            if a == c:
+                M1 = (Wp2*(Wp2-1)*Wbeta) * dX
+                M2 = (Wp1*beta[a]*2) * (X-np.matmul(P0[a, :], X))
+                J_sub = 2/n * np.matmul(wY, M1+M2)
+            else:
+                dXc = np.tile(X[c, :], (n, 1)) - X
+                Wp3 = np.tile(P0[:, c], (dim, 1)).T
+                M1 = E[a, c] * np.outer(dY[c, :], P0[c, a]*Wbeta[c, 0]*(X[a, :]-np.matmul(P0[c, :], X)) + P0[a, c] * Wbeta[a, 0] * dX[c, :])
+                M2 = np.matmul(wY, Wp3*Wp2*Wbeta*dXc)
+                M3 = np.outer(np.matmul(wY, P0[a, :].T), P0[a, c]*Wbeta[a, 0]*dXc[a, :])
+                J_sub = (M1 + M2 + M3)*(2/n)
+            J[a*m:a*m+m, c*dim:c*dim+dim] = J_sub[:, :]
+        if a % 100 == 0:
+            print(a)
+    finish_time = time.time()
+    print("计算 Jacobi耗时 ", finish_time-begin_time)
+    return J
+
+
 def Jxy(H, J):
     """
     计算Y对X求导的结果
@@ -401,9 +559,9 @@ class TSNE_Derivative:
         """
         Dy = euclidean_distances(Y)
         print("Hessian...")
-        H = hessian_y_matrix(Dy, P, Q, Y)
+        H = hessian_y_matrix_fast(Dy, P, Q, Y)
         print("J...")
-        J = derivative_X_matrix(X, Y, Dy, beta, P0)
+        J = derivative_X_matrix_fast(X, Y, Dy, beta, P0)
         self.H = H
         self.J = J
         print("Pxy...")

@@ -83,7 +83,7 @@ def hessian_y_matrix(Dx, Dy, Y):
     Dy2 = Dy.copy()
     Dy2[range(n), range(n)] = 1.0
 
-    for a in range(0, n):
+    for a in range(0, n):  # n
         dY = np.tile(Y[a, :], (n, 1)) - Y
         W = np.zeros((n, n))
         W[range(n), range(n)] = 2 * Dx[a, :] / (Dy2[a, :] ** 3)

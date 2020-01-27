@@ -4,6 +4,7 @@ t-sne的测试代码
 import numpy as np
 from sklearn.metrics import euclidean_distances
 import math
+from Main import Preprocess
 
 from Derivatives import TSNE_Derivative
 from MyDR import cTSNE
@@ -219,10 +220,78 @@ def time_test():
     np.savetxt(path + "Q.csv", Q, fmt='%f', delimiter=",")
 
 
+def time_part_test():
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\timeTest\\MNIST50mclass1_985\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data, -1, 1)
+    label = np.loadtxt(path+"label.csv", dtype=np.float, delimiter=",")
+
+    time1 = time.time()
+    t_sne = cTSNE.cTSNE(n_component=2, perplexity=30.0)
+    Y = t_sne.fit_transform(X)
+    time2 = time.time()
+    print("降维所花的时间为 ", time2-time1)
+    plt.scatter(Y[:, 0], Y[:, 1], marker='o', c=label)
+    plt.show()
+
+    P = t_sne.P
+    Q = t_sne.Q
+    P0 = t_sne.P0
+    beta = t_sne.beta
+    Dy = euclidean_distances(Y)
+
+    H1 = TSNE_Derivative.hessian_y_matrix_fast(Dy, P, Q, Y)
+    # H2 = TSNE_Derivative.hessian_y_matrix(Dy, P, Q, Y)
+    H2 = TSNE_Derivative.hessian_y_matrix_s(Dy, P, Q, Y)
+
+    np.savetxt(path+"tsne_H1.csv", H1, fmt='%f', delimiter=",")
+    np.savetxt(path+"tsne_H2.csv", H2, fmt='%f', delimiter=",")
+    np.savetxt(path+"tsne_dH.csv", H1-H2, fmt='%f', delimiter=",")
+
+    # old_time0 = time.time()
+    # H2 = TSNE_Derivative.hessian_y(Dy, P, Q, Y)
+    # old_time1 = time.time()
+    # print("以前的标量形式耗时 ", old_time1-old_time0)
+
+
+def time_test_J():
+    """
+    对derivative_X_matrix的时间复杂度进行分析
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\timeTest\\MNIST50mclass1_985\\"
+    data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data, -1, 1)
+    label = np.loadtxt(path + "label.csv", dtype=np.float, delimiter=",")
+
+    time1 = time.time()
+    t_sne = cTSNE.cTSNE(n_component=2, perplexity=30.0)
+    Y = t_sne.fit_transform(X)
+    time2 = time.time()
+    print("降维所花的时间为 ", time2 - time1)
+    plt.scatter(Y[:, 0], Y[:, 1], marker='o', c=label)
+    plt.show()
+
+    P = t_sne.P
+    Q = t_sne.Q
+    P0 = t_sne.P0
+    beta = t_sne.beta
+    Dy = euclidean_distances(Y)
+
+    J1 = TSNE_Derivative.derivative_X_matrix_test(X, Y, Dy, beta, P0)
+    # J2 = TSNE_Derivative.derivative_X_matrix(X, Y, Dy, beta, P0)
+
+    np.savetxt(path+"J1.csv", J1, fmt='%f', delimiter=",")
+    # np.savetxt(path+"J2.csv", J2, fmt='%f', delimiter=",")
+    # np.savetxt(path+"dJ.csv", J1-J2, fmt='%f', delimiter=",")
+    print("sum J1 = ", np.sum(J1))
+
+
 if __name__ == '__main__':
     # run1()
     # run2()
     # just_test()
     # check_P()
     # vectors_perturb_run()
-    time_test()
+    # time_part_test()
+    time_test_J()

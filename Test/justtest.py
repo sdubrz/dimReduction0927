@@ -53,6 +53,28 @@ def test3():
         print("two")
 
 
+def test4():
+    n = 10
+    PQ = np.random.random((n, n))
+    E = np.random.random((n, n))
+    a = 1
+    S3_0 = (-1)*np.tile(PQ[a, :] * E[a, :], (4, 1)).T  # 利用了P和Q是对称矩阵的性质
+    print(S3_0)
+    S3_0[:, 1:3] = 0
+    S3 = (S3_0.reshape((2*n, 2))).T
+    print(S3)
+
+
+def test5():
+    a = np.random.random((5, 5))
+    print("a = ", a)
+    b = np.tile(a[1, :], (2, 1)).T
+    print("b = ", b)
+    c = np.random.random((5, 2))
+    print("c = ", c)
+    print("b*c = ", b*c)
+
+
 if __name__ == '__main__':
     # run2()
-    test3()
+    test5()
