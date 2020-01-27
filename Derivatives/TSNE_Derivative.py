@@ -478,6 +478,7 @@ def derivative_X_matrix(X, Y, Dy, beta, P0):
 def derivative_X_matrix_fast(X, Y, Dy, beta, P0):
     """
     计算目标函数对Y的导数再对X求导 矩阵实现方式
+    当前最快的实现方式  2020.01.27
     :param X: 高维数据矩阵
     :param Y: 降维结果矩阵
     :param Dy: 降维结果的距离矩阵

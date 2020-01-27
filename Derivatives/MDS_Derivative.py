@@ -314,8 +314,8 @@ class MDS_Derivative:
         """
         Dx = euclidean_distances(X)
         Dy = euclidean_distances(Y)
-        self.H = hessian_y_matrix(Dx, Dy, Y)
-        self.J_yx = derivative_X_matrix(Dx, Dy, X, Y)
+        self.H = hessian_y_matrix_fast(Dx, Dy, Y)
+        self.J_yx = derivative_X_matrix_fast(Dx, Dy, X, Y)
         self.P = Jyx(self.H, self.J_yx)
 
         return self.P
