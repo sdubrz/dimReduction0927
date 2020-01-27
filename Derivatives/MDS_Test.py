@@ -381,7 +381,7 @@ def time_part_test():
     分析时间都消耗到了哪里
     :return:
     """
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\timeTest\\MNIST50mclass1_985\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\timeTest\\Wine\\"
     data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     X = Preprocess.normalize(data, -1, 1)
     label = np.loadtxt(path + "label.csv", dtype=np.float, delimiter=",")
@@ -397,18 +397,19 @@ def time_part_test():
     Dx = euclidean_distances(X)
     Dy = euclidean_distances(Y)
 
-    time_h0 = time.time()
-    H = MDS_Derivative.hessian_y_matrix(Dx, Dy, Y)
-    time_h1 = time.time()
-    print("H 耗时 ", time_h1-time_h0)
-    print("sum H = ", np.sum(H))
-    np.savetxt(path+"MDS_H_vector.csv", H, fmt='%f', delimiter=",")
+    # H1 = MDS_Derivative.hessian_y_matrix(Dx, Dy, Y)
+    # H2 = MDS_Derivative.hessian_y_matrix_fast(Dx, Dy, Y)
+    # np.savetxt(path+"MDS_H1.csv", H1, fmt='%f', delimiter=",")
+    # np.savetxt(path+"MDS_H2.csv", H2, fmt='%f', delimiter=",")
+    # np.savetxt(path+"MDS_dH.csv", H1-H2, fmt='%f', delimiter=",")
 
-    time_h2 = time.time()
-    H2 = MDS_Derivative.hessian_y(Dx, Dy, Y)
-    time_h3 = time.time()
-    print("以前的标量形式耗时 ", time_h3-time_h2)
-    np.savetxt(path+"MDS_H_data.csv", H2, fmt='%f', delimiter=",")
+    J1 = MDS_Derivative.derivative_X_matrix(Dx, Dy, X, Y)
+    J2 = MDS_Derivative.derivative_X_matrix_fast(Dx, Dy, X, Y)
+    dJ = J1 - J2
+    np.savetxt(path+"MDS_J1.csv", J1, fmt='%f', delimiter=",")
+    np.savetxt(path+"MDS_J2.csv", J2, fmt='%f', delimiter=",")
+    np.savetxt(path+"MDS_dJ.csv", dJ, fmt='%f', delimiter=",")
+    print("sum J = ", np.sum(J2))
 
 
 if __name__ == '__main__':

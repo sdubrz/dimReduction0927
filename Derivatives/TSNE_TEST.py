@@ -278,7 +278,7 @@ def time_test_J():
     beta = t_sne.beta
     Dy = euclidean_distances(Y)
 
-    J1 = TSNE_Derivative.derivative_X_matrix_test(X, Y, Dy, beta, P0)
+    J1 = TSNE_Derivative.derivative_X_matrix_fast(X, Y, Dy, beta, P0)
     # J2 = TSNE_Derivative.derivative_X_matrix(X, Y, Dy, beta, P0)
 
     np.savetxt(path+"J1.csv", J1, fmt='%f', delimiter=",")
