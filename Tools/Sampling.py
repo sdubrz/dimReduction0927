@@ -3,8 +3,8 @@ import numpy as np
 
 
 def sample():
-    in_path = "E:\\Project\\result2019\\result0927\\datasets\\waveform\\"
-    out_path = "E:\\Project\\result2019\\result0927\\datasets\\waveform500\\"
+    in_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\pendigits\\"
+    out_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\pendigits1500\\"
 
     data0 = np.loadtxt(in_path+"data.csv", dtype=np.float, delimiter=',')
     label0 = np.loadtxt(in_path+"label.csv", dtype=np.int, delimiter=',')
@@ -14,7 +14,7 @@ def sample():
     label = []
 
     for i in range(0, n):
-        if i % 10 == 0:
+        if i % 5 == 0:
             data.append(data0[i, :])
             label.append([label0[i]])
 
