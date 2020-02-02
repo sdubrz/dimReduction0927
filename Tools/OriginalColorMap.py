@@ -10,7 +10,7 @@ def color_scatter():
     """
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\olive\\"
     path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\seeds\\"
-    attr = 3  # 第几个维度
+    attr = 5  # 第几个维度
 
     data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     Y = np.loadtxt(path+"PCA.csv", dtype=np.float, delimiter=",")  # 文件名由降维方法确定

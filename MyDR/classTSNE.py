@@ -185,6 +185,8 @@ if __name__ == "__main__":
     print("Running example on 2,500 MNIST digits...")
     X = np.loadtxt("mnist2500_X.txt")
     labels = np.loadtxt("mnist2500_labels.txt")
-    Y = tsne(X, 2, 50, 20.0)
-    pylab.scatter(Y[:, 0], Y[:, 1], 20, labels)
-    pylab.show()
+    np.savetxt("mnist2500.csv", X, fmt='%f', delimiter=",")
+
+    # Y = tsne(X, 2, 50, 20.0)
+    # pylab.scatter(Y[:, 0], Y[:, 1], 20, labels)
+    # pylab.show()

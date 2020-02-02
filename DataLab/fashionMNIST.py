@@ -2,9 +2,11 @@ import numpy as np
 from Main import DimReduce
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 import os
 from Tools import ImageScatter
 from Main import Preprocess
+from MyDR import cTSNE
 
 
 def sampling():
@@ -195,10 +197,37 @@ def combination():
                 print(i, j, k)
 
 
+def combination4():
+    """
+    每4个类进行组合，手动输入类别序号
+    :return:
+    """
+    print("44组合")
+
+
+def fashion568_test():
+    """
+    探究fashion568在t-SNE中不正常的原因
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass568\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+
+    # t_sne = TSNE(n_components=2, perplexity=30.0)  # sklearn 中的t-SNE
+    t_sne = cTSNE.cTSNE(n_component=2, perplexity=30.0)
+    Y = t_sne.fit_transform(data)
+    # np.savetxt(path+"sTSNE.csv", Y, fmt='%f', delimiter=",")
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.show()
+
+
 if __name__ == '__main__':
     # sampling()
     # see_data()
     # pca_research()
     # classify()
-    pca_art_scatter()
+    # pca_art_scatter()
     # combination()
+    fashion568_test()
