@@ -199,10 +199,88 @@ def combination():
 
 def combination4():
     """
-    每4个类进行组合，手动输入类别序号
+    四种物体组合, 6 和 8 是比价好的，保持6和8
     :return:
     """
-    print("44组合")
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\fashion\\"
+    fashion_count = [238, 254, 251, 262, 264, 251, 251, 244, 227, 258]
+    in_path = path + "single\\fashion50mclass"
+    data6 = np.loadtxt(in_path+"6_251\\data.csv", dtype=np.float, delimiter=",")
+    label6 = np.loadtxt(in_path+"6_251\\label.csv", dtype=np.int, delimiter=",")
+    origin6 = np.loadtxt(in_path+"6_251\\origin.csv", dtype=np.int, delimiter=",")
+    data8 = np.loadtxt(in_path + "8_227\\data.csv", dtype=np.float, delimiter=",")
+    label8 = np.loadtxt(in_path + "8_227\\label.csv", dtype=np.int, delimiter=",")
+    origin8 = np.loadtxt(in_path + "8_227\\origin.csv", dtype=np.int, delimiter=",")
+
+    for i in range(0, 9):
+        if i == 6 or i == 8:
+            continue
+        in_path_i = in_path+str(i)+"_"+str(fashion_count[i])+"\\"
+        Xi_data = np.loadtxt(in_path_i+"data.csv", dtype=np.float, delimiter=",")
+        Xi_label = np.loadtxt(in_path_i+"label.csv", dtype=np.int, delimiter=",")
+        Xi_origin = np.loadtxt(in_path_i+"origin.csv", dtype=np.int, delimiter=",")
+        for j in range(i+1, 10):
+            if j == 6 or j == 8:
+                continue
+            in_path_j = in_path + str(j) + "_" + str(fashion_count[j]) + "\\"
+            Xj_data = np.loadtxt(in_path_j + "data.csv", dtype=np.float, delimiter=",")
+            Xj_label = np.loadtxt(in_path_j + "label.csv", dtype=np.int, delimiter=",")
+            Xj_origin = np.loadtxt(in_path_j + "origin.csv", dtype=np.int, delimiter=",")
+
+            out_path = path + "combination4\\fashion50mClass68"+str(i)+str(j)+"\\"
+            image_path = path + "combination4PCA\\"
+            if os.path.exists(out_path):
+                pass
+            else:
+                os.makedirs(out_path)
+            n = fashion_count[6] + fashion_count[8] + fashion_count[i] + fashion_count[j]
+            data = np.zeros((n, 50))
+            label = np.zeros((n, 1))
+            origin = np.zeros((n, 784))
+
+            n1 = fashion_count[6]
+            n2 = n1 + fashion_count[8]
+            n3 = n2 + fashion_count[i]
+
+            data[0:n1, :] = data6[:, :]
+            origin[0:n1, :] = origin6[:, :]
+            data[n1:n2, :] = data8[:, :]
+            origin[n1:n2, :] = origin8[:, :]
+            data[n2:n3, :] = Xi_data[:, :]
+            origin[n2:n3, :] = Xi_origin[:, :]
+            data[n3:n, :] = Xj_data[:, :]
+            origin[n3:n, :] = Xj_origin[:, :]
+
+            label[0:n1] = 6
+            label[n1:n2] = 8
+            label[n2:n3] = i
+            label[n3:n] = j
+
+            np.savetxt(out_path+"data.csv", data, fmt='%f', delimiter=",")
+            np.savetxt(out_path+"label.csv", label, fmt='%d', delimiter=",")
+            np.savetxt(out_path+"origin.csv", origin, fmt='%d', delimiter=",")
+            label2 = np.loadtxt(out_path+"label.csv", dtype=np.int, delimiter=",")
+
+            pca1 = PCA(n_components=2)
+            Y1 = pca1.fit_transform(data)
+            pca2 = PCA(n_components=50)
+            data2 = pca2.fit_transform(origin)
+            pca3 = PCA(n_components=2)
+            Y2 = pca3.fit_transform(origin)
+
+            np.savetxt(out_path+"data2.csv", data2, fmt='%f', delimiter=",")
+            plt.scatter(Y1[:, 0], Y1[:, 1], c=label2)
+            plt.title("68"+str(i)+str(j)+"A")
+            plt.colorbar()
+            plt.savefig(image_path+"68"+str(i)+str(j)+"A.png")
+            plt.close()
+            plt.scatter(Y2[:, 0], Y2[:, 1], c=label2)
+            plt.title("68" + str(i) + str(j) + "B")
+            plt.colorbar()
+            plt.savefig(image_path + "68" + str(i) + str(j) + "B.png")
+            plt.close()
+
+            print("68" + str(i) + str(j))
 
 
 def fashion568_test():
@@ -230,4 +308,5 @@ if __name__ == '__main__':
     # classify()
     # pca_art_scatter()
     # combination()
-    fashion568_test()
+    # fashion568_test()
+    combination4()
