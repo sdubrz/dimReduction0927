@@ -302,6 +302,8 @@ class MDS_Derivative:
         self.H = None
         self.J_yx = None
         self.P = None
+        self.Dx = None
+        self.Dy = None
 
     def getP(self, X, Y):
         """
@@ -314,6 +316,8 @@ class MDS_Derivative:
         """
         Dx = euclidean_distances(X)
         Dy = euclidean_distances(Y)
+        self.Dx = Dx
+        self.Dy = Dy
         self.H = hessian_y_matrix_fast(Dx, Dy, Y)
         self.J_yx = derivative_X_matrix_fast(Dx, Dy, X, Y)
         self.P = Jyx(self.H, self.J_yx)

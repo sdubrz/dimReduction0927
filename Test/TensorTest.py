@@ -67,6 +67,17 @@ def run5():
     print(a)
 
 
+def run6():
+    a = np.ones((3, 1))
+    b = np.array([[1, 2, 3],
+                  [4, 5, 6],
+                  [7, 8, 9]])
+    c = np.matmul(a.T, b)
+    d = np.matmul(c, a)
+    print(c)
+    print(d)
+
+
 if __name__ == '__main__':
-    run5()
+    run6()
 

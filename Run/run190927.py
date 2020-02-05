@@ -26,6 +26,7 @@ from SMMC_ import Clustering
 from Main import LocalPCA
 from Perturb2020 import MDS_Perturb
 from Perturb2020 import TSNE_Perturb
+from Perturb2020 import MDS_PerturbSecond
 
 """"
 本程序是基于run190422.py修改的
@@ -219,6 +220,14 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                    method_name=method,
                                                                    yita=yita, save_path=save_path, weighted=weighted,
                                                                    label=label, y_precomputed=y_precomputed)
+    elif method == "MDS2nd":
+        y, y_list_add, y_list_sub = MDS_PerturbSecond.perturb_mds_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
+                                                                       method_k=method_k,
+                                                                       MAX_EIGEN_COUNT=max_eigen_numbers,
+                                                                       method_name=method,
+                                                                       yita=yita, save_path=save_path,
+                                                                       weighted=weighted,
+                                                                       label=label, y_precomputed=y_precomputed)
     else:
         y, y_list_add, y_list_sub = Preturb.perturb_once_weighted(x, nbrs_k=nbrs_k, y_init=y_random,
                                                           method_k=method_k,
@@ -590,19 +599,19 @@ def run_test(data_name0=None):
     main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "fashion50mclass568"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"
-    yita = 5
-    nbrs_k = 51
+    method = "MDS2nd"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 0.025
+    nbrs_k = 30
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
-    normalize = False  # 是否进行normalize
+    normalize = True  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好
@@ -678,8 +687,8 @@ def run_test(data_name0=None):
     TrendJson.trend_json(last_path)
 
     # 画主成分的投影方向，如果是循环调用该函数的话，是默认不画图的
-    if data_name0 is None and show_result:
-        MainDirector.draw_main_director(last_path, normalize=True, line_length=0.03)
+    # if data_name0 is None and show_result:
+    #     MainDirector.draw_main_director(last_path, normalize=True, line_length=0.03)
 
     # 画KNN关系图
     # VisualizationKNN.draw_knn(last_path)  # 太浪费空间，暂时注释掉，默认不运行

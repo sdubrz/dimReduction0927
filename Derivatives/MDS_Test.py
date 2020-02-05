@@ -6,6 +6,7 @@ import math
 from Main import Preprocess
 from sklearn.manifold import MDS
 from Derivatives import MDS_Derivative
+from Derivatives import MDS_DerivativeSecond
 import time
 
 
@@ -412,6 +413,43 @@ def time_part_test():
     print("sum J = ", np.sum(J2))
 
 
+def second_test():
+    """
+    测试MDS的二阶导，
+    每一个dn×dn的模块是不是对称的
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\MDSsecond\\Iris3\\"
+    X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(X, -1, 1)
+    (n, d) = X.shape
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+
+    mds = MDS(n_components=2)
+    Y = mds.fit_transform(X)
+
+    np.savetxt(path+"Y.csv", Y, fmt="%f", delimiter=",")
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.show()
+
+    der = MDS_Derivative.MDS_Derivative()
+    J = der.getP(X, Y)
+    np.savetxt(path+"J.csv", J, fmt='%f', delimiter=",")
+    J.tofile(path+"J.txt")
+
+    Dx = der.Dx
+    Dy = der.Dy
+    H = der.H
+    Hinv = np.linalg.pinv(H)
+
+    A = MDS_DerivativeSecond.yDx2(X, Y, Dx, Dy, J, Hinv)
+    A.tofile(path+"A.txt")
+    path2 = path + "second\\"
+    for i in range(0, 2*n):
+        np.savetxt(path2+str(i)+".csv", A[i, :, :], fmt='%f', delimiter=",")
+    print("存储完成")
+
+
 if __name__ == '__main__':
     # run2()
     # shape_test()
@@ -419,4 +457,5 @@ if __name__ == '__main__':
     # vectors_perturb_run()
     # time_test()
     # number_test()
-    time_part_test()
+    # time_part_test()
+    second_test()
