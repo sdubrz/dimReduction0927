@@ -74,8 +74,14 @@ def run6():
                   [7, 8, 9]])
     c = np.matmul(a.T, b)
     d = np.matmul(c, a)
-    print(c)
-    print(d)
+    # print(c)
+    # print(d)
+
+    f = np.sum(b, axis=1)
+    print(f)
+    print(f.shape)
+    f2 = f.reshape((3, 1))
+    print(f2.shape)
 
 
 if __name__ == '__main__':

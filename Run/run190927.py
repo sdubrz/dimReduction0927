@@ -27,6 +27,7 @@ from Main import LocalPCA
 from Perturb2020 import MDS_Perturb
 from Perturb2020 import TSNE_Perturb
 from Perturb2020 import MDS_PerturbSecond
+from Tools import MDSStress
 
 """"
 本程序是基于run190422.py修改的
@@ -605,8 +606,8 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "MDS2nd"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.025
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 0.08111
     nbrs_k = 30
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
@@ -662,17 +663,23 @@ def run_test(data_name0=None):
     cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
     # cluster_label = Clustering.run_clustering_path(last_path, d_latent=m, n_pca=20, n_clusters=8, k_knn=nbrs_k, o=8, max_iter=100)
 
+    # 计算MDS中每个点对stress的贡献
+    X = np.loadtxt(last_path+"x.csv", dtype=np.float, delimiter=",")
+    stress_values = MDSStress.stress_value(X, Y)
+    np.savetxt(last_path+"stressValue.csv", stress_values, fmt='%f', delimiter=",")
+
     json_start = time()
     # main_path2 = main_path + method + "\\" + data_name + "\\"
     polygon_json190927.merge_json(main_path, data_name, method, yita, method_k, nbrs_k, draw_kind,
                                   MAX_EIGEN_NUMBER=eigen_numbers,
-                                  weighted=weighted, test_attr=cluster_label, false_class=cluster_label)
+                                  weighted=weighted, test_attr=stress_values, false_class=cluster_label)
     json_end = time()
     print("合成json文件的时间为\t", json_end - json_start)
 
     end_time = time()
     print("程序的总运行时间为\t", end_time - start_time)
 
+    # 这个算的其实是每个点与其他点距离在降维前后的差别
     Stress_json.create_json(last_path)
 
     Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
