@@ -9,6 +9,7 @@ from Main import processData as pD
 from Derivatives.TSNE_Derivative import TSNE_Derivative
 from Derivatives.VectorPerturb import VectorPerturb
 import time
+from MyDR import PointsError
 
 
 class TSNEPerturb:
@@ -139,6 +140,11 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     print("初次降维已经计算完毕")
     y_add_list, y_sub_list = tsne_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
 
+    points_error = PointsError.tsne_kl(tsne_perturb.Px, tsne_perturb.Q)
+
+    np.savetxt(save_path0+"Px.csv", tsne_perturb.Px, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"Q.csv", tsne_perturb.Q, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"error.csv", points_error, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.inv(tsne_perturb.Hessian), fmt='%f', delimiter=",")
