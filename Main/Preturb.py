@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from Perturb import PointsInfluence
 import matplotlib.pyplot as plt
 from MyDR import cTSNE
+from MyDR import PointsError
 
 
 def perturb_pca_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="PCA2",
@@ -284,6 +285,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     #     print("所输入的k值过大")
     #     method_k = n
 
+    save_path0 = save_path
     if weighted:
         save_path = save_path + "【weighted】"
 
@@ -348,6 +350,8 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
         P = np.transpose(P_)
         y = np.matmul(data, P)
         np.savetxt(save_path+"P.csv", P, fmt="%f", delimiter=",")
+        points_error = PointsError.pca_error(data, y)
+        np.savetxt(save_path0+"error.csv", points_error, fmt='%f', delimiter=",")
     elif method_name == 'LDA' or method_name == 'lda':
         print('当前使用 LDA 方法')
         lda = LDA(n_component=2)

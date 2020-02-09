@@ -19,6 +19,7 @@ from JSON_Data import CircleScatter
 from JSON_Data import highKNN_2dPCA
 from JSON_Data import TrendJson
 from JSON_Data import Stress_json
+from JSON_Data import ErrorJson
 from Main import MainDirector
 from Tools import VisualizationKNN
 from ClusterTest import clusterTest
@@ -607,7 +608,7 @@ def run_test(data_name0=None):
         data_name = data_name0
 
     method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.08111
+    yita = 0.08333
     nbrs_k = 30
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
@@ -681,6 +682,7 @@ def run_test(data_name0=None):
 
     # 这个算的其实是每个点与其他点距离在降维前后的差别
     Stress_json.create_json(last_path)
+    ErrorJson.create_json(last_path)  # 生成带有每个点的误差的json文件
 
     Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
     print("计算二维完成")

@@ -8,6 +8,7 @@ from Main import processData as pD
 from Derivatives.MDS_Derivative import MDS_Derivative
 from Derivatives.VectorPerturb import VectorPerturb
 import time
+from MyDR import PointsError
 
 
 class MDSPerturb:
@@ -129,6 +130,9 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
     print("初次降维已经计算完毕")
     y_add_list, y_sub_list = mds_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
 
+    points_error = PointsError.mds_stress(data, y)
+
+    np.savetxt(save_path0+"error.csv", points_error, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Pxy.csv", mds_perturb.P, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Hessian.csv", mds_perturb.Hessian, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Hessian_.csv", np.linalg.inv(mds_perturb.Hessian), fmt='%f', delimiter=",")
