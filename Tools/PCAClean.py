@@ -75,14 +75,14 @@ def PCA(data, p):
     D, V = EigDV(covMat, p)
     # 得到降维后的数据
     lowDataMat = getlowDataMat(dataMat, V)
-    np.savetxt("C:\\Users\\Hayim\\Desktop\\testrun\\datasets\\MNIST\\new.csv", np.around(lowDataMat, decimals=6), delimiter=',')
+    np.savetxt("C:\\Users\\Hayim\\Desktop\\testrun\\datasets\\MNIST_568\\new.csv", np.around(lowDataMat, decimals=6),'%.6f', delimiter=',')
     # 重构数据
     reconDataMat = Reconstruction(lowDataMat, V, meanVal)
     return reconDataMat
 
 
 def main():
-    data_path = 'C:\\Users\\Hayim\\Desktop\\testrun\\datasets\\MNIST\\data.csv'
+    data_path = 'C:\\Users\\Hayim\\Desktop\\testrun\\datasets\\MNIST_568\\data.csv'
     data_reader = np.loadtxt(data_path, dtype=np.int, delimiter=",")
     data = data_reader[:, :].astype(np.float)
     data_shape = data.shape
@@ -90,7 +90,7 @@ def main():
     print(data_shape)
     print("降维前的特征个数：" + str(cols) + "\n")
     print('----------------------------------------')
-    reconImage = PCA(data, 0.80)
+    reconImage = PCA(data, 0.85)
     reconImage = reconImage.astype(np.uint8)
     print(reconImage.shape)
 

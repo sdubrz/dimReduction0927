@@ -601,7 +601,7 @@ def run_test(data_name0=None):
     main_path = 'C:\\Users\\Hayim\\Desktop\\testrun\\'  # XPS
     main_path_without_normalize = 'C:\\Users\\Hayim\\Desktop\\testrun\\'  # XPS
 
-    data_name = "mnist50mminiclass159"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "MNIST_568mini"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
@@ -609,7 +609,7 @@ def run_test(data_name0=None):
 
     method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
     yita = 0.08333
-    nbrs_k = 30
+    nbrs_k = 60
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
@@ -708,13 +708,6 @@ def run_test(data_name0=None):
 
 
 if __name__ == "__main__":
-    path = "C:/Users/Hayim/Desktop/testrun/datasets"  # 文件夹目录
-    files = os.listdir(path)  # 得到文件夹下的所有文件名称
-    s = []
-
-    for file in files:  # 遍历文件夹
-        if file.startswith('mnist50mminiclass'):
-            run_test(str(file))
     last_path, data_name, main_path, method = run_test()
 
     do_remove = False  # 是否要做删除outlier操作
