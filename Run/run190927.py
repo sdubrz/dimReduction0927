@@ -601,7 +601,7 @@ def run_test(data_name0=None):
     main_path = 'C:\\Users\\Hayim\\Desktop\\testrun\\'  # XPS
     main_path_without_normalize = 'C:\\Users\\Hayim\\Desktop\\testrun\\'  # XPS
 
-    data_name = "MNIST_568mini"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "MNIST0245"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:

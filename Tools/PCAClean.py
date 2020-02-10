@@ -64,8 +64,8 @@ def Reconstruction(lowDataMat, K_eigenVector, meanVal):
 
 
 # PCA算法
-def PCA(data, p):
-    dataMat = np.float32(np.mat(data))
+def PCA(data, p, path):
+    dataMat = np.mat(data)
     # 数据中心化
     dataMat, meanVal = Z_centered(dataMat)
     # 计算协方差矩阵
@@ -75,22 +75,25 @@ def PCA(data, p):
     D, V = EigDV(covMat, p)
     # 得到降维后的数据
     lowDataMat = getlowDataMat(dataMat, V)
-    np.savetxt("C:\\Users\\Hayim\\Desktop\\testrun\\datasets\\MNIST_568\\new.csv", np.around(lowDataMat, decimals=6),'%.6f', delimiter=',')
+    print(lowDataMat[0,:])
+    np.savetxt(path + "new.csv", np.real(lowDataMat),'%.6f', delimiter=',')
     # 重构数据
     reconDataMat = Reconstruction(lowDataMat, V, meanVal)
     return reconDataMat
 
 
-def main():
+def main(path=None):
     data_path = 'C:\\Users\\Hayim\\Desktop\\testrun\\datasets\\MNIST_568\\data.csv'
-    data_reader = np.loadtxt(data_path, dtype=np.int, delimiter=",")
+    if path is not None:
+        data_path=path+'data.csv'
+    data_reader = np.loadtxt(data_path, dtype=np.str, delimiter=",")
     data = data_reader[:, :].astype(np.float)
     data_shape = data.shape
     rows,cols = data_shape
     print(data_shape)
     print("降维前的特征个数：" + str(cols) + "\n")
     print('----------------------------------------')
-    reconImage = PCA(data, 0.85)
+    reconImage = PCA(data, 0.85, path)
     reconImage = reconImage.astype(np.uint8)
     print(reconImage.shape)
 
