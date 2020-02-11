@@ -142,8 +142,8 @@ def mnist_scatter():
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\result2020\\result0103\\datasets\\MNIST50mclass1_985\\"  # 华硕
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
-    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\fashion50mclass568\\"  # XPS
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass568\\"  # XPS
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\MNIST50mclass1_985\\"  # XPS
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\MNIST50mclass1_985\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
     if option == 1:  # 直接画散点图
         Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
