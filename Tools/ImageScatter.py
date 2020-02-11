@@ -136,25 +136,37 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
 
 
 def mnist_scatter():
-    option = 2
+    option = 1
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_3class\\"
     # path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\fashion50mclass568\\"
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\result2020\\result0103\\datasets\\MNIST50mclass1_985\\"  # 华硕
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
-    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\coil20obj_16_3class\\"  # XPS
-    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass568\\"  # XPS
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\fashion50mclass568\\"  # XPS
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass568\\"  # XPS
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
     if option == 1:  # 直接画散点图
-        Y = np.loadtxt(path + "tsne.csv", dtype=np.float, delimiter=",")
+        Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
+        (n, m) = Y.shape
         label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
-        plt.scatter(Y[:, 0], Y[:, 1], c=label)
+        # plt.scatter(Y[:, 0], Y[:, 1], c=label)
+        colors = ['r', 'g', 'b']
+        for i in range(0, n):
+            c = 'r'
+            if label[i] == 5:
+                c = 'r'
+            elif label[i] == 6:
+                c = 'g'
+            else:
+                c = 'b'
+            plt.scatter(Y[i, 0], Y[i, 1], c=c, alpha=0.7)
+
         ax = plt.gca()
         ax.set_aspect(1)
-        plt.colorbar()
+        # plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=1.2, y_name="PCA.csv", image_shape=(8, 8), colormap='gray')  # 搜 反转
+        mnist_images(path, eta=0.5, y_name="PCA.csv", image_shape=(28, 28), colormap='gray')  # 搜 反转
 
 
 if __name__ == '__main__':
