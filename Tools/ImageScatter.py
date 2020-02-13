@@ -112,13 +112,16 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
 
     # 如果事前没有生成图片，则需要先生成图片
-    create_pictures(path, image_shape=image_shape)
+    #create_pictures(path, image_shape=image_shape)
 
+    #small_path = path + "smallImages\\"
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
         os.makedirs(small_path)
-    small_image(eta=eta, in_path=path+"pictures\\", out_path=small_path)
+    #small_image(eta=eta, in_path=path+"pictures\\", out_path=small_path)
+    small_image(eta=eta, in_path="D:\\Exp\\datasets\\coil-20-proc\\", out_path=small_path)
     Y = np.loadtxt(path + y_name, dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + 'label.csv', dtype=np.int, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()
     # plt.colormaps()
@@ -128,7 +131,7 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     for i in range(0, n):
         # if label[i] != 5:
         #     continue
-        ab = AnnotationBbox(get_image(small_path + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
+        ab = AnnotationBbox(get_image(small_path +'obj'+ str(label[i])+'__'+ str(i%72) +".png"), (Y[i, 0], Y[i, 1]), frameon=False)
         ax.add_artist(ab)
     ax = plt.gca()
     ax.set_aspect(1)
@@ -144,9 +147,9 @@ def mnist_scatter():
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\coil20obj_16_3class\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass568\\"  # XPS
-    path = "C:\\Users\\Hayim\Desktop\\testrun\\datasets\\mnist50mminiclass024\\"
+    path = "D:\\Exp\\datasets\\coil-20-5-7-8\\"
     if option == 1:  # 直接画散点图
-        Y = np.loadtxt(path + "MDS.csv", dtype=np.float, delimiter=",")
+        Y = np.loadtxt(path + "cTSNE.csv", dtype=np.float, delimiter=",")
         label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
         plt.scatter(Y[:, 0], Y[:, 1], c=label)
         ax = plt.gca()
@@ -154,7 +157,7 @@ def mnist_scatter():
         plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=0.6, y_name="MDS.csv", image_shape=(28, 28), colormap='gray')  # 搜 反转
+        mnist_images(path, eta=0.15, y_name="cTSNE.csv", image_shape=(128, 128), colormap='gray')  # 搜 反转
 
 
 if __name__ == '__main__':
