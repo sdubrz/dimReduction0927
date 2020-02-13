@@ -601,7 +601,7 @@ def run_test(data_name0=None):
     main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Wine"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
@@ -609,7 +609,7 @@ def run_test(data_name0=None):
 
     method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
     yita = 0.20200213
-    nbrs_k = 45
+    nbrs_k = 21
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
