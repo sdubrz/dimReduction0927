@@ -22,6 +22,7 @@ class MDSPerturb:
         self.P = None
         self.Hessian = None
         self.Jacobi = None
+        self.gradient = None
         self.init_y()
         self.first_derivative()
 
@@ -55,6 +56,7 @@ class MDSPerturb:
             W = np.tile(w, (2, 1)).T
             first[i, :] = np.sum(W*dY, axis=0)
 
+        self.gradient = first
         plt.subplot(131)
         plt.plot(error)
         plt.title("error of each point")
@@ -170,6 +172,7 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
 
     points_error = PointsError.mds_stress(data, y)
 
+    np.savetxt(save_path0+"gradient.csv", mds_perturb.gradient, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"error.csv", points_error, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Pxy.csv", mds_perturb.P, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Hessian.csv", mds_perturb.Hessian, fmt='%f', delimiter=",")

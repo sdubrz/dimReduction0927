@@ -240,6 +240,7 @@ class cTSNE:
             plt.title("KL divergence, min="+str(min(kl)))
             plt.show()
         # Return solution
+        print("最终迭代的次数是 ", iter)
         return Y
 
     def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None, beta=None, show_progress=False):

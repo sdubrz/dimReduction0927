@@ -8,6 +8,7 @@ from Main import LocalPCA
 from Main import processData as pD
 from Derivatives.TSNE_Derivative import TSNE_Derivative
 from Derivatives.VectorPerturb import VectorPerturb
+from sklearn.metrics import euclidean_distances
 import time
 from MyDR import PointsError
 
@@ -27,12 +28,14 @@ class TSNEPerturb:
         self.beta = None  # 计算高维概率矩阵时用的方差
         self.Hessian = None
         self.Jacobi = None
+        self.gradient = None
         self.init_y()
+        self.first_derivative()
 
     def init_y(self):
         time1 = time.time()
         t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
-        Y = t_sne.fit_transform(self.X, max_iter=1000)
+        Y = t_sne.fit_transform(self.X, max_iter=10000)
         self.Y = Y
         self.beta = t_sne.beta
         self.Px0 = t_sne.P0
@@ -40,6 +43,41 @@ class TSNEPerturb:
         self.Q = t_sne.Q
         time2 = time.time()
         print("初始降维用时为, ", time2-time1)
+
+    def first_derivative(self):
+        """
+        计算目标函数对Y的一阶导数
+        :return:
+        """
+        X = self.X
+        Y = self.Y
+        P = self.Px
+        Q = self.Q
+        (n, m) = X.shape
+        first_derivative = np.zeros((n, 2))
+
+        Dy = euclidean_distances(Y)
+        D = 1 / (1+Dy**2)
+        PQ = P - Q
+
+        for i in range(0, n):
+            dY = np.tile(Y[i, :], (n, 1)) - Y
+            w = PQ[i, :] * D[i, :]
+            W = np.tile(w, (2, 1)).T
+            first_derivative[i, :] = np.sum(W*dY, axis=0)
+
+        first_derivative = first_derivative * 4
+        self.gradient = first_derivative
+
+        plt.subplot(121)
+        plt.plot(first_derivative[:, 0])
+        plt.title("first derivative 1")
+
+        plt.subplot(122)
+        plt.plot(first_derivative[:, 1])
+        plt.title("first derivative 2")
+
+        plt.show()
 
     def perturb(self, vectors_list, weights):
         """
@@ -142,6 +180,7 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
 
     points_error = PointsError.tsne_kl(tsne_perturb.Px, tsne_perturb.Q)
 
+    np.savetxt(save_path0+"gradient.csv", tsne_perturb.gradient, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"Px.csv", tsne_perturb.Px, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"Q.csv", tsne_perturb.Q, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"error.csv", points_error, fmt='%f', delimiter=",")
