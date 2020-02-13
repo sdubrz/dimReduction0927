@@ -7,6 +7,7 @@ from Main import LocalPCA
 from Main import processData as pD
 from Derivatives.MDS_Derivative import MDS_Derivative
 from Derivatives.VectorPerturb import VectorPerturb
+from sklearn.metrics import euclidean_distances
 import time
 from MyDR import PointsError
 
@@ -21,15 +22,54 @@ class MDSPerturb:
         self.P = None
         self.Hessian = None
         self.Jacobi = None
+        self.gradient = None
         self.init_y()
+        self.first_derivative()
 
     def init_y(self):
         time1 = time.time()
-        mds = MDS(n_components=2, max_iter=3000)
+        mds = MDS(n_components=2, max_iter=3000, eps=-1.0)  # 这样应该可以限制死执行次数
         Y = mds.fit_transform(self.X)
         self.Y = Y
         time2 = time.time()
         print("初始降维用时为, ", time2-time1)
+        print("总共迭代的次数为 ", mds.n_iter_)
+
+    def first_derivative(self):
+        """
+        计算所求结果处的一阶导数
+        :return:
+        """
+        (n, m) = self.X.shape
+        Dx = euclidean_distances(self.X) + np.eye(n)
+        Dy = euclidean_distances(self.Y) + np.eye(n)
+
+        # 计算每个点产生的误差
+        dD = (Dx - Dy)**2
+        dD = 0.5*dD
+        error = np.sum(dD, axis=1)
+
+        first = np.zeros((n, 2))  # 每个点处的一阶导
+        for i in range(0, n):
+            dY = np.tile(self.Y[i, :], (n, 1)) - self.Y
+            w = 1 - Dx[i, :] / Dy[i, :]
+            W = np.tile(w, (2, 1)).T
+            first[i, :] = np.sum(W*dY, axis=0)
+
+        self.gradient = first
+        plt.subplot(131)
+        plt.plot(error)
+        plt.title("error of each point")
+
+        plt.subplot(132)
+        plt.plot(first[:, 0])
+        plt.title("first derivative 1")
+
+        plt.subplot(133)
+        plt.plot(first[:, 1])
+        plt.title("first derivative 2")
+
+        plt.show()
 
     def perturb(self, vectors_list, weights):
         """
@@ -132,6 +172,7 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
 
     points_error = PointsError.mds_stress(data, y)
 
+    np.savetxt(save_path0+"gradient.csv", mds_perturb.gradient, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"error.csv", points_error, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Pxy.csv", mds_perturb.P, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Hessian.csv", mds_perturb.Hessian, fmt='%f', delimiter=",")
