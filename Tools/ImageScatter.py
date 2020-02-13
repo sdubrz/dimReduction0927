@@ -112,13 +112,16 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
 
     # 如果事前没有生成图片，则需要先生成图片
-    create_pictures(path, image_shape=image_shape)
+    #create_pictures(path, image_shape=image_shape)
 
+    #small_path = path + "smallImages\\"
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
         os.makedirs(small_path)
-    small_image(eta=eta, in_path=path+"pictures\\", out_path=small_path)
+    #small_image(eta=eta, in_path=path+"pictures\\", out_path=small_path)
+    small_image(eta=eta, in_path="D:\\Exp\\datasets\\coil-20-proc\\", out_path=small_path)
     Y = np.loadtxt(path + y_name, dtype=np.float, delimiter=",")
+    label = np.loadtxt(path + 'label.csv', dtype=np.int, delimiter=",")
     (n, m) = Y.shape
     fig, ax = plt.subplots()
     # plt.colormaps()
@@ -128,7 +131,7 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     for i in range(0, n):
         # if label[i] != 5:
         #     continue
-        ab = AnnotationBbox(get_image(small_path + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
+        ab = AnnotationBbox(get_image(small_path +'obj'+ str(label[i])+'__'+ str(i%72) +".png"), (Y[i, 0], Y[i, 1]), frameon=False)
         ax.add_artist(ab)
     ax = plt.gca()
     ax.set_aspect(1)
@@ -142,9 +145,11 @@ def mnist_scatter():
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\result2020\\result0103\\datasets\\MNIST50mclass1_985\\"  # 华硕
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
+
     path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\coil20obj_10_3class\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\MNIST50mclass1_985\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
+    
     if option == 1:  # 直接画散点图
         Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
         (n, m) = Y.shape
