@@ -25,11 +25,12 @@ class MDSPerturb:
 
     def init_y(self):
         time1 = time.time()
-        mds = MDS(n_components=2, max_iter=3000)
+        mds = MDS(n_components=2, max_iter=3000, eps=-1.0)  # 这样应该可以限制死执行次数
         Y = mds.fit_transform(self.X)
         self.Y = Y
         time2 = time.time()
         print("初始降维用时为, ", time2-time1)
+        print("总共迭代的次数为 ", mds.n_iter_)
 
     def perturb(self, vectors_list, weights):
         """
