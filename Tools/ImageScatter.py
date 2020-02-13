@@ -16,7 +16,7 @@ def create_pictures(path="", image_shape=(28, 28)):
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
     X = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
-    # X = 255*np.ones(X.shape) - X  # 反转
+    X = 255*np.ones(X.shape) - X  # 反转
     # X = np.maximum(X, 1)
     # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     # count = np.zeros((10, 1))
@@ -142,7 +142,7 @@ def mnist_scatter():
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\result2020\\result0103\\datasets\\MNIST50mclass1_985\\"  # 华硕
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\coil20obj_10_3class\\"  # XPS
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\MNIST50mclass1_526\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\MNIST50mclass1_985\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
     if option == 1:  # 直接画散点图
@@ -166,7 +166,7 @@ def mnist_scatter():
         # plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=0.15, y_name="cTSNE.csv", image_shape=(128, 128), colormap='gray')  # 搜 反转
+        mnist_images(path, eta=0.36, y_name="MDS.csv", image_shape=(28, 28), colormap='gray')  # 搜 反转
 
 
 if __name__ == '__main__':
