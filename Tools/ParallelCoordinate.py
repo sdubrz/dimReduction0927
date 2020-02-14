@@ -16,6 +16,8 @@ def parallel_coordinate(data, label, linewidth=0.7):
     colors = ['r', 'g', 'b', 'orange', 'm', 'k', 'c', 'yellow']
 
     for i in range(0, n):
+        # if label[i] != 3:
+        #     continue
         c = colors[label[i] % len(colors)]
         for j in range(0, m-1):
             plt.plot([j, j+1], [data[i, j], data[i, j+1]], c=c, alpha=0.4, linewidth=linewidth)
@@ -28,7 +30,7 @@ def parallel_coordinate(data, label, linewidth=0.7):
 
 def run1():
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\Wine\\"
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\olive2\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Wine\\"
     data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     data = Preprocess.normalize(data, 0, 1)
     label = np.loadtxt(path + "label.csv", dtype=np.int, delimiter=",")
@@ -69,7 +71,7 @@ def highlight_point():
     对某一些点高亮
     :return:
     """
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Wine\\"
     data = np.loadtxt(path + "data.csv", dtype=np.float, delimiter=",")
     data = Preprocess.normalize(data, 0, 1)
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
@@ -78,7 +80,9 @@ def highlight_point():
 
     colors = ['orange', 'r', 'g', 'b', 'm', 'k', 'c', 'yellow']
 
-    for i in range(98, n):  # 48  98  147
+    for i in range(0, n):
+        if label[i] != 3:
+            continue
         c = colors[label[i] % len(colors)]
         for j in range(0, m - 1):
             plt.plot([j, j + 1], [data[i, j], data[i, j + 1]], c=c, alpha=0.4, linewidth=0.7)
@@ -88,7 +92,7 @@ def highlight_point():
         plt.plot([i, i], [0, 1], c='k')
 
     # 高亮部分点
-    indexs = [109, 128, 146]  # 因为系统中是从1开始计数的，所以最终使用的时候要减一
+    indexs = [69]  # 因为系统中是从1开始计数的，所以最终使用的时候要减一
     for index in indexs:
         i = index - 1
         c = colors[label[i] % len(colors)]
@@ -100,5 +104,5 @@ def highlight_point():
 
 if __name__ == '__main__':
     # select_data_show()
-    run1()
-    # highlight_point()
+    # run1()
+    highlight_point()

@@ -10,13 +10,14 @@ import os
 from Test import cleanData
 
 
-def create_pictures(path="", image_shape=(28, 28)):
+def create_pictures(path="", image_shape=(28, 28), inv=False):
     """生成MNIST的图片"""
     # path = "E:\\Project\\DataLab\\MNIST\\"
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
     X = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
     (n, m) = X.shape
-    # X = 255*np.ones(X.shape) - X  # 反转
+    if inv:
+        X = 255*np.ones(X.shape) - X  # 反转
     # X = np.maximum(X, 1)
     # label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
     # count = np.zeros((10, 1))
@@ -102,7 +103,7 @@ def coil_image_scatter():
     plt.show()
 
 
-def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(28, 28), colormap='gray'):
+def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(28, 28), colormap='gray', inv=False):
     """
     用MNIST数据画艺术散点图
     :return:
@@ -112,7 +113,7 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
 
     # 如果事前没有生成图片，则需要先生成图片
-    create_pictures(path, image_shape=image_shape)
+    create_pictures(path, image_shape=image_shape, inv=inv)
 
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
@@ -142,8 +143,8 @@ def mnist_scatter():
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\result2020\\result0103\\datasets\\MNIST50mclass1_985\\"  # 华硕
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"  # XPS
-    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\MNIST50mclass1_985\\"  # XPS
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"  # XPS
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\coil16m1413\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
     if option == 1:  # 直接画散点图
         Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
@@ -166,7 +167,7 @@ def mnist_scatter():
         # plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=0.5, y_name="PCA.csv", image_shape=(28, 28), colormap='gray')  # 搜 反转
+        mnist_images(path, eta=0.15, y_name="MDS.csv", image_shape=(128, 128), colormap='gray', inv=False)  # 搜 反转
 
 
 if __name__ == '__main__':
