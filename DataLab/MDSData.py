@@ -11,11 +11,12 @@ def mds_isomap():
     比较 MDS 与 Isomap 降维的区别
     :return:
     """
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\coil20obj_10_3class\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\olive\\"
     data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
 
-    X = Preprocess.normalize(data, -1, 1)
+    # X = Preprocess.normalize(data, -1, 1)
+    X = data
     mds = MDS(n_components=2)
     Y1 = mds.fit_transform(X)
 
@@ -26,6 +27,8 @@ def mds_isomap():
     plt.subplot(121)
     plt.scatter(Y1[:, 0], Y1[:, 1], c=label)
     plt.title("MDS")
+    ax = plt.gca()
+    ax.set_aspect(1)
 
     plt.subplot(122)
     plt.scatter(Y2[:, 0], Y2[:, 1], c=label)
