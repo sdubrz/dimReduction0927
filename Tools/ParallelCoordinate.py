@@ -16,8 +16,8 @@ def parallel_coordinate(data, label, linewidth=0.7):
     colors = ['r', 'g', 'b', 'orange', 'm', 'k', 'c', 'yellow']
 
     for i in range(0, n):
-        # if label[i] != 3:
-        #     continue
+        if label[i] != 3:
+            continue
         c = colors[label[i] % len(colors)]
         for j in range(0, m-1):
             plt.plot([j, j+1], [data[i, j], data[i, j+1]], c=c, alpha=0.4, linewidth=linewidth)
@@ -104,5 +104,5 @@ def highlight_point():
 
 if __name__ == '__main__':
     # select_data_show()
-    # run1()
-    highlight_point()
+    run1()
+    # highlight_point()

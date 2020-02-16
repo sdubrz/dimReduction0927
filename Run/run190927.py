@@ -601,16 +601,16 @@ def run_test(data_name0=None):
     main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Wine"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "MNIST50mclass1_985"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.20200214
-    nbrs_k = 40
-    method_k = 90  # if cTSNE perplexity=method_k/3
+    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 0.20200215
+    nbrs_k = 51
+    method_k = 30  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     normalize = True  # 是否进行normalize
@@ -687,7 +687,7 @@ def run_test(data_name0=None):
     Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
     print("计算二维完成")
 
-    CircleScatter.circle_json(last_path, r=0.03)
+    CircleScatter.circle_json(last_path)
     print('生成散点json完成')
 
     highKNN_2dPCA.create_json2(last_path, line_length=0.1)

@@ -69,7 +69,7 @@ class cTSNE:
         sum_X = np.sum(np.square(X), 1)
         D = np.add(np.add(-2 * np.dot(X, X.T), sum_X).T, sum_X)
         P = np.zeros((n, n))
-        beta = np.ones((n, 1))
+        beta = np.ones((n, 1)) / np.max(D)  # 加上一个除法，有的数据不normalize会报0除错误，系初始的beta设置过大导致
         logU = np.log(perplexity)
 
         # Loop over all datapoints
@@ -477,12 +477,29 @@ def knn_change():
     print("keep = ", keep)
 
 
+def run2():
+    """
+    寻找部分数据出现零除错误的原因
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\fashion50mclass568\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+
+    tsne = cTSNE(n_component=2, perplexity=30.0)
+    Y = tsne.fit_transform(data, max_iter=1000)
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.show()
+
+
 if __name__ == '__main__':
     # dr_3d()
     # perturbation_one_by_one()
     # run()
-    show_kl()
+    # show_kl()
     # knn_change()
+    run2()
 
 
 

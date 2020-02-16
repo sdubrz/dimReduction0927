@@ -143,8 +143,8 @@ def mnist_scatter():
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\result2020\\result0103\\datasets\\MNIST50mclass1_985\\"  # 华硕
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
-    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"  # XPS
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\coil16m1413\\"  # XPS
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\coil20obj_16_3class\\"  # XPS
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass568\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
     if option == 1:  # 直接画散点图
         Y = np.loadtxt(path + "PCA.csv", dtype=np.float, delimiter=",")
@@ -167,7 +167,7 @@ def mnist_scatter():
         # plt.colorbar()
         plt.show()
     else:  # 画艺术散点图
-        mnist_images(path, eta=0.15, y_name="MDS.csv", image_shape=(128, 128), colormap='gray', inv=False)  # 搜 反转
+        mnist_images(path, eta=0.5, y_name="cTSNE.csv", image_shape=(28, 28), colormap='gray', inv=True)  # 搜 反转
 
 
 if __name__ == '__main__':
