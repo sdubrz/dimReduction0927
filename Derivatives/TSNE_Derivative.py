@@ -537,6 +537,28 @@ def Jxy(H, J):
     """
     H_ = np.linalg.pinv(H)  # inv
     P = -1 * np.matmul(H_, J)
+    np.savetxt("F:\\Hinv.csv", H_, fmt='%.18e', delimiter=",")
+
+    return P
+
+
+def Jxy2(H, J):
+    """
+    计算Y对X求导的结果
+    这里用了Jacobi方法来提高求逆的精度
+    :param H:
+    :param J:
+    :return:
+    """
+    (n, m) = H.shape
+    D = np.zeros((n, n))
+    D[range(n), range(n)] = H[range(n), range(n)]
+    D2 = np.linalg.inv(D)
+
+    H_ = np.matmul(D2, np.linalg.pinv(np.matmul(H, D2)))
+    np.savetxt("F:\\Hinv2.csv", H_, fmt='%.18e', delimiter=",")
+
+    P = -1 * np.matmul(H_, J)
 
     return P
 
@@ -546,6 +568,7 @@ class TSNE_Derivative:
         self.H = None
         self.J = None
         self.P = None
+        self.P2 = None  # 临时加上，用作测试
 
     def getP(self, X, Y, P, Q, P0, beta):
         """
@@ -568,6 +591,12 @@ class TSNE_Derivative:
         print("Pxy...")
         Pxy = Jxy(H, J)
         self.P = Pxy
+
+        # Pxy2 = Jxy(H, J)
+        # self.P2 = Pxy2
+        #
+        # np.savetxt("F:\\Pxy.csv", Pxy2, fmt='%.18e', delimiter=",")
+        # np.savetxt("F:\\Pxy2.csv", Pxy, fmt='%.18e', delimiter=",")
 
         return Pxy
 
