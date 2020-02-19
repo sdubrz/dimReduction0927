@@ -210,6 +210,7 @@ class cTSNE:
                 momentum = initial_momentum
             else:
                 momentum = final_momentum
+            # gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))  # 感觉它这里代码有错误
             gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
             # if not early_exaggerate:  # 2020.02.17为了提高收敛精度，将此注释
             #     gains[gains < min_gain] = min_gain
@@ -246,7 +247,7 @@ class cTSNE:
             plt.show()
         # Return solution
         print("最终迭代的次数是 ", iter)
-        np.savetxt("F:\\first.csv", np.array(firsts), fmt='%.18e', delimiter=",")
+        # np.savetxt("F:\\first.csv", np.array(firsts), fmt='%.18e', delimiter=",")
         print(firsts[len(firsts)-1])
         return Y
 
