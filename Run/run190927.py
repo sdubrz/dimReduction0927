@@ -29,6 +29,7 @@ from Perturb2020 import MDS_Perturb
 from Perturb2020 import TSNE_Perturb
 from Perturb2020 import MDS_PerturbSecond
 from Tools import MDSStress
+from Tools import SplineLengthWidth
 
 """"
 本程序是基于run190422.py修改的
@@ -431,7 +432,11 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                 this_spline.append([spline_x[j], spline_y[j]])
             b_spline_list.append(this_spline)
 
+        spline_lengths, spline_widths, spline_radios = SplineLengthWidth.spline_length_width(b_spline_list)
         SaveData.save_lists(b_spline_list, save_path + "convex_hull_list.csv")
+        np.savetxt(save_path+"spline_lengths.csv", spline_lengths, fmt='%.18e', delimiter=",")
+        np.savetxt(save_path+"spline_widths.csv", spline_widths, fmt='%.18e', delimiter=",")
+        np.savetxt(save_path+"spline_radios.csv", spline_radios, fmt='%.18e', delimiter=",")
 
     if draw_kind == "star_shape":
         print('使用星多边形画法')
@@ -601,19 +606,19 @@ def run_test(data_name0=None):
     main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "IsomapFace"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "coil20obj_16_3class"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.20200219
-    nbrs_k = 65
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 0.20200220
+    nbrs_k = 20
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
-    normalize = False  # 是否进行normalize
+    normalize = True  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好

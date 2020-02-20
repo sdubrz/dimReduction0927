@@ -16,7 +16,7 @@ def circle_json(path, r=0.1, n_points=100):
     :param n_points: 点数
     :return:
     """
-    f = open(path+"stress.json", encoding='utf-8')
+    f = open(path+"error.json", encoding='utf-8')
     data = json.load(f)
     n = len(data)
 
