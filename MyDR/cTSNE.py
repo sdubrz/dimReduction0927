@@ -57,8 +57,8 @@ class cTSNE:
 
         return P
 
-    def x2p(self, X=np.array([]), tol=1e-5, perplexity=30.0):
-        """
+    def x2p(self, X=np.array([]), tol=1e-12, perplexity=30.0):
+        """原来的tol是1e-5
             Performs a binary search to get P-values in such a way that each
             conditional Gaussian has the same perplexity.
         """
@@ -69,7 +69,7 @@ class cTSNE:
         sum_X = np.sum(np.square(X), 1)
         D = np.add(np.add(-2 * np.dot(X, X.T), sum_X).T, sum_X)
         P = np.zeros((n, n))
-        beta = np.ones((n, 1))
+        beta = np.ones((n, 1)) / np.max(D)  # 加上一个除法，有的数据不normalize会报0除错误，系初始的beta设置过大导致
         logU = np.log(perplexity)
 
         # Loop over all datapoints
@@ -88,7 +88,7 @@ class cTSNE:
             # Evaluate whether the perplexity is within tolerance
             Hdiff = H - logU
             tries = 0
-            while np.abs(Hdiff) > tol and tries < 50:
+            while np.abs(Hdiff) > tol and tries < 1000:  # 原来是50
 
                 # If not, increase or decrease precision
                 if Hdiff > 0:
@@ -140,7 +140,7 @@ class cTSNE:
         if not early_exaggerate:  # 20191231
             final_momentum = 0.0
         eta = 500
-        min_gain = 0.01
+        min_gain = 0.0  # 原为0.01
 
         if show_progress:
             self.kl = []
@@ -160,14 +160,17 @@ class cTSNE:
             gains = np.ones((n, no_dims))
 
         # Compute P-values
-        P = self.x2p(X, 1e-5, self.perplexity)
+        P = self.x2p(X, 1e-15, self.perplexity)  # 第二个参数原来是1e-5
         self.P0 = P.copy()
         P = P + np.transpose(P)
         P = P / np.sum(P)
         self.P = P.copy()
+        np.savetxt("F:\\t-sneP.csv", P, fmt='%.18e', delimiter=",")
         if early_exaggerate:
             P = P * 4.  # early exaggeration
-        P = np.maximum(P, 1e-12)
+        P = np.maximum(P, 1e-120)  # 1e-12太大了
+
+        firsts = []  # 临时所加，用于统计一阶导的变化规律
 
         # Run iterations
         for iter in range(max_iter):
@@ -181,7 +184,7 @@ class cTSNE:
             num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
             num[range(n), range(n)] = 0.  # 把对角线设置为0
             Q = num / np.sum(num)
-            Q = np.maximum(Q, 1e-12)
+            Q = np.maximum(Q, 1e-120)
 
             if show_progress:
                 c = np.sum(P*np.log(P/Q))
@@ -200,14 +203,17 @@ class cTSNE:
             for i in range(n):
                 dY[i, :] = np.sum(np.tile(PQ[:, i] * num[:, i], (no_dims, 1)).T * (Y[i, :] - Y), 0)  # dY是完全重新计算了，应该不会影响
 
+            firsts.append(dY[0, :].tolist())
+
             # Perform the update
             if iter < 20 and early_exaggerate:
                 momentum = initial_momentum
             else:
                 momentum = final_momentum
+            # gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))  # 感觉它这里代码有错误
             gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
-            if not early_exaggerate:  # 20191231
-                gains[gains < min_gain] = min_gain
+            # if not early_exaggerate:  # 2020.02.17为了提高收敛精度，将此注释
+            #     gains[gains < min_gain] = min_gain
             iY = momentum * iY - eta * (gains * dY)
             Y = Y + iY
             Y = Y - np.tile(np.mean(Y, 0), (n, 1))
@@ -228,7 +234,7 @@ class cTSNE:
         num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
         num[range(n), range(n)] = 0.  # 把对角线设置为0
         Q = num / np.sum(num)
-        Q = np.maximum(Q, 1e-12)
+        Q = np.maximum(Q, 1e-120)
         self.Q = Q
 
         self.final_iter = iter
@@ -241,6 +247,8 @@ class cTSNE:
             plt.show()
         # Return solution
         print("最终迭代的次数是 ", iter)
+        # np.savetxt("F:\\first.csv", np.array(firsts), fmt='%.18e', delimiter=",")
+        print(firsts[len(firsts)-1])
         return Y
 
     def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None, beta=None, show_progress=False):
@@ -305,7 +313,11 @@ class cTSNE:
 
             # Perform the update
             gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
+
             # gains[gains < min_gain] = min_gain
+            if (iter+1) % 1000 == 0:  # 逐步减小步长
+                eta = eta / 5
+
             iY = momentum * iY - eta * (gains * dY)
             Y = Y + iY
             Y = Y - np.tile(np.mean(Y, 0), (n, 1))
@@ -477,12 +489,30 @@ def knn_change():
     print("keep = ", keep)
 
 
+def run2():
+    """
+    寻找部分数据出现零除错误的原因
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+    data = Preprocess.normalize(data)
+
+    tsne = cTSNE(n_component=2, perplexity=30.0)
+    Y = tsne.fit_transform(data, max_iter=100000, early_exaggerate=False)
+
+    plt.scatter(Y[:, 0], Y[:, 1], c=label)
+    plt.show()
+
+
 if __name__ == '__main__':
     # dr_3d()
     # perturbation_one_by_one()
     # run()
-    show_kl()
+    # show_kl()
     # knn_change()
+    run2()
 
 
 

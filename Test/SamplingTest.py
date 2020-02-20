@@ -20,7 +20,7 @@ def random_sample():
         y[i, 0] = random.uniform(0, 1)
         y[i, 1] = random.uniform(0, 1)
 
-    np.savetxt(path+"random_data.csv", y, fmt="%f", delimiter=",")
+    # np.savetxt(path+"random_data.csv", y, fmt="%f", delimiter=",")
 
     plt.scatter(y[:, 0], y[:, 1])
     ax = plt.gca()
@@ -74,7 +74,7 @@ def darts():
     print("公共的点数是： ", len(points))
 
     X = np.array(points)
-    np.savetxt(path + "blue_noise.csv", X, fmt="%f", delimiter=",")
+    # np.savetxt(path + "blue_noise.csv", X, fmt="%f", delimiter=",")
     plt.scatter(X[:, 0], X[:, 1])
     ax = plt.gca()
     ax.set_aspect(1)
@@ -86,7 +86,9 @@ def dart_two_plane():
     用飞镖法生成两个平面的数据
     :return:
     """
-    path = "E:\\Project\\result2019\\samplingTest\\darts_2plane-2\\"
+    # path = "E:\\Project\\result2019\\samplingTest\\darts_2plane-2\\"  # 华硕
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\2plane\\"  # XPS
+
     max_fail = 3000  # 最大失败次数
     points = []
 
@@ -95,7 +97,7 @@ def dart_two_plane():
         temp_x = random.uniform(0, 1)
         temp_y = random.uniform(0, 1)
         p = [temp_x, temp_y]
-        if all_far(points, p, radius=0.025):
+        if all_far(points, p, radius=0.0):
             points.append(p)
             loop_count = 0
             if len(points) % 1000 == 0:
@@ -111,7 +113,7 @@ def dart_two_plane():
         temp_x = random.uniform(0, 1)
         temp_y = random.uniform(0, 1)
         p = [temp_x, temp_y]
-        if all_far(points2, p, radius=0.02):
+        if all_far(points2, p, radius=0.038):
             points2.append(p)
             loop_count = 0
             if len(points2) % 1000 == 0:
@@ -198,7 +200,8 @@ def planes_cross():
     两个相交的平面，有一定的夹角
     :return:
     """
-    path = "E:\\Project\\result2019\\samplingTest\\2plane_60degree_long\\"
+    # path = "E:\\Project\\result2019\\samplingTest\\2plane_60degree_long\\"  # 华硕
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\2plane_60degree\\"  # XPS
     max_fail = 3000  # 最大失败次数
     angle = np.pi / 3  # 两个平面的夹角
     slop_k = np.tan(angle)  # 斜率
@@ -208,9 +211,9 @@ def planes_cross():
     loop_count = 0
     while loop_count < max_fail:
         temp_x = random.uniform(0, 0.5)
-        temp_y = random.uniform(0, 5)
+        temp_y = random.uniform(0, 3.5)
         p = [temp_x, temp_y]
-        if all_far(points, p, radius=0.03):
+        if all_far(points, p, radius=0.06):
             points.append(p)
             loop_count = 0
             if len(points) % 1000 == 0:
@@ -224,9 +227,9 @@ def planes_cross():
     loop_count = 0
     while loop_count < max_fail:
         temp_x = random.uniform(0, 0.5)
-        temp_y = random.uniform(0, 5)
+        temp_y = random.uniform(0, 3.5)
         p = [temp_x, temp_y, temp_y*slop_k]
-        if all_far(points2, p, radius=0.03):
+        if all_far(points2, p, radius=0.06):
             points2.append(p)
             loop_count = 0
             if len(points2) % 1000 == 0:
@@ -243,7 +246,7 @@ def planes_cross():
 
     X[0:len(points), 0:2] = X1[:, :]
     X[len(points):n, 0:3] = X2[:, :]
-    X[0:len(points), 2] = 4.5
+    X[0:len(points), 2] = 3
     # X[len(points):n, 0] = 0.5
     np.savetxt(path + "data.csv", X, fmt="%f", delimiter=",")
     label = np.ones((n, 1))

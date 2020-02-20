@@ -75,6 +75,11 @@ def test5():
     print("b*c = ", b*c)
 
 
+def test6():
+    a = np.log(np.exp(1))
+    print(a)
+
+
 if __name__ == '__main__':
     # run2()
-    test5()
+    test6()

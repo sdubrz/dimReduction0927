@@ -20,6 +20,26 @@ def circle_json(path, r=0.1, n_points=100):
     data = json.load(f)
     n = len(data)
 
+    # 将半径改为按照散点图的跨度自己确定
+    x_min = 0
+    y_min = 0
+    x_max = 0
+    y_max = 0
+    for item in data:
+        temp_x = item['x']
+        temp_y = item['y']
+        if x_min > temp_x:
+            x_min = temp_x
+        if x_max < temp_x:
+            x_max = temp_x
+        if y_min > temp_y:
+            y_min = temp_y
+        if y_max < temp_y:
+            y_max = temp_y
+
+    dy = y_max - y_min
+    r = dy / 100
+
     for item in data:
         c = Circle.circle(item['x'], item['y'], r, n_points=n_points)
         item['pointsNum'] = n_points

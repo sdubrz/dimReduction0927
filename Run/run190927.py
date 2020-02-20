@@ -601,8 +601,9 @@ def run_test(data_name0=None):
     main_path = 'D:\\Exp\\'  # XPS
     main_path_without_normalize = 'D:\\Exp\\'  # XPS
 
+
     data_name = "coil20obj_10_3class"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
-  
+
     if data_name0 is None:
         pass
     else:
@@ -616,7 +617,7 @@ def run_test(data_name0=None):
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
-    normalize = True  # 是否进行normalize
+    normalize = False  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好
@@ -690,7 +691,7 @@ def run_test(data_name0=None):
     Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
     print("计算二维完成")
 
-    CircleScatter.circle_json(last_path, r=0.03)
+    CircleScatter.circle_json(last_path)
     print('生成散点json完成')
 
     highKNN_2dPCA.create_json2(last_path, line_length=0.1)

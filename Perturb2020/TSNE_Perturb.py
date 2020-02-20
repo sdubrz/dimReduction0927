@@ -35,7 +35,7 @@ class TSNEPerturb:
     def init_y(self):
         time1 = time.time()
         t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
-        Y = t_sne.fit_transform(self.X, max_iter=10000)
+        Y = t_sne.fit_transform(self.X, max_iter=30000)
         self.Y = Y
         self.beta = t_sne.beta
         self.Px0 = t_sne.P0
@@ -180,15 +180,15 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
 
     points_error = PointsError.tsne_kl(tsne_perturb.Px, tsne_perturb.Q)
 
-    np.savetxt(save_path0+"gradient.csv", tsne_perturb.gradient, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"Px.csv", tsne_perturb.Px, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"Q.csv", tsne_perturb.Q, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"error.csv", points_error, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.inv(tsne_perturb.Hessian), fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Hessian2.csv", np.matmul(tsne_perturb.Hessian, np.linalg.pinv(tsne_perturb.Hessian)), fmt='%f', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%f', delimiter=",")
+    np.savetxt(save_path0+"gradient.csv", tsne_perturb.gradient, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"Px.csv", tsne_perturb.Px, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"Q.csv", tsne_perturb.Q, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"error.csv", points_error, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.inv(tsne_perturb.Hessian), fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Hessian2.csv", np.matmul(tsne_perturb.Hessian, np.linalg.pinv(tsne_perturb.Hessian)), fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%.18e', delimiter=",")
 
     print("sum J = ", np.sum(tsne_perturb.Jacobi))
     # print("sum J columns = ", np.sum(tsne_perturb.Jacobi, axis=1))
