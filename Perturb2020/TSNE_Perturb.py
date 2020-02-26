@@ -186,9 +186,14 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     np.savetxt(save_path0+"error.csv", points_error, fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%.18e', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.inv(tsne_perturb.Hessian), fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.pinv(tsne_perturb.Hessian), fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Hessian2.csv", np.matmul(tsne_perturb.Hessian, np.linalg.pinv(tsne_perturb.Hessian)), fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%.18e', delimiter=",")
+
+    hessian = tsne_perturb.Hessian
+    d_hessian = hessian - hessian.T
+    np.savetxt(save_path0+"cTSNE_dHessian.csv", d_hessian, fmt='%.18e', delimiter=",")
+    print("sum dHessian = ", np.sum(d_hessian))
 
     print("sum J = ", np.sum(tsne_perturb.Jacobi))
     # print("sum J columns = ", np.sum(tsne_perturb.Jacobi, axis=1))

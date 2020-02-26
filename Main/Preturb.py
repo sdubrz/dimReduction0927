@@ -302,7 +302,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
 
     eigen_weights = np.ones((n, dim))  # 计算每个特征值占所有特征值和的比重
 
-    n_inter_perturb = 1000  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
+    n_inter_perturb = 20  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
 
     for i in range(0, MAX_EIGEN_COUNT):
         eigen_vectors_list.append(np.zeros((n, dim)))
@@ -372,7 +372,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     #     y0 = t_sne.fit_transform(data)
     #     t_sne2 = TSNE(n_components=2, n_iter=5000, perplexity=method_k / 3, init=y0)
     #     y = t_sne2.fit_transform(data)
-    elif method_name == "cTSNE":
+    elif method_name == "cTSNE0":
         y, temp_temp = DimReduce.dim_reduce_convergence(data, method=method_name, method_k=method_k, n_iter_init=10000)
         y_no_per = DimReduce.dim_reduce(data, method=method_name, method_k=method_k, n_iters=n_inter_perturb, y_random=y
                                         , early_exaggeration=1.0, c_early_exage=False)
@@ -417,8 +417,8 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
                 sub_quality = perturb_convergence(y, y_no_per, y_sub_v)
                 print("第 %d 次扰动的收敛精度与扰动幅度比值分别为 %f 和 %f " % (loop_index, add_quality, sub_quality))
 
-        y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)  # 这个是防止翻转的那种情况发生的。
-        y_sub_v = SymbolAdjust.symbol_adjust(y, y_sub_v)
+        # y_add_v = SymbolAdjust.symbol_adjust(y, y_add_v)  # 这个是防止翻转的那种情况发生的。
+        # y_sub_v = SymbolAdjust.symbol_adjust(y, y_sub_v)
 
         y_list_add.append(y_add_v)
         y_list_sub.append(y_sub_v)

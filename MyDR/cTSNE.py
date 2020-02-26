@@ -140,16 +140,17 @@ class cTSNE:
         if not early_exaggerate:  # 20191231
             final_momentum = 0.0
         eta = 500
-        min_gain = 0.0  # 原为0.01
+        min_gain = 0.01  # 原为0.01
 
         if show_progress:
             self.kl = []
 
         # Initialize variables
+        Y2 = np.random.randn(n, no_dims)
         if y_random is None:
-            Y = np.random.randn(n, no_dims)
+            Y2 = np.random.randn(n, no_dims)
         else:
-            Y = y_random
+            Y2 = y_random
         dY = np.zeros((n, no_dims))
 
         if dY is None:
@@ -163,21 +164,19 @@ class cTSNE:
         P = self.x2p(X, 1e-15, self.perplexity)  # 第二个参数原来是1e-5
         self.P0 = P.copy()
         P = P + np.transpose(P)
-        P = P / np.sum(P)
+        # P = P / np.sum(P)
+        P = P / (2*n)
+        P = np.maximum(P, 1e-120)  # 1e-12太大了
         self.P = P.copy()
         np.savetxt("F:\\t-sneP.csv", P, fmt='%.18e', delimiter=",")
         if early_exaggerate:
             P = P * 4.  # early exaggeration
-        P = np.maximum(P, 1e-120)  # 1e-12太大了
 
         firsts = []  # 临时所加，用于统计一阶导的变化规律
 
         # Run iterations
         for iter in range(max_iter):
-
-            if iter > 1000:  # 20191231
-                min_gain = 0.0
-
+            Y = Y2
             # Compute pairwise affinities
             sum_Y = np.sum(np.square(Y), 1)  # square是将矩阵中的每个元素计算平方，sum_Y里面存储的是每个点的模的平方
             num = -2. * np.dot(Y, Y.T)
@@ -212,11 +211,12 @@ class cTSNE:
                 momentum = final_momentum
             # gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))  # 感觉它这里代码有错误
             gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
-            # if not early_exaggerate:  # 2020.02.17为了提高收敛精度，将此注释
-            #     gains[gains < min_gain] = min_gain
+            if not early_exaggerate:  # 2020.02.17为了提高收敛精度，将此注释
+                gains[gains < min_gain] = min_gain
             iY = momentum * iY - eta * (gains * dY)
-            Y = Y + iY
-            Y = Y - np.tile(np.mean(Y, 0), (n, 1))
+            Y = Y + iY  # 原来的式子
+            # Y = Y - eta*dY  # 新改的实验方法
+            Y2 = Y - np.tile(np.mean(Y, 0), (n, 1))
 
             # Compute current value of cost function
             # if (iter + 1) % 1000 == 0 and show_progress:
@@ -249,6 +249,11 @@ class cTSNE:
         print("最终迭代的次数是 ", iter)
         # np.savetxt("F:\\first.csv", np.array(firsts), fmt='%.18e', delimiter=",")
         print(firsts[len(firsts)-1])
+
+        plt.plot(np.log10(firsts))
+        plt.title("log10 der")
+        plt.show()
+
         return Y
 
     def fit_transform_i(self, X, preturb_index, max_iter=1000, y_random=None, beta=None, show_progress=False):

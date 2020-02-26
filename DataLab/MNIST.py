@@ -1,6 +1,7 @@
 # 用亚采样的方法处理MNIST-digit数据
 import numpy as np
 import os
+from sklearn.decomposition import PCA
 
 def sub_sample():
     """
@@ -93,6 +94,50 @@ def down_sampling(origin, data):
     return np.array(small_data), np.array(small_origin)
 
 
+def origin_classification():
+    """
+    将原始的数据分为几个类
+    然后用PCA把每个单类数据分别降维到40维
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\MNIST\\origin\\"
+    total = np.loadtxt(path+"data.csv", dtype=np.int, delimiter=",")
+    label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
+    (n0, m0) = total.shape
+
+    origin_list = []
+    for i in range(0, 10):
+        origin_list.append([])
+
+    for i in range(0, n0):
+        current_list = origin_list[label[i]]
+        current_list.append(total[i, :].tolist())
+
+    for num in range(0, 10):
+        origin = np.array(origin_list[num])
+        current_path = path + "digits40m" + str(num) + "\\"
+        # if not os._exists(current_path):
+        #     os.makedirs(current_path)
+
+        pca = PCA(n_components=40)
+        Y = pca.fit_transform(origin)
+        (n, m) = origin.shape
+
+        origin2 = []
+        Y2 = []
+        for i in range(0, n):
+            if i % 13 != 0:
+                continue
+            origin2.append(origin[i, :].tolist())
+            Y2.append(Y[i, :].tolist())
+
+        np.savetxt(current_path+"origin.csv", np.array(origin2), fmt='%d', delimiter=",")
+        np.savetxt(current_path+"data.csv", np.array(Y2), fmt='%f', delimiter=",")
+        np.savetxt(current_path+"label.csv", np.ones((len(Y2), 1))*num, fmt='%d', delimiter=",")
+        print(num)
+
+
 if __name__ == '__main__':
     # sub_sample()
-    classification()
+    # classification()
+    origin_classification()

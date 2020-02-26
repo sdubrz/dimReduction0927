@@ -49,7 +49,7 @@ def dim_reduce(data, method="MDS", method_k=30, y_random=None, label=None, n_ite
         tsne = TSNE(n_components=2, n_iter=n_iters, perplexity=method_k / 3, init=y_random, early_exaggeration=early_exaggeration)
         y = tsne.fit_transform(data)
 
-    if method == 'ctsne' or method == 'cTSNE':
+    if method == 'ctsne' or method == 'cTSNE' or method=='cTSNE0':
         print("[DimReduce]\t当前使用 c-t-SNE 降维方法")
         t_sne = cTSNE.cTSNE(n_component=2, perplexity=method_k/3)
         y = t_sne.fit_transform(data, max_iter=n_iters, y_random=y_random, early_exaggerate=c_early_exage, show_progress=False)
