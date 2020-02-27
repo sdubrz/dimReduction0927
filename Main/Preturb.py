@@ -303,7 +303,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
     eigen_weights = np.ones((n, dim))  # 计算每个特征值占所有特征值和的比重
 
     n_inter_perturb = 20  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
-
+    print("特征向量个数为", MAX_EIGEN_COUNT)
     for i in range(0, MAX_EIGEN_COUNT):
         eigen_vectors_list.append(np.zeros((n, dim)))
 
@@ -327,6 +327,7 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
 
     np.savetxt(save_path+"eigenvalues.csv", eigen_values, fmt="%f", delimiter=",")
     np.savetxt(save_path + "eigenweights.csv", eigen_weights, fmt="%f", delimiter=",")
+    np.savetxt(save_path0+"error.csv", np.zeros((n, 1)), fmt='%f', delimiter=",")
 
     mean_weight = np.mean(eigen_weights[:, 0])
     print("平均的扰动权重是 ", mean_weight*yita)

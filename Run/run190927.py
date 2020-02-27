@@ -146,11 +146,11 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     dim = data_shape[1]
     print(data_shape)
 
-    max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
-    print("实际需要的特征向量个数为 ", max_eigen_numbers)
-    if max_eigen_numbers > 4:
-        max_eigen_numbers = 4
-        print("现在手动控制不超过4个")
+    # max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
+    # print("实际需要的特征向量个数为 ", max_eigen_numbers)
+    # if max_eigen_numbers > 4:
+    #     max_eigen_numbers = 4
+    #     print("现在手动控制不超过4个")
 
     label = np.zeros((n, 1))
     if hasLabel:
@@ -330,8 +330,8 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
             y_sub_v = y_list_sub_adjust[j]
 
             for i in range(0, n):
-                plt.plot([y[i, 0], y_add_v[i, 0]], [y[i, 1], y_add_v[i, 1]], linewidth=0.8, c=colors[j], alpha=0.9)
-                plt.plot([y[i, 0], y_sub_v[i, 0]], [y[i, 1], y_sub_v[i, 1]], linewidth=0.8, c=colors[j], alpha=0.9)
+                plt.plot([y[i, 0], y_add_v[i, 0]], [y[i, 1], y_add_v[i, 1]], linewidth=0.8, c=colors[j % len(colors)], alpha=0.9)
+                plt.plot([y[i, 0], y_sub_v[i, 0]], [y[i, 1], y_sub_v[i, 1]], linewidth=0.8, c=colors[j % len(colors)], alpha=0.9)
 
     if draw_kind == "convex_hull" or draw_kind == "b-spline":
         print('使用凸包画法')
@@ -606,19 +606,19 @@ def run_test(data_name0=None):
     main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Wine"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "digits40m1"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.202002252
-    nbrs_k = 20
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 10.12002252
+    nbrs_k = 45
     method_k = 90  # if cTSNE perplexity=method_k/3
-    eigen_numbers = 4  # 无用
+    eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
-    normalize = True  # 是否进行normalize
+    normalize = False  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好
@@ -648,8 +648,8 @@ def run_test(data_name0=None):
     (n, m) = data_shape(main_path, data_name)
     if method == "P_matrix":
         P_matrix = np.zeros((m, 2))
-        x_index = 12  # 第一个维度
-        y_index = 9  # 第二个维度
+        x_index = 0  # 第一个维度
+        y_index = 1  # 第二个维度
         P_matrix[x_index, 0] = 1
         P_matrix[y_index, 1] = 1
 
