@@ -29,6 +29,7 @@ from Perturb2020 import MDS_Perturb
 from Perturb2020 import TSNE_Perturb
 from Perturb2020 import MDS_PerturbSecond
 from Tools import MDSStress
+from Tools import SplineLengthWidth
 
 """"
 本程序是基于run190422.py修改的
@@ -145,11 +146,11 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     dim = data_shape[1]
     print(data_shape)
 
-    max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
-    print("实际需要的特征向量个数为 ", max_eigen_numbers)
-    if max_eigen_numbers > 4:
-        max_eigen_numbers = 4
-        print("现在手动控制不超过4个")
+    # max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
+    # print("实际需要的特征向量个数为 ", max_eigen_numbers)
+    # if max_eigen_numbers > 4:
+    #     max_eigen_numbers = 4
+    #     print("现在手动控制不超过4个")
 
     label = np.zeros((n, 1))
     if hasLabel:
@@ -329,8 +330,8 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
             y_sub_v = y_list_sub_adjust[j]
 
             for i in range(0, n):
-                plt.plot([y[i, 0], y_add_v[i, 0]], [y[i, 1], y_add_v[i, 1]], linewidth=0.8, c=colors[j], alpha=0.9)
-                plt.plot([y[i, 0], y_sub_v[i, 0]], [y[i, 1], y_sub_v[i, 1]], linewidth=0.8, c=colors[j], alpha=0.9)
+                plt.plot([y[i, 0], y_add_v[i, 0]], [y[i, 1], y_add_v[i, 1]], linewidth=0.8, c=colors[j % len(colors)], alpha=0.9)
+                plt.plot([y[i, 0], y_sub_v[i, 0]], [y[i, 1], y_sub_v[i, 1]], linewidth=0.8, c=colors[j % len(colors)], alpha=0.9)
 
     if draw_kind == "convex_hull" or draw_kind == "b-spline":
         print('使用凸包画法')
@@ -431,7 +432,11 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                 this_spline.append([spline_x[j], spline_y[j]])
             b_spline_list.append(this_spline)
 
+        spline_lengths, spline_widths, spline_radios = SplineLengthWidth.spline_length_width(b_spline_list)
         SaveData.save_lists(b_spline_list, save_path + "convex_hull_list.csv")
+        np.savetxt(save_path+"spline_lengths.csv", spline_lengths, fmt='%.18e', delimiter=",")
+        np.savetxt(save_path+"spline_widths.csv", spline_widths, fmt='%.18e', delimiter=",")
+        np.savetxt(save_path+"spline_radios.csv", spline_radios, fmt='%.18e', delimiter=",")
 
     if draw_kind == "star_shape":
         print('使用星多边形画法')
@@ -615,7 +620,7 @@ def run_test(data_name0=None):
     nbrs_k = 15
 
     method_k = 90  # if cTSNE perplexity=method_k/3
-    eigen_numbers = 4  # 无用
+    eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
     normalize = False  # 是否进行normalize
     min_proportion = 0.9
@@ -647,8 +652,8 @@ def run_test(data_name0=None):
     (n, m) = data_shape(main_path, data_name)
     if method == "P_matrix":
         P_matrix = np.zeros((m, 2))
-        x_index = 12  # 第一个维度
-        y_index = 9  # 第二个维度
+        x_index = 0  # 第一个维度
+        y_index = 1  # 第二个维度
         P_matrix[x_index, 0] = 1
         P_matrix[y_index, 1] = 1
 
