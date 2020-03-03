@@ -110,7 +110,7 @@ def coil_image_scatter():
     plt.show()
 
 
-def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(28, 28), colormap='gray', inv=False, enlarge=1):
+def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(28, 28), colormap='gray', inv=False, enlarge=1, trans=False):
     """
     用MNIST数据画艺术散点图
     :return:
@@ -120,7 +120,7 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\winequality1000\\"
 
     # 如果事前没有生成图片，则需要先生成图片
-    create_pictures(path, image_shape=image_shape, inv=inv, enlarge=enlarge)
+    create_pictures(path, image_shape=image_shape, inv=inv, enlarge=enlarge, trans=trans)
 
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
@@ -223,7 +223,7 @@ def image_scatter_part(path=None, eta=0.4, y_name="PCA.csv", label=None, image_s
 
 
 def mnist_scatter():
-    option = 1
+    option = 2
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\coil20obj_16_3class\\"
     # path = "E:\\Project\\result2019\\result1112without_normalize\\datasets\\fashion50mclass568\\"
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
@@ -253,7 +253,7 @@ def mnist_scatter():
         # plt.colorbar()
         plt.show()
     elif option == 2:  # 画艺术散点图
-        mnist_images(path, eta=1.0, y_name="y.csv", image_shape=(28, 28), colormap='gray', inv=True)  # 搜 反转
+        mnist_images(path, eta=0.83, y_name="y.csv", image_shape=(28, 28), colormap='gray', inv=True, trans=False)  # 搜 反转
     else:  # 画部分点的艺术散点图
         image_scatter_part(path, eta=1.0, y_name="y.csv", image_shape=(28, 28), colormap='gray', inv=True, dis=0.04, trans=False)
 
