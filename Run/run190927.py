@@ -30,6 +30,7 @@ from Perturb2020 import TSNE_Perturb
 from Perturb2020 import MDS_PerturbSecond
 from Tools import MDSStress
 from Tools import SplineLengthWidth
+from Derivatives import Influence
 
 """"
 本程序是基于run190422.py修改的
@@ -612,8 +613,8 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "MDS2nd"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.20200303
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 0.20200306
     nbrs_k = 20
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
@@ -667,6 +668,7 @@ def run_test(data_name0=None):
 
     # 添加测试属性的地方
     cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
+    # cluster_label = Influence.find_max_attr(last_path)  # 后面直接加吧
     # cluster_label = Clustering.run_clustering_path(last_path, d_latent=m, n_pca=20, n_clusters=8, k_knn=nbrs_k, o=8, max_iter=100)
 
     # 计算MDS中每个点对stress的贡献
