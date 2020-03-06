@@ -612,7 +612,7 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    method = "MDS2nd"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
     yita = 0.20200303
     nbrs_k = 20
     method_k = 90  # if cTSNE perplexity=method_k/3

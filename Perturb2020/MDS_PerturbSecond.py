@@ -1,6 +1,7 @@
 # 同时用一阶导和二阶导计算扰动，计算local PCA在MDS降维结果中的投影
 import numpy as np
 from sklearn.manifold import MDS
+from sklearn.metrics import euclidean_distances
 import matplotlib.pyplot as plt
 from Main import Preprocess
 from Main import LocalPCA
@@ -10,6 +11,7 @@ from Derivatives.MDS_DerivativeSecond import MDS_SecondDerivative
 from Derivatives.VectorPerturb import VectorPerturb
 from Derivatives.VectorPerturbSecond import VectorPerturbSecond
 import time
+from MyDR import PointsError
 
 
 class MDSPerturb:
@@ -23,15 +25,53 @@ class MDSPerturb:
         self.Hessian = None
         self.Jacobi = None
         self.yHx = None
+        self.gradient = None
         self.init_y()
+        self.first_derivative()
 
     def init_y(self):
         time1 = time.time()
-        mds = MDS(n_components=2, max_iter=3000)
+        mds = MDS(n_components=2, max_iter=10000, eps=-1.0)
         Y = mds.fit_transform(self.X)
         self.Y = Y
         time2 = time.time()
         print("初始降维用时为, ", time2-time1)
+
+    def first_derivative(self):
+        """
+        计算所求结果处的一阶导数
+        :return:
+        """
+        (n, m) = self.X.shape
+        Dx = euclidean_distances(self.X) + np.eye(n)
+        Dy = euclidean_distances(self.Y) + np.eye(n)
+
+        # 计算每个点产生的误差
+        dD = (Dx - Dy)**2
+        dD = 0.5*dD
+        error = np.sum(dD, axis=1)
+
+        first = np.zeros((n, 2))  # 每个点处的一阶导
+        for i in range(0, n):
+            dY = np.tile(self.Y[i, :], (n, 1)) - self.Y
+            w = 1 - Dx[i, :] / Dy[i, :]
+            W = np.tile(w, (2, 1)).T
+            first[i, :] = np.sum(W*dY, axis=0)
+
+        self.gradient = first
+        plt.subplot(131)
+        plt.plot(error)
+        plt.title("error of each point")
+
+        plt.subplot(132)
+        plt.plot(first[:, 0])
+        plt.title("first derivative 1")
+
+        plt.subplot(133)
+        plt.plot(first[:, 1])
+        plt.title("first derivative 2")
+
+        plt.show()
 
     def perturb(self, vectors_list, weights):
         """
@@ -138,6 +178,9 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
     print("初次降维已经计算完毕")
     y_add_list, y_sub_list = mds_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
 
+    points_error = PointsError.mds_stress(data, y)
+    np.savetxt(save_path0 + "error.csv", points_error, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0 + "gradient.csv", mds_perturb.gradient, fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"MDS_Pxy.csv", mds_perturb.P, fmt='%f', delimiter=",")
     np.savetxt(save_path0+"MDS_Hessian.csv", mds_perturb.Hessian, fmt='%f', delimiter=",")
     # np.savetxt(save_path0+"MDS_Hessian_.csv", np.linalg.inv(mds_perturb.Hessian), fmt='%f', delimiter=",")
