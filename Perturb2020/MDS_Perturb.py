@@ -11,6 +11,7 @@ from sklearn.metrics import euclidean_distances
 import time
 from MyDR import PointsError
 from Main import LocalLDA
+from Main import LocalLPP
 
 
 class MDSPerturb:
@@ -95,7 +96,7 @@ class MDSPerturb:
 
 
 def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
-                 yita=0.1, save_path="", weighted=True, label=None, y_precomputed=False):
+                 yita=0.1, save_path="", weighted=True, label=None, y_precomputed=False, local_struct="pca"):
     """
         一个点一个点地添加扰动，不同的特征向量需要根据它们的特征值分配权重。该方法只适用于某些非线性降维方法。
         该方法目前只支持新的MDS方法，即 method=="MDS"
@@ -110,6 +111,7 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
         :param weighted:特征向量作为扰动时是否按照其所对应的特征值分配权重
         :param label:数据的分类标签
         :param y_precomputed: y是否已经提前计算好，如果是，则直接从文件中读取
+        :param local_struct: 要投影的local structure
         :return:
         """
     print("MDS one by one")
@@ -143,7 +145,12 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
         local_data = np.zeros((nbrs_k, dim))
         for j in range(0, nbrs_k):
             local_data[j, :] = data[knn[i, j], :]
-        temp_vectors, eigen_values[i, :] = LocalPCA.local_pca_dn(local_data)
+        if local_struct == "pca":
+            temp_vectors, eigen_values[i, :] = LocalPCA.local_pca_dn(local_data)
+        elif local_struct == "lpp":
+            temp_vectors, eigen_values[i, :] = LocalLPP.local_lpp(local_data)
+        else:
+            print("暂不支持该local structure")
 
         for j in range(0, MAX_EIGEN_COUNT):
             eigenvectors = eigen_vectors_list[j]

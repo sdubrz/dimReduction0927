@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from MyDR import cTSNE
 from MyDR import PointsError
 from Main import LocalLDA
+from Main import LocalLPP
 
 
 def perturb_pca_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="PCA2",
@@ -253,7 +254,8 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
 
 
 def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
-                 yita=0.1, save_path="", weighted=True, P_matrix=None, label=None, MIN_EIGEN_NUMBER=2, min_proportion=0.9, min_good_points=0.9):
+                 yita=0.1, save_path="", weighted=True, P_matrix=None, label=None, MIN_EIGEN_NUMBER=2,
+                          min_proportion=0.9, min_good_points=0.9, local_structure='pca'):
     """
     一次性对所有的点添加扰动，是之前使用过的方法
     这里各个特征向量的扰动按照特征值的比重添加权重
@@ -312,7 +314,13 @@ def perturb_once_weighted(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, 
         local_data = np.zeros((nbrs_k, dim))
         for j in range(0, nbrs_k):
             local_data[j, :] = data[knn[i, j], :]
-        temp_vectors, eigen_values[i, :] = LocalPCA.local_pca_dn(local_data)
+        if local_structure == 'pca':
+            temp_vectors, eigen_values[i, :] = LocalPCA.local_pca_dn(local_data)
+        elif local_structure == 'lpp':
+            temp_vectors, eigen_values[i, :] = LocalLPP.local_lpp(local_data)
+        else:
+            print("暂不支持该种local structure")
+            return
 
         for j in range(0, MAX_EIGEN_COUNT):
             eigenvectors = eigen_vectors_list[j]

@@ -106,7 +106,8 @@ def local_pca_calculated(path):
 
 def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
-        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9, y_precomputed=False):
+        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9, y_precomputed=False,
+             local_structure='pca'):
     """"
 
     :param main_path: 主文件目录
@@ -133,6 +134,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     :param P_matrix: 普通的线性降维方法的投影矩阵
     :param show_result: 在计算完成后，是否将结果画出来
     :param y_precomputed: 第一次的降维结果是否已经计算过，因为有些情况下第一次降维耗时较长
+    :param local_structure: 要投影的local structure
     @author subbrz
     2018年12月20日
     """
@@ -212,7 +214,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                        method_name=method,
                                                                        yita=yita, save_path=save_path,
                                                                        weighted=weighted,
-                                                                       label=label, y_precomputed=y_precomputed)
+                                                                       label=label, y_precomputed=y_precomputed, local_struct=local_structure)
     elif method == "PCA2":
         y, y_list_add, y_list_sub = Preturb.perturb_pca_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
                                                                MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
@@ -223,7 +225,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                    MAX_EIGEN_COUNT=max_eigen_numbers,
                                                                    method_name=method,
                                                                    yita=yita, save_path=save_path, weighted=weighted,
-                                                                   label=label, y_precomputed=y_precomputed)
+                                                                   label=label, y_precomputed=y_precomputed, local_struct=local_structure)
     elif method == "MDS2nd":
         y, y_list_add, y_list_sub = MDS_PerturbSecond.perturb_mds_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
                                                                        method_k=method_k,
@@ -240,7 +242,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                           save_path=save_path, weighted=weighted, P_matrix=P_matrix,
                                                             label=label, MAX_EIGEN_COUNT=max_eigen_numbers,
                                                                   min_proportion=min_proportion,
-                                                                  min_good_points=min_good_points)
+                                                                  min_good_points=min_good_points, local_structure=local_structure)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
 
@@ -605,20 +607,22 @@ def run_test(data_name0=None):
     # main_path = "F:\\result2019\\result0927\\"  # HP
     # main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
     main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
+    lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "Wine"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.20200306
-    nbrs_k = 20
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 0.202003062
+    nbrs_k = 30
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
+    local_structure = "lpp"
     normalize = True  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
@@ -645,6 +649,9 @@ def run_test(data_name0=None):
     if (not normalize) and (not straighten):
         main_path = main_path_without_normalize
 
+    if local_structure == 'lpp':
+        main_path = lpp_path
+
     # 继续设置普通的线性降维方法的参数
     (n, m) = data_shape(main_path, data_name)
     if method == "P_matrix":
@@ -659,7 +666,7 @@ def run_test(data_name0=None):
         method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result,
                                         min_proportion=min_proportion, min_good_points=min_good_points,
-                                        y_precomputed=y_precomputed)
+                                        y_precomputed=y_precomputed, local_structure=local_structure)
 
     # if not(data_name0 is None):  # 规模化运行时，保存降维结果
     read_path = main_path + "datasets\\" + data_name + "\\"  # 保存降维结果，方便画艺术散点图
