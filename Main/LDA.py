@@ -14,6 +14,8 @@ class LDA:
         # self.X = None  # 高维数据矩阵
         self.P = None  # 投影矩阵
         self.Y = None
+        self.vectors = None  # 排好序的各个特征向量
+        self.values = None  # 排好序的各个特征值
 
     def max_indexs(self, a_list0, num_head=2):
         """获得前几个大的数的索引号"""
@@ -93,7 +95,8 @@ class LDA:
 
         Q = np.dot(LA.inv(Sw), Sb)
         values, vectors = LA.eig(Q)
-        selected_index = self.max_indexs(values, num_head=self.n_component)
+        # selected_index = self.max_indexs(values, num_head=self.n_component)
+        selected_index = self.max_indexs(values, num_head=m)
 
         P = np.zeros((m, self.n_component))
         for i in range(0, self.n_component):
@@ -102,12 +105,21 @@ class LDA:
         self.P = P
         self.Y = np.dot(X, P)
 
+        self.vectors = np.zeros((m, m))
+        self.values = []
+        for i in range(0, m):
+            self.vectors[:, i] = vectors[:, selected_index[i]]
+            self.values.append(values[selected_index[i]])
+        self.vectors = self.vectors.T
         return self.Y
 
 
 def run_test():
-    path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Wine\\yita(0.1)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
-    X = np.loadtxt(path+"x.csv", dtype=np.float, delimiter=",")
+    # path = "E:\\Project\\result2019\\result1026without_straighten\\PCA\\Wine\\yita(0.1)nbrs_k(20)method_k(20)numbers(4)_b-spline_weighted\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris\\"
+    from Main import Preprocess
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data, -1, 1)
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
 
     (n, m) = X.shape
@@ -117,6 +129,11 @@ def run_test():
     print(P)
     plt.scatter(Y[:, 0], Y[:, 1], marker='o', c=label)
     plt.show()
+
+    vectors = lda.vectors
+    values = lda.values
+    print(vectors)
+    print(values)
 
 
 if __name__ == '__main__':
