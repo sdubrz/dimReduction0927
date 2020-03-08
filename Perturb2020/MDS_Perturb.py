@@ -166,6 +166,7 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
 
     np.savetxt(save_path + "eigenvalues.csv", eigen_values, fmt="%f", delimiter=",")
     np.savetxt(save_path + "eigenweights.csv", eigen_weights, fmt="%f", delimiter=",")
+    np.savetxt(save_path0 + "eigenvectors1.csv", eigen_vectors_list[0], fmt='%f', delimiter=",")
 
     mean_weight = np.mean(eigen_weights[:, 0])
     print("平均的扰动权重是 ", mean_weight * yita)
