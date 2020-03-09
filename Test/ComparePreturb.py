@@ -162,7 +162,7 @@ def run():
     vectors = np.zeros((n, m))
     vectors[:, 0] = 1.0
 
-    compare = Compare(X, vectors, eta=0.05, method='cTSNE')
+    compare = Compare(X, vectors, eta=0.05, method=method)
     Y = compare.Y
     Y1 = compare.preturb_1by1()
     Y2 = compare.preturb_random()
