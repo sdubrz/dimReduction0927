@@ -200,6 +200,32 @@ def run():
     plt.show()
 
 
+def errors_statistics():
+    """
+    统计不同扰动方法的误差
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\小实验\\不同扰动方法\\灵越运行结果\\datasets\\"
+    name = "Wine"
+    method = "cTSNE"
+
+    path = path + name + "\\" + method + "\\"
+    dY1 = np.loadtxt(path+"dY1.csv", dtype=np.float, delimiter=",")
+    dY2 = np.loadtxt(path + "dY2.csv", dtype=np.float, delimiter=",")
+    dY3 = np.loadtxt(path + "dY3.csv", dtype=np.float, delimiter=",")
+    (n, m) = dY1.shape
+
+    dY21 = dY2 - dY1
+    dY31 = dY3 - dY1
+    norm2 = np.zeros((n, 1))
+    norm3 = np.zeros((n, 1))
+    for i in range(0, n):
+        norm2[i] = np.linalg.norm(dY21[i, :]) / np.linalg.norm(dY1[i, :])
+        norm3[i] = np.linalg.norm(dY31[i, :]) / np.linalg.norm(dY1[i, :])
+    print("random 的误差 ", np.mean(norm2))
+    print("我们方法的误差 ", np.mean(norm3))
+
+
 def test():
     list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     slice = random.sample(list, 5)  # 从list中随机获取5个元素，作为一个片断返回
@@ -232,4 +258,5 @@ def test():
 
 if __name__ == '__main__':
     # test()
-    run()
+    # run()
+    errors_statistics()
