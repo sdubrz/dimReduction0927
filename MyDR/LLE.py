@@ -15,7 +15,7 @@ from sklearn.utils.extmath import stable_cumsum
 from sklearn.utils.validation import check_is_fitted
 from sklearn.utils.validation import FLOAT_DTYPES
 from sklearn.neighbors import NearestNeighbors
-path = "E:\\Project\\result2019\\result1224\\datasets\\coil20obj_16_3class\\"
+path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\Iris3\\"
 
 
 def barycenter_weights(X, Z, reg=1e-3):
@@ -62,7 +62,7 @@ def barycenter_weights(X, Z, reg=1e-3):
         G.flat[::Z.shape[1] + 1] += R
         w = solve(G, v, sym_pos=True)
         B[i, :] = w / np.sum(w)
-    # np.savetxt(path+"out_weights.csv", B, fmt='%f', delimiter=",")
+    np.savetxt(path+"out_weights.csv", B, fmt='%f', delimiter=",")
     return B
 
 

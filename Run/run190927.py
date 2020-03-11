@@ -30,6 +30,7 @@ from Perturb2020 import TSNE_Perturb
 from Perturb2020 import MDS_PerturbSecond
 from Tools import MDSStress
 from Tools import SplineLengthWidth
+from Tools import CheckRepeat
 from Derivatives import Influence
 
 """"
@@ -148,6 +149,10 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     n = data_shape[0]
     dim = data_shape[1]
     print(data_shape)
+
+    if CheckRepeat.has_repeat(data):
+        print("有重复的点")
+        return
 
     # max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
     # print("实际需要的特征向量个数为 ", max_eigen_numbers)
@@ -610,13 +615,13 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "pendigits"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
     yita = 0.102003062
     nbrs_k = 20
     method_k = 90  # if cTSNE perplexity=method_k/3

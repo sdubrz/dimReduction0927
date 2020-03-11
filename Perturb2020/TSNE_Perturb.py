@@ -194,10 +194,12 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     np.savetxt(save_path0+"Q.csv", tsne_perturb.Q, fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"error.csv", points_error, fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%.18e', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%.18e', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.pinv(tsne_perturb.Hessian), fmt='%.18e', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Hessian2.csv", np.matmul(tsne_perturb.Hessian, np.linalg.pinv(tsne_perturb.Hessian)), fmt='%.18e', delimiter=",")
-    np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%.18e', delimiter=",")
+
+    if n*dim < 300*50:  # 如果数据过大就不保存这些矩阵了
+        np.savetxt(save_path0+"cTSNE_Hessian.csv", tsne_perturb.Hessian, fmt='%.18e', delimiter=",")
+        np.savetxt(save_path0+"cTSNE_Hessian_.csv", np.linalg.pinv(tsne_perturb.Hessian), fmt='%.18e', delimiter=",")
+        np.savetxt(save_path0+"cTSNE_Hessian2.csv", np.matmul(tsne_perturb.Hessian, np.linalg.pinv(tsne_perturb.Hessian)), fmt='%.18e', delimiter=",")
+        np.savetxt(save_path0+"cTSNE_Jacobi.csv", tsne_perturb.Jacobi, fmt='%.18e', delimiter=",")
 
     hessian = tsne_perturb.Hessian
     d_hessian = hessian - hessian.T
