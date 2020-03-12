@@ -206,7 +206,7 @@ def errors_statistics():
     :return:
     """
     path = "E:\\文件\\IRC\\特征向量散点图项目\\小实验\\不同扰动方法\\灵越运行结果\\datasets\\"
-    name = "Wine"
+    name = "digits40m1"
     method = "cTSNE"
 
     path = path + name + "\\" + method + "\\"
