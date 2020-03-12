@@ -621,7 +621,7 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
     yita = 0.102003062
     nbrs_k = 5
     method_k = 90  # if cTSNE perplexity=method_k/3
@@ -708,6 +708,8 @@ def run_test(data_name0=None):
 
     CircleScatter.circle_json(last_path)
     print('生成散点json完成')
+    from Tools import BigDataRemoveStress
+    BigDataRemoveStress.remove_stress(last_path)
 
     highKNN_2dPCA.create_json2(last_path, line_length=0.1)
 
