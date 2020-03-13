@@ -615,7 +615,7 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Irismini"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
@@ -623,7 +623,7 @@ def run_test(data_name0=None):
 
     method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
     yita = 0.102003062
-    nbrs_k = 5
+    nbrs_k = 20
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
@@ -702,6 +702,8 @@ def run_test(data_name0=None):
     # 这个算的其实是每个点与其他点距离在降维前后的差别
     Stress_json.create_json(last_path)
     ErrorJson.create_json(last_path)  # 生成带有每个点的误差的json文件
+    from JSON_Data import Aspect_json
+    Aspect_json.linearity_aspect(last_path)
 
     Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
     print("计算二维完成")
