@@ -134,10 +134,10 @@ def hessian_y_matrix_fast(Dx, Dy, Y):
                 right_sub = W[c, 0] * np.outer(dY[c, :], dY[c, :])
                 H_sub = left_sub - right_sub
             H[a*m:a*m+m, c*m:c*m+m] = H_sub[:, :]
-        if a % 100 == 0:
-            print(a)
+        # if a % 100 == 0:
+        #     print(a)
     finish_time = time.time()
-    print("计算 Hessian耗时 ", finish_time-begin_time)
+    # print("计算 Hessian耗时 ", finish_time-begin_time)
     return H
 
 
@@ -255,10 +255,10 @@ def derivative_X_matrix_fast(Dx, Dy, X, Y):
             else:
                 H_sub = 2 * Wy[b, 0] * Wx[b, 0] * np.outer(dY[b, :], dX[b, :])
             J[a*m:a*m+m, b*d:b*d+d] = H_sub[:, :]
-        if a % 100 == 0:
-            print(a)
+        # if a % 100 == 0:
+        #     print(a)
     finish_time = time.time()
-    print("计算 J 耗时 ", finish_time-begin_time)
+    # print("计算 J 耗时 ", finish_time-begin_time)
 
     return J
 

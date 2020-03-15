@@ -360,10 +360,10 @@ def merge_json(main_path, data_name, method_name, yita, method_k, nbrs_k, draw_k
     eigen1_div_eigen2 = eigen1_div_eigen2_reader.astype(np.float)  # 高维中第一特征值与第二特征值的比值
     linearityEqualized = HistEqual.hist_equalization(eigen1_div_eigen2, bins_num=100)
 
-    # eigen1_div_eigen2_project_reader = np.loadtxt(read_path + "eigen1_div_eigen2_projected.csv", dtype=np.str,
-    #                                       delimiter=",")
-    eigen1_div_eigen2_project_reader = np.loadtxt(read_path + "spline_radios.csv", dtype=np.str,
-                                                  delimiter=",")  # 更换为图形的长宽比
+    eigen1_div_eigen2_project_reader = np.loadtxt(read_path + "eigen1_div_eigen2_projected.csv", dtype=np.str,
+                                          delimiter=",")
+    # eigen1_div_eigen2_project_reader = np.loadtxt(read_path + "spline_radios.csv", dtype=np.str,
+    #                                               delimiter=",")  # 更换为图形的长宽比，这里应该用哪一个更合适一点？
     eigen1_div_eigen2_project = eigen1_div_eigen2_project_reader.astype(np.float)  # 第一特征向量与第二特征向量投影之后的长度比值
 
     # 每个点所使用的特征向量个数

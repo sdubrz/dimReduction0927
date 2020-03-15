@@ -28,8 +28,12 @@ from Main import LocalPCA
 from Perturb2020 import MDS_Perturb
 from Perturb2020 import TSNE_Perturb
 from Perturb2020 import MDS_PerturbSecond
+from Perturb2020 import TSNE_NewtonPerturb
 from Tools import MDSStress
 from Tools import SplineLengthWidth
+from Tools import CheckRepeat
+from Derivatives import Influence
+
 
 """"
 本程序是基于run190422.py修改的
@@ -105,7 +109,8 @@ def local_pca_calculated(path):
 
 def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_numbers=5, method="MDS",
         draw_kind="line", has_line=False, hasLabel=False, to_normalize=False, do_straight=False,
-        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9, y_precomputed=False):
+        weighted=True, P_matrix=None, show_result=False, min_proportion=0.9, min_good_points=0.9, y_precomputed=False,
+             local_structure='pca'):
     """"
 
     :param main_path: 主文件目录
@@ -132,6 +137,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     :param P_matrix: 普通的线性降维方法的投影矩阵
     :param show_result: 在计算完成后，是否将结果画出来
     :param y_precomputed: 第一次的降维结果是否已经计算过，因为有些情况下第一次降维耗时较长
+    :param local_structure: 要投影的local structure
     @author subbrz
     2018年12月20日
     """
@@ -156,6 +162,10 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     if hasLabel:
         label_reader = np.loadtxt(label_path, dtype=np.str, delimiter=",")
         label = label_reader.astype(np.int)
+
+    if CheckRepeat.has_repeat(data, label, main_path + "datasets\\" + data_name +"\\"):
+        print("有重复的点")
+        return
 
     if not os.path.exists(y_random_path):
         print("还没有随机初始结果，现在生成")
@@ -200,6 +210,12 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         #                                                   save_path=save_path)
         print('暂时不推荐使用这种方法')
         return
+    elif method == "cTSNE0":
+        # one by one 的方法，最慢的方法
+        y, y_list_add, y_list_sub = Preturb.perturb_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
+                                                               MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
+                                                               yita=yita, save_path=save_path, weighted=weighted,
+                                                               label=label, y_precomputed=y_precomputed)
     elif method == "cTSNE":
         # y, y_list_add, y_list_sub = Preturb.perturb_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
         #                                                        MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
@@ -211,7 +227,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                        method_name=method,
                                                                        yita=yita, save_path=save_path,
                                                                        weighted=weighted,
-                                                                       label=label, y_precomputed=y_precomputed)
+                                                                       label=label, y_precomputed=y_precomputed, local_struct=local_structure)
     elif method == "PCA2":
         y, y_list_add, y_list_sub = Preturb.perturb_pca_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
                                                                MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
@@ -222,7 +238,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                    MAX_EIGEN_COUNT=max_eigen_numbers,
                                                                    method_name=method,
                                                                    yita=yita, save_path=save_path, weighted=weighted,
-                                                                   label=label, y_precomputed=y_precomputed)
+                                                                   label=label, y_precomputed=y_precomputed, local_struct=local_structure)
     elif method == "MDS2nd":
         y, y_list_add, y_list_sub = MDS_PerturbSecond.perturb_mds_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
                                                                        method_k=method_k,
@@ -231,6 +247,15 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                        yita=yita, save_path=save_path,
                                                                        weighted=weighted,
                                                                        label=label, y_precomputed=y_precomputed)
+    elif method == "cTSNE_Newton":
+        y, y_list_add, y_list_sub = TSNE_NewtonPerturb.perturb_tsne_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
+                                                                         method_k=method_k,
+                                                                         MAX_EIGEN_COUNT=max_eigen_numbers,
+                                                                         method_name=method,
+                                                                         yita=yita, save_path=save_path,
+                                                                         weighted=weighted,
+                                                                         label=label, y_precomputed=y_precomputed,
+                                                                         local_struct=local_structure)
     else:
         y, y_list_add, y_list_sub = Preturb.perturb_once_weighted(x, nbrs_k=nbrs_k, y_init=y_random,
                                                           method_k=method_k,
@@ -239,7 +264,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                           save_path=save_path, weighted=weighted, P_matrix=P_matrix,
                                                             label=label, MAX_EIGEN_COUNT=max_eigen_numbers,
                                                                   min_proportion=min_proportion,
-                                                                  min_good_points=min_good_points)
+                                                                  min_good_points=min_good_points, local_structure=local_structure)
     perturb_end = time()
     print("降维所花费的时间为\t", perturb_end-perturb_start)
 
@@ -603,6 +628,7 @@ def run_test(data_name0=None):
     # main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
     # main_path = "F:\\result2019\\result0927\\"  # HP
     # main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
+
     main_path = 'D:\\Exp\\'  # XPS
     main_path_without_normalize = 'D:\\Exp\\'  # XPS
 
@@ -648,6 +674,9 @@ def run_test(data_name0=None):
     if (not normalize) and (not straighten):
         main_path = main_path_without_normalize
 
+    if local_structure == 'lpp':
+        main_path = lpp_path
+
     # 继续设置普通的线性降维方法的参数
     (n, m) = data_shape(main_path, data_name)
     if method == "P_matrix":
@@ -662,7 +691,7 @@ def run_test(data_name0=None):
         method=method, draw_kind=draw_kind, has_line=True, hasLabel=True, to_normalize=normalize,
         do_straight=straighten, weighted=weighted, P_matrix=P_matrix, show_result=show_result,
                                         min_proportion=min_proportion, min_good_points=min_good_points,
-                                        y_precomputed=y_precomputed)
+                                        y_precomputed=y_precomputed, local_structure=local_structure)
 
     # if not(data_name0 is None):  # 规模化运行时，保存降维结果
     read_path = main_path + "datasets\\" + data_name + "\\"  # 保存降维结果，方便画艺术散点图
@@ -671,6 +700,7 @@ def run_test(data_name0=None):
 
     # 添加测试属性的地方
     cluster_label = clusterTest.k_means_data(last_path, n_cluster=8, draw=False)
+    # cluster_label = Influence.find_max_attr(last_path)  # 后面直接加吧
     # cluster_label = Clustering.run_clustering_path(last_path, d_latent=m, n_pca=20, n_clusters=8, k_knn=nbrs_k, o=8, max_iter=100)
 
     # 计算MDS中每个点对stress的贡献
@@ -692,12 +722,16 @@ def run_test(data_name0=None):
     # 这个算的其实是每个点与其他点距离在降维前后的差别
     Stress_json.create_json(last_path)
     ErrorJson.create_json(last_path)  # 生成带有每个点的误差的json文件
+    from JSON_Data import Aspect_json
+    Aspect_json.linearity_aspect(last_path)
 
     Json_2d.create_json2(last_path, k=nbrs_k, line_length=0.1, draw_spline=False)
     print("计算二维完成")
 
     CircleScatter.circle_json(last_path)
     print('生成散点json完成')
+    from Tools import BigDataRemoveStress
+    BigDataRemoveStress.remove_stress(last_path)
 
     highKNN_2dPCA.create_json2(last_path, line_length=0.1)
 

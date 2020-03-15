@@ -1,7 +1,9 @@
+# 用牛顿法解的t-SNE
 # 用求导的方式计算 local PCA 在t-SNE的投影
 import numpy as np
 # from sklearn.manifold import MDS
 import matplotlib.pyplot as plt
+from MyDR import cTSNE_Newton
 from MyDR import cTSNE
 from Main import Preprocess
 from Main import LocalPCA
@@ -36,8 +38,11 @@ class TSNEPerturb:
 
     def init_y(self):
         time1 = time.time()
-        t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
-        Y = t_sne.fit_transform(self.X, max_iter=30000)
+        tsne0 = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
+        Y0 = tsne0.fit_transform(self.X, max_iter=2000)
+
+        t_sne = cTSNE_Newton.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
+        Y = t_sne.fit_transform(self.X, max_iter=10000, y_random=Y0)
         self.Y = Y
         self.beta = t_sne.beta
         self.Px0 = t_sne.P0
@@ -179,8 +184,8 @@ def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5
     mean_weight = np.mean(eigen_weights[:, 0])
     print("平均的扰动权重是 ", mean_weight * yita)
 
-    if not method_name == "cTSNE":
-        print("该方法只支持 cTSNE 降维方法")
+    if not method_name == "cTSNE_Newton":
+        print("该方法只支持 cTSNE_Newton 降维方法")
 
     tsne_perturb = TSNEPerturb(data, method_k)
     y = tsne_perturb.Y
@@ -332,6 +337,9 @@ def perturb_tsne_lda_one_by_one(data, nbrs_k, y_init=None, method_k=30, MAX_EIGE
     # print("sum P columns = ", np.sum(mds_perturb.P, axis=1))
 
     return y, y_add_list, y_sub_list
+
+
+
 
 
 

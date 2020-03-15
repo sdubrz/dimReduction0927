@@ -118,7 +118,7 @@ class cTSNE:
         return P
 
     def fit_transform(self, X, max_iter=1000, early_exaggerate=True, y_random=None, dY=None, iY=None, gains=None,
-                      show_progress=False, min_kl=None):
+                      show_progress=False, min_kl=None, follow_gradient=True):
         """
         执行降维
         :param X: 高维数据
@@ -130,6 +130,7 @@ class cTSNE:
         :param gains: 用于迭代的一个参数
         :param show_progress: 是否展示中间结果
         :param min_kl: 当KL散度小于该值时停止迭代
+        :param follow_gradient: 是否记录迭代过程中的导数
         :return:
         """
         # print("\tearly-exaggerate: ", early_exaggerate)
@@ -168,7 +169,7 @@ class cTSNE:
         P = P / (2*n)
         P = np.maximum(P, 1e-120)  # 1e-12太大了
         self.P = P.copy()
-        #np.savetxt("F:\\t-sneP.csv", P, fmt='%.18e', delimiter=",")
+
         if early_exaggerate:
             P = P * 4.  # early exaggeration
 
@@ -202,7 +203,8 @@ class cTSNE:
             for i in range(n):
                 dY[i, :] = np.sum(np.tile(PQ[:, i] * num[:, i], (no_dims, 1)).T * (Y[i, :] - Y), 0)  # dY是完全重新计算了，应该不会影响
 
-            firsts.append(dY[0, :].tolist())
+            if follow_gradient:
+                firsts.append(dY[0, :].tolist())
 
             # Perform the update
             if iter < 20 and early_exaggerate:
@@ -229,13 +231,14 @@ class cTSNE:
                 P = P / 4.
 
         # 最后更新低维空间中的概率矩阵
-        sum_Y = np.sum(np.square(Y), 1)
-        num = -2. * np.dot(Y, Y.T)
-        num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
-        num[range(n), range(n)] = 0.  # 把对角线设置为0
-        Q = num / np.sum(num)
-        Q = np.maximum(Q, 1e-120)
-        self.Q = Q
+        if follow_gradient:
+            sum_Y = np.sum(np.square(Y), 1)
+            num = -2. * np.dot(Y, Y.T)
+            num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
+            num[range(n), range(n)] = 0.  # 把对角线设置为0
+            Q = num / np.sum(num)
+            Q = np.maximum(Q, 1e-120)
+            self.Q = Q
 
         self.final_iter = iter
         if show_progress:
@@ -245,14 +248,15 @@ class cTSNE:
             plt.plot(kl)
             plt.title("KL divergence, min="+str(min(kl)))
             plt.show()
-        # Return solution
-        print("最终迭代的次数是 ", iter)
-        # np.savetxt("F:\\first.csv", np.array(firsts), fmt='%.18e', delimiter=",")
-        print(firsts[len(firsts)-1])
 
-        plt.plot(np.log10(firsts))
-        plt.title("log10 der")
-        plt.show()
+        if follow_gradient:
+            print("最终迭代的次数是 ", iter)
+            # np.savetxt("F:\\first.csv", np.array(firsts), fmt='%.18e', delimiter=",")
+            print(firsts[len(firsts)-1])
+
+            plt.plot(np.log10(firsts))
+            plt.title("log10 der")
+            plt.show()
 
         return Y
 

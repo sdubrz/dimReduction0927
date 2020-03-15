@@ -6,6 +6,8 @@ from Main import Preprocess
 from MyDR import LLE
 from Main import LLE_Perturb
 
+from sklearn.neighbors import NearestNeighbors
+
 
 def run():
     """
@@ -61,6 +63,37 @@ def run3():
     plt.show()
 
 
+def knn_test():
+    """
+    测试KNN的一些函数的用法
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\Iris3\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data)
+    (n, m) = X.shape
+    print(X[0, :])
+
+    knn = NearestNeighbors(n_neighbors=15).fit(X)
+    X = knn._fit_X
+    print(X)
+
+
+def run4():
+    """
+    测试本地版本的LLE
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\Iris3\\"
+    data = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(data)
+    (n, m) = X.shape
+
+    lle = LLE.LocallyLinearEmbedding(n_neighbors=15, n_components=2)
+    Y = lle.fit_transform(X)
+    plt.scatter()
+
+
 if __name__ == '__main__':
-    run2()
+    knn_test()
 

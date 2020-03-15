@@ -139,7 +139,7 @@ def dim_reduce_i(data, perturb_index, method="cTSNE", y_random=None, max_iter=10
     :param beta: t-sne方法在计算概率时用的方差值
     :return:
     """
-    if method == "cTSNE":
+    if method == "cTSNE" or method == "cTSNE0":
         t_sne = cTSNE.cTSNE(n_component=2, perplexity=method_k/3)
         Y = t_sne.fit_transform_i(data, perturb_index, max_iter=max_iter, y_random=y_random, beta=beta)
         return Y

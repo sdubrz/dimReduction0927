@@ -13,10 +13,11 @@ def pca_error(X, Y):
     """
     (n, m) = X.shape
     X2 = X - np.mean(X, axis=0)
+    Y2 = Y - np.mean(Y, axis=0)
 
     distance = np.zeros((n, 1))
     for i in range(0, n):
-        distance[i] = np.linalg.norm(X2[i, :])**2 - np.linalg.norm(Y[i, :])**2
+        distance[i] = np.linalg.norm(X2[i, :])**2 - np.linalg.norm(Y2[i, :])**2
 
     return distance
 
