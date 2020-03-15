@@ -4,6 +4,7 @@ import numpy as np
 # from sklearn.manifold import MDS
 import matplotlib.pyplot as plt
 from MyDR import cTSNE_Newton
+from MyDR import cTSNE
 from Main import Preprocess
 from Main import LocalPCA
 from Main import processData as pD
@@ -37,8 +38,11 @@ class TSNEPerturb:
 
     def init_y(self):
         time1 = time.time()
+        tsne0 = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
+        Y0 = tsne0.fit_transform(self.X, max_iter=2000)
+
         t_sne = cTSNE_Newton.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
-        Y = t_sne.fit_transform(self.X, max_iter=100000)
+        Y = t_sne.fit_transform(self.X, max_iter=10000, y_random=Y0)
         self.Y = Y
         self.beta = t_sne.beta
         self.Px0 = t_sne.P0
