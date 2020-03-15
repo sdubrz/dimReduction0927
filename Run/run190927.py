@@ -150,10 +150,6 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     dim = data_shape[1]
     print(data_shape)
 
-    if CheckRepeat.has_repeat(data):
-        print("有重复的点")
-        return
-
     # max_eigen_numbers = LocalPCA.eigen_number(data, nbrs_k, proportion=min_proportion, good_points=min_good_points)
     # print("实际需要的特征向量个数为 ", max_eigen_numbers)
     # if max_eigen_numbers > 4:
@@ -164,6 +160,10 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     if hasLabel:
         label_reader = np.loadtxt(label_path, dtype=np.str, delimiter=",")
         label = label_reader.astype(np.int)
+
+    if CheckRepeat.has_repeat(data, label, main_path + "datasets\\" + data_name +"\\"):
+        print("有重复的点")
+        return
 
     if not os.path.exists(y_random_path):
         print("还没有随机初始结果，现在生成")
@@ -208,6 +208,12 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         #                                                   save_path=save_path)
         print('暂时不推荐使用这种方法')
         return
+    elif method == "cTSNE0":
+        # one by one 的方法，最慢的方法
+        y, y_list_add, y_list_sub = Preturb.perturb_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
+                                                               MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
+                                                               yita=yita, save_path=save_path, weighted=weighted,
+                                                               label=label, y_precomputed=y_precomputed)
     elif method == "cTSNE":
         # y, y_list_add, y_list_sub = Preturb.perturb_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
         #                                                        MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
@@ -615,15 +621,15 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "seeds"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "PCA"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
-    yita = 0.102003062
-    nbrs_k = 20
+    method = "cTSNE0"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    yita = 0.202003062
+    nbrs_k = 25
     method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"

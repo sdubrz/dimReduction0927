@@ -80,6 +80,16 @@ def test6():
     print(a)
 
 
+def heatmap_test():
+    import matplotlib.pyplot as plt
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.102003062)nbrs_k(20)method_k(90)numbers(4)_b-spline_weighted\\"
+    X = np.loadtxt(path+"MDS_Pxy.csv", dtype=np.float, delimiter=",")
+    plt.imshow(X, cmap="spring")
+    plt.colorbar()
+    plt.show()
+
+
 if __name__ == '__main__':
     # run2()
-    test6()
+    # test6()
+    heatmap_test()

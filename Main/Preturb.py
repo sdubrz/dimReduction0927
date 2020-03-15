@@ -182,8 +182,8 @@ def perturb_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, met
     print("平均的扰动权重是 ", mean_weight * yita)
 
     # 开始执行降维计算
-    if not method_name == "cTSNE":
-        print("暂时只支持 CTSNE 方法")
+    if not method_name == "cTSNE0":
+        print("暂时只支持 CTSNE0 方法")
         return
 
     n_inter_perturb = 5  # 某些迭代的降维算法，在计算有扰动的数据时所需的迭代次数
