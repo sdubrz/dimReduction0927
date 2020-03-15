@@ -607,7 +607,7 @@ def run_test(data_name0=None):
     main_path_without_normalize = 'D:\\Exp\\'  # XPS
 
 
-    data_name = "coil20obj_10_3class"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "abalone250"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
 
     if data_name0 is None:
         pass
@@ -617,12 +617,12 @@ def run_test(data_name0=None):
     method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
 
     yita = 0.20200213
-    nbrs_k = 15
+    nbrs_k = 20
 
-    method_k = 90  # if cTSNE perplexity=method_k/3
+    method_k = 30  # if cTSNE perplexity=method_k/3
     eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
-    normalize = False  # 是否进行normalize
+    normalize = True  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好

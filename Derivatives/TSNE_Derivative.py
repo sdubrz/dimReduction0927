@@ -537,7 +537,7 @@ def Jxy(H, J):
     """
     H_ = np.linalg.pinv(H)  # inv
     P = -1 * np.matmul(H_, J)
-    np.savetxt("F:\\Hinv.csv", H_, fmt='%.18e', delimiter=",")
+    #np.savetxt("F:\\Hinv.csv", H_, fmt='%.18e', delimiter=",")
 
     return P
 

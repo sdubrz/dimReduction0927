@@ -168,7 +168,7 @@ class cTSNE:
         P = P / (2*n)
         P = np.maximum(P, 1e-120)  # 1e-12太大了
         self.P = P.copy()
-        np.savetxt("F:\\t-sneP.csv", P, fmt='%.18e', delimiter=",")
+        #np.savetxt("F:\\t-sneP.csv", P, fmt='%.18e', delimiter=",")
         if early_exaggerate:
             P = P * 4.  # early exaggeration
 
