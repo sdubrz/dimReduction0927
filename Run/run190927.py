@@ -633,19 +633,21 @@ def run_test(data_name0=None):
     main_path_without_normalize = 'D:\\Exp\\'  # XPS
 
 
-    data_name = "abalone250"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "Tic-Tac-Toe"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
 
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+    method = "cTSNE_Newton"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd"
+
+    local_structure = 'pca'
 
     yita = 0.20200213
-    nbrs_k = 20
+    nbrs_k = 15
 
-    method_k = 30  # if cTSNE perplexity=method_k/3
+    method_k = 90  # if cTSNE perplexity=method_k/3
     eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
     normalize = True  # 是否进行normalize
