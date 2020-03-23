@@ -133,9 +133,10 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     ax.scatter(Y[:, 0], Y[:, 1])
     if colormap == 'gray':
         plt.set_cmap(cm.gray)
-    for i in range(0, n):
+    for i2 in range(0, n):
         # if label[i] != 5:
         #     continue
+        i = n - i2-1
         ab = AnnotationBbox(get_image(small_path + str(i)+".png"), (Y[i, 0], Y[i, 1]), frameon=False)
         ax.add_artist(ab)
     ax = plt.gca()
@@ -229,8 +230,8 @@ def mnist_scatter():
     # path = "E:\\Project\\result2019\\result1224\\datasets\\MNIST50mclass1_985\\"
     # path = "E:\\Project\\result2020\\result0103\\datasets\\MNIST50mclass1_985\\"  # 华硕
     # path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\fashion50mclass568\\"  # 华硕
-    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\fashion50mclass568\\"  # XPS
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass568\\"  # XPS
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\coil20obj_16_3class\\"  # XPS
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\fashion50mclass6_251\\"  # XPS
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
     if option == 1:  # 直接画散点图
         Y = np.loadtxt(path + "y.csv", dtype=np.float, delimiter=",")
@@ -253,9 +254,9 @@ def mnist_scatter():
         # plt.colorbar()
         plt.show()
     elif option == 2:  # 画艺术散点图
-        mnist_images(path, eta=0.50, y_name="y.csv", image_shape=(28, 28), colormap='gray', inv=True, trans=False)  # 搜 反转
+        mnist_images(path, eta=0.8, y_name="cTSNE.csv", image_shape=(28, 28), colormap='gray', inv=True, trans=False)  # 搜 反转
     else:  # 画部分点的艺术散点图
-        image_scatter_part(path, eta=1.0, y_name="PCA.csv", image_shape=(28, 28), colormap='gray', inv=True, dis=0.04, trans=False)
+        image_scatter_part(path, eta=0.6, y_name="cTSNE.csv", image_shape=(28, 28), colormap='gray', inv=True, dis=0.10, trans=False)
 
 
 if __name__ == '__main__':

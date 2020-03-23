@@ -89,7 +89,13 @@ def heatmap_test():
     plt.show()
 
 
+def test7():
+    a = np.array([[1.0, 2.0],[3.0, 4.0]])
+    print(np.dtype(a[0, 0]))
+
+
 if __name__ == '__main__':
     # run2()
     # test6()
-    heatmap_test()
+    # heatmap_test()
+    test7()

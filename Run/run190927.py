@@ -638,10 +638,10 @@ def run_test(data_name0=None):
     else:
         data_name = data_name0
 
-    method = "cTSNE_Newton"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"
-    yita = 0.202003062
-    nbrs_k = 25
-    method_k = 90  # if cTSNE perplexity=method_k/3
+    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"
+    yita = 0.20200306222
+    nbrs_k = 21
+    method_k = 60  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
     local_structure = "pca"

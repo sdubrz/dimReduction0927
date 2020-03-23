@@ -176,8 +176,9 @@ class cTSNE:
         firsts = []  # 临时所加，用于统计一阶导的变化规律
 
         # Run iterations
+        Y = Y2
         for iter in range(max_iter):
-            Y = Y2
+            # Y = Y2  # 原版本的t-sne是有这个中心化的操作的
             # Compute pairwise affinities
             sum_Y = np.sum(np.square(Y), 1)  # square是将矩阵中的每个元素计算平方，sum_Y里面存储的是每个点的模的平方
             num = -2. * np.dot(Y, Y.T)
@@ -329,7 +330,7 @@ class cTSNE:
 
             iY = momentum * iY - eta * (gains * dY)
             Y = Y + iY
-            Y = Y - np.tile(np.mean(Y, 0), (n, 1))
+            # Y = Y - np.tile(np.mean(Y, 0), (n, 1))  # 原版本的t-SNE是有这个中心化的。
 
             # if (iter+1) % 100 == 0:  # 收敛本不应该这样判断的
             #     dd = np.linalg.norm(Y[i, :] - y_random[i, :])
