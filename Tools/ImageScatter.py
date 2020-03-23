@@ -254,7 +254,7 @@ def mnist_scatter():
         # plt.colorbar()
         plt.show()
     elif option == 2:  # 画艺术散点图
-        mnist_images(path, eta=0.8, y_name="cTSNE.csv", image_shape=(28, 28), colormap='gray', inv=True, trans=False)  # 搜 反转
+        mnist_images(path, eta=0.8, y_name="cTSNE_Normal.csv", image_shape=(28, 28), colormap='gray', inv=True, trans=False)  # 搜 反转
     else:  # 画部分点的艺术散点图
         image_scatter_part(path, eta=0.6, y_name="cTSNE.csv", image_shape=(28, 28), colormap='gray', inv=True, dis=0.10, trans=False)
 

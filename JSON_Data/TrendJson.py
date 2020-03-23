@@ -43,7 +43,7 @@ def trend_json(path='', draw=False):
     :return:
     """
     eclipse_list = trend_eclipse(path)
-    f = open(path + "stress.json", encoding='utf-8')
+    f = open(path + "removeStress.json", encoding='utf-8')
     data = json.load(f)
 
     index = 0
