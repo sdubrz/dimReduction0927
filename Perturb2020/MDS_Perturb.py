@@ -45,6 +45,7 @@ class MDSPerturb:
         (n, m) = self.X.shape
         Dx = euclidean_distances(self.X) + np.eye(n)
         Dy = euclidean_distances(self.Y) + np.eye(n)
+        np.savetxt("F:\\Dy.csv", Dy, fmt='%.18e', delimiter=",")
 
         # 计算每个点产生的误差
         dD = (Dx - Dy)**2

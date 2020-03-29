@@ -20,9 +20,15 @@ def has_repeat(X, label, path=None):
             if i == j:
                 continue
             else:
-                if D[i, j] == 0:
-                    repeat_index.append(max(i, j))
-                    repeat = True
+                temp_bool = True
+                for k in range(0, m):
+                    if X[i, k] != X[j, k]:
+                        temp_bool = False
+                if temp_bool:
+                    temp_number = max(i, j)
+                    if not temp_number in repeat_index:
+                        repeat_index.append(max(i, j))
+                        repeat = True
 
     if repeat:
         print("repeat index ", repeat_index)
@@ -43,6 +49,15 @@ def has_repeat(X, label, path=None):
         if not path is None:
             np.savetxt(path+"data2.csv", data2, fmt='%f', delimiter=",")
             np.savetxt(path+"label2.csv", label2, fmt='%d', delimiter=",")
+    else:
+        print("初步检查没有发现重复的点")
+        D2 = np.zeros((n, n))
+        for i in range(0, n):
+            for j in range(0, n):
+                if i == j:
+                    continue
+                D2[i, j] = 1 / D[i, j]
+        print("确实没有发现重复的点")
 
     return repeat
 
