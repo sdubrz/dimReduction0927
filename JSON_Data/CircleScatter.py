@@ -80,5 +80,6 @@ def test2():
 if __name__ == '__main__':
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\coil20obj_16_3class\\yita(0.20200213)nbrs_k(18)method_k(90)numbers(4)_b-spline_weighted\\"
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\fashion50mclass568\\yita(50.20200217)nbrs_k(51)method_k(30)numbers(4)_b-spline_weighted\\"
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\olive\\yita(50.1)nbrs_k(20)method_k(90)numbers(4)_b-spline_weighted\\"
     circle_json(path)

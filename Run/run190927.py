@@ -641,15 +641,15 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "WhiteWineQuality"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "TctoddTest"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
     yita = 0.20200306222
-    nbrs_k = 20
+    nbrs_k = 23
     method_k = 60  # if cTSNE perplexity=method_k/3
     eigen_numbers = 4  # 无用
     draw_kind = "b-spline"
