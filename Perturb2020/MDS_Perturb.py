@@ -92,6 +92,7 @@ class MDSPerturb:
         self.y_add_list, self.y_sub_list = vector_perturb.perturb_all(vectors_list, weights)
         time3 = time.time()
         print("扰动已经计算完成，用时 ", time3 - time2)
+        print("我们的方法总时间: ", time3-time1)
 
         return self.y_add_list, self.y_sub_list
 

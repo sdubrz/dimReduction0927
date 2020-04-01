@@ -216,7 +216,7 @@ class cTSNE:
             gains = (gains + 0.2) * ((dY > 0.) != (iY > 0.)) + (gains * 0.8) * ((dY > 0.) == (iY > 0.))
             if not early_exaggerate:  # 2020.02.17为了提高收敛精度，将此注释
                 gains[gains < min_gain] = min_gain
-            iY = momentum * iY - eta * (gains * dY)
+            iY = momentum * iY - (eta / (np.sqrt(0.1*iter+0.1))) * (gains * dY)  # 改了可变步长
             Y = Y + iY  # 原来的式子
             # Y = Y - eta*dY  # 新改的实验方法
             Y2 = Y - np.tile(np.mean(Y, 0), (n, 1))

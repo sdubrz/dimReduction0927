@@ -144,6 +144,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
     data_path = main_path + "datasets\\" + data_name + "\\data.csv"
     label_path = main_path + "datasets\\" + data_name + "\\label.csv"
     y_random_path = main_path + "datasets\\" + data_name + "\\y_random.csv"
+    data_path0 = main_path + "datasets\\" + data_name + "\\"
 
     data_reader = np.loadtxt(data_path, dtype=np.str, delimiter=",")
     data = data_reader[:, :].astype(np.float)
@@ -228,6 +229,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                        yita=yita, save_path=save_path,
                                                                        weighted=weighted,
                                                                        label=label, y_precomputed=y_precomputed, local_struct=local_structure)
+        np.savetxt(data_path0+"y.csv", y, fmt='%.18e', delimiter=",")
     elif method == "PCA2":
         y, y_list_add, y_list_sub = Preturb.perturb_pca_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
                                                                MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
@@ -239,6 +241,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                    method_name=method,
                                                                    yita=yita, save_path=save_path, weighted=weighted,
                                                                    label=label, y_precomputed=y_precomputed, local_struct=local_structure)
+        np.savetxt(data_path0 + "y.csv", y, fmt='%.18e', delimiter=",")
     elif method == "MDS2nd":
         y, y_list_add, y_list_sub = MDS_PerturbSecond.perturb_mds_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
                                                                        method_k=method_k,
@@ -265,6 +268,29 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                          weighted=weighted,
                                                                          label=label, y_precomputed=y_precomputed,
                                                                          local_struct=local_structure)
+    elif method == "MDS_random":
+        y_random = np.loadtxt(data_path0+"y.csv", dtype=np.float, delimiter=",")
+        from Perturb2020 import Random_MDS_Perturb
+        y, y_list_add, y_list_sub = Random_MDS_Perturb.perturb_mds_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
+                                                                       method_k=method_k,
+                                                                       MAX_EIGEN_COUNT=max_eigen_numbers,
+                                                                       method_name=method,
+                                                                       yita=yita, save_path=save_path,
+                                                                       weighted=weighted,
+                                                                       label=label, y_precomputed=y_precomputed,
+                                                                       local_struct=local_structure)
+    elif method == "cTSNE_random":
+        y_random = np.loadtxt(data_path0+"y.csv", dtype=np.float, delimiter=",")
+        from Perturb2020 import Random_TSNE_Perturb
+        y, y_list_add, y_list_sub = Random_TSNE_Perturb.perturb_tsne_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
+                                                                         method_k=method_k,
+                                                                         MAX_EIGEN_COUNT=max_eigen_numbers,
+                                                                         method_name=method,
+                                                                         yita=yita, save_path=save_path,
+                                                                         weighted=weighted,
+                                                                         label=label, y_precomputed=y_precomputed,
+                                                                         local_struct=local_structure)
+
     else:
         y, y_list_add, y_list_sub = Preturb.perturb_once_weighted(x, nbrs_k=nbrs_k, y_init=y_random,
                                                           method_k=method_k,
@@ -641,20 +667,21 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "TctoddTest"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "digits40m1"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
-    yita = 0.20200306222
-    nbrs_k = 23
+    method = "cTSNE_random"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
+                     # "MDS_random"  cTSNE_random
+    yita = 100.20200401
+    nbrs_k = 41
     method_k = 60  # if cTSNE perplexity=method_k/3
-    eigen_numbers = 4  # 无用
+    eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
     local_structure = "pca"
-    normalize = True  # 是否进行normalize
+    normalize = False  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好
