@@ -11,7 +11,7 @@ from Test import cleanData
 import random
 
 
-def create_pictures(path="", image_shape=(28, 28), inv=False, enlarge=1, trans=False):
+def create_pictures(path="C:\\Users\\xym63\\Desktop\\fashion\\", image_shape=(28, 28), inv=True, enlarge=1, trans=False):
     """生成MNIST的图片"""
     # path = "E:\\Project\\DataLab\\MNIST\\"
     # path = "E:\\Project\\result2019\\result1026without_straighten\\datasets\\MNIST50mclass2_874\\"
@@ -125,8 +125,8 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     small_path = path + "smallImages\\"
     if not os.path.exists(small_path):
         os.makedirs(small_path)
-    #small_image(eta=eta, in_path=path+"pictures\\", out_path=small_path)
-    small_image(eta=eta, in_path="D:\\Exp\\datasets\\coil-20-proc\\", out_path=small_path)
+    small_image(eta=eta, in_path=path+"pictures\\", out_path=small_path)
+    #small_image(eta=eta, in_path="D:\\Exp\\datasets\\coil-20-proc\\", out_path=small_path)
     Y = np.loadtxt(path + y_name, dtype=np.float, delimiter=",")
     label = np.loadtxt(path + 'label.csv', dtype=np.int, delimiter=",")
     (n, m) = Y.shape
@@ -138,7 +138,7 @@ def mnist_images(path=None, eta=0.4, y_name="PCA.csv", label=None, image_shape=(
     for i in range(0, n):
         # if label[i] != 5:
         #     continue
-        ab = AnnotationBbox(get_image(small_path +'obj'+ str(label[i])+'__'+ str(i%72) +".png"), (Y[i, 0], Y[i, 1]), frameon=False)
+        ab = AnnotationBbox(get_image(small_path + str(i) +".png"), (Y[i, 0], Y[i, 1]), frameon=False)
         ax.add_artist(ab)
     ax = plt.gca()
     ax.set_aspect(1)
@@ -234,7 +234,7 @@ def mnist_scatter():
 
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\digits5_8\\"  # XPS
 
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\datasets\\IsomapFace\\"  # XPS
+    path = "D:\\Exp\\cTSNE_Newton\\fashion50mclass4_264\\yita(0.20200213)nbrs_k(40)method_k(90)numbers(5)_b-spline_weighted\\"  # XPS
 
 
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\DataLab\\optdigits\\optdigitClass9_562\\"
@@ -266,4 +266,4 @@ def mnist_scatter():
 
 
 if __name__ == '__main__':
-    mnist_scatter()
+    create_pictures()
