@@ -207,7 +207,7 @@ def image_scatter_part(path=None, eta=0.4, y_name="PCA.csv", label=None, image_s
     (n, m) = Y.shape
     fig, ax = plt.subplots()
     # plt.colormaps()
-    ax.scatter(Y[:, 0], Y[:, 1])
+    ax.scatter(Y[:, 0], Y[:, 1], c='deepskyblue')
     if colormap == 'gray':
         plt.set_cmap(cm.gray)
 
@@ -254,9 +254,13 @@ def mnist_scatter():
         # plt.colorbar()
         plt.show()
     elif option == 2:  # 画艺术散点图
-        mnist_images(path, eta=0.8, y_name="cTSNE0.csv", image_shape=(28, 28), colormap='gray', inv=True, trans=False)  # 搜 反转
+        # mnist_images(path, eta=0.6, y_name="cTSNEfigure.csv", image_shape=(64, 64), colormap='gray', inv=False,
+        #              trans=False)
+        # mnist_images(path, eta=0.4, y_name="cTSNEselected1.csv", image_shape=(128, 128), colormap='gray', inv=False, trans=False)  # 搜 反转
+        mnist_images(path, eta=1.5, y_name="y.csv", image_shape=(28, 28), colormap='gray', inv=True,
+                     trans=False)  # 搜 反转
     else:  # 画部分点的艺术散点图
-        image_scatter_part(path, eta=0.6, y_name="cTSNE.csv", image_shape=(28, 28), colormap='gray', inv=True, dis=0.10, trans=False)
+        image_scatter_part(path, eta=1.0, y_name="cTSNE.csv", image_shape=(28, 28), colormap='gray', inv=True, dis=0.08, trans=False)
 
 
 if __name__ == '__main__':

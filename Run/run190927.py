@@ -667,21 +667,21 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "digits40m1"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "shuttle_600"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE_random"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
+    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
                      # "MDS_random"  cTSNE_random
-    yita = 100.20200401
-    nbrs_k = 41
-    method_k = 60  # if cTSNE perplexity=method_k/3
+    yita = 0.20200428
+    nbrs_k = 40
+    method_k = 70  # if cTSNE perplexity=method_k/3
     eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
     local_structure = "pca"
-    normalize = False  # 是否进行normalize
+    normalize = True  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好

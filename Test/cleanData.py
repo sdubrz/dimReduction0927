@@ -456,6 +456,19 @@ def mnist_pca_research():
     print("finished")
 
 
+def face_transfer():
+    path = "F:\\"
+    X0 = np.loadtxt(path+"origin.csv", dtype=np.int, delimiter=",")
+    (n, m) = X0.shape
+    X = np.zeros((n, m))
+
+    for i in range(0, n):
+        A = np.reshape(X0[i, :], (64, 64)).T
+        X[i, :] = np.reshape(A, (1, 64*64))
+
+    np.savetxt(path+"origin2.csv", X, fmt='%d', delimiter=",")
+
+
 if __name__ == '__main__':
     # wine_quality_red()
     # bostonHouse6912()
@@ -472,8 +485,9 @@ if __name__ == '__main__':
     # mnist_50m_class()
     # mnist_pictures()
     # mnist_50m()
-    mnist_run()
+    # mnist_run()
     # mocap_teen()
     # mocap_less_frame()
     # mnist_pca_research()
+    face_transfer()
 
