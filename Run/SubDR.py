@@ -4,6 +4,7 @@ from sklearn.manifold import MDS
 from sklearn.manifold import TSNE
 from MyDR import cTSNE
 import matplotlib.pyplot as plt
+import time
 
 
 def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30.0, label=None):
@@ -20,6 +21,7 @@ def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30
     """
     (n, m) = X.shape
 
+    time0 = time.time()
     if method == "MDS":
         mds = MDS(n_components=2, max_iter=unit_loop, eps=-1)
         Y0 = mds.fit_transform(X)
@@ -40,9 +42,12 @@ def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30
     ax.set_aspect(1)
     plt.savefig(path+method+"Y0.png")
     plt.close()
+    time1 = time.time()
+    print("初次降维花费时间为 ", time1-time0)
 
     for loop in range(1, n_steps):
         print(loop)
+        time0 = time.time()
         Y0 = np.loadtxt(path+method+"Y"+str(loop-1)+".csv", dtype=np.float, delimiter=",")
         if method == "MDS":
             mds = MDS(n_components=2, max_iter=unit_loop, eps=-1, n_init=1)
@@ -64,16 +69,19 @@ def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30
         ax.set_aspect(1)
         plt.savefig(path+method+"Y"+str(loop)+".png")
         plt.close()
+        time1 = time.time()
+        print("第 " + str(loop) + " 次降维花费时间为 " + str(time1-time0))
 
 
 if __name__ == '__main__':
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"
+    path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\pendigits\\"
     X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     from Main import Preprocess
     X = Preprocess.normalize(X, -1, 1)
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
 
-    dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path=path, perplexity=30.0, label=label)
+    dr_steps(X, method="MDS", unit_loop=500, n_steps=20, path=path, perplexity=30.0, label=label)
 
 
 
