@@ -667,21 +667,21 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "shuttle_600"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "IsomapFace"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNE"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
                      # "MDS_random"  cTSNE_random
-    yita = 0.20200428
-    nbrs_k = 40
+    yita = 0.20200715
+    nbrs_k = 65
     method_k = 70  # if cTSNE perplexity=method_k/3
     eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
     local_structure = "pca"
-    normalize = True  # 是否进行normalize
+    normalize = False  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好
@@ -770,6 +770,13 @@ def run_test(data_name0=None):
 
     # 生成表示高维趋势的 json文件
     TrendJson.trend_json(last_path)
+
+    # 根据前两个特征向量的投影生成椭圆图形
+    from JSON_Data import Ellipse_Json
+    Ellipse_Json.ellipse_json(last_path)
+    # 画凸包的json
+    from JSON_Data import Convex_Json
+    Convex_Json.convex_json(last_path)
 
     # 画主成分的投影方向，如果是循环调用该函数的话，是默认不画图的
     # if data_name0 is None and show_result:

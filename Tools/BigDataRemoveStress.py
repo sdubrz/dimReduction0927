@@ -30,7 +30,7 @@ def remove_stress(path):
 
 
 def test():
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\PCA\\pendigits\\yita(0.102003062)nbrs_k(20)method_k(90)numbers(4)_b-spline_weighted\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\PCA\\Iris3\\yita(0.20200303)nbrs_k(20)method_k(90)numbers(4)_b-spline_weighted\\"
     remove_stress(path)
 
