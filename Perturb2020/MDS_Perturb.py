@@ -15,7 +15,12 @@ from Main import LocalLPP
 
 
 class MDSPerturb:
-    def __init__(self, X):
+    def __init__(self, X, Y0=None):
+        """
+
+        :param X:
+        :param Y0: 事先计算好的降维结果
+        """
         self.X = X
         self.n_samples = X.shape[0]
         self.Y = None
@@ -25,7 +30,10 @@ class MDSPerturb:
         self.Hessian = None
         self.Jacobi = None
         self.gradient = None
-        self.init_y()
+        if Y0 is None:
+            self.init_y()
+        else:
+            self.Y = Y0
         self.first_derivative()
 
     def init_y(self):
@@ -176,7 +184,10 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
     if not method_name == "MDS":
         print("该方法只支持 MDS 降维方法")
 
-    mds_perturb = MDSPerturb(data)
+    Y0 = None
+    if y_precomputed:
+        Y0 = np.loadtxt(save_path0+"Y.csv", dtype=np.float, delimiter=",")
+    mds_perturb = MDSPerturb(data, Y0)
     y = mds_perturb.Y
     print("初次降维已经计算完毕")
     y_add_list, y_sub_list = mds_perturb.perturb(eigen_vectors_list, yita*eigen_weights)

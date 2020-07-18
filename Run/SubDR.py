@@ -74,8 +74,8 @@ def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30
 
 
 if __name__ == '__main__':
-    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"
-    path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\pendigits\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\datasets\\Iris3\\"  # XPS
+    path = "E:\\Project\\result2020\\result0104without_normalize\\datasets\\pendigits\\"  # 华硕
     X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
     from Main import Preprocess
     X = Preprocess.normalize(X, -1, 1)
