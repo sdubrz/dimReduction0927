@@ -45,7 +45,7 @@ def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30
     # time1 = time.time()
     # print("初次降维花费时间为 ", time1-time0)
 
-    for loop in range(2, n_steps):
+    for loop in range(3, n_steps):
         print(loop)
         time0 = time.time()
         Y0 = np.loadtxt(path+method+"Y"+str(loop-1)+".csv", dtype=np.float, delimiter=",")
@@ -54,7 +54,7 @@ def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30
             Y = mds.fit_transform(X, init=Y0)
         elif method == "cTSNE":
             tsne = cTSNE.cTSNE(n_component=2, perplexity=perplexity)
-            Y = tsne.fit_transform(X, max_iter=unit_loop, early_exaggerate=False, y_random=Y0)
+            Y = tsne.fit_transform(X, max_iter=unit_loop, early_exaggerate=False, y_random=Y0, follow_gradient=False)
         else:
             print("暂不支持该方法")
             return
