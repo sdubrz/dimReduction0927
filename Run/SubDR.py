@@ -81,7 +81,7 @@ if __name__ == '__main__':
     X = Preprocess.normalize(X, -1, 1)
     label = np.loadtxt(path+"label.csv", dtype=np.int, delimiter=",")
 
-    dr_steps(X, method="MDS", unit_loop=500, n_steps=20, path=path, perplexity=30.0, label=label)
+    dr_steps(X, method="cTSNE", unit_loop=500, n_steps=20, path=path, perplexity=30.0, label=label)
 
 
 
