@@ -21,31 +21,31 @@ def dr_steps(X, method="MDS", unit_loop=1000, n_steps=10, path="", perplexity=30
     """
     (n, m) = X.shape
 
-    time0 = time.time()
-    if method == "MDS":
-        mds = MDS(n_components=2, max_iter=unit_loop, eps=-1)
-        Y0 = mds.fit_transform(X)
-    elif method == "cTSNE":  # 第一次运行直接用sklearn中的方法加速计算
-        tsne = TSNE(n_components=2, perplexity=perplexity, n_iter=unit_loop)
-        Y0 = tsne.fit_transform(X)
-    else:
-        print("暂不支持该方法： ", method)
-        return
-    np.savetxt(path+method+"Y0.csv", Y0, fmt='%.18e', delimiter=",")
-    plt.figure(figsize=(16, 16))
-    if label is None:
-        plt.scatter(Y0[:, 0], Y0[:, 1])
-    else:
-        plt.scatter(Y0[:, 0], Y0[:, 1], c=label)
-    plt.title(method+"Y0")
-    ax = plt.gca()
-    ax.set_aspect(1)
-    plt.savefig(path+method+"Y0.png")
-    plt.close()
-    time1 = time.time()
-    print("初次降维花费时间为 ", time1-time0)
+    # time0 = time.time()
+    # if method == "MDS":
+    #     mds = MDS(n_components=2, max_iter=unit_loop, eps=-1)
+    #     Y0 = mds.fit_transform(X)
+    # elif method == "cTSNE":  # 第一次运行直接用sklearn中的方法加速计算
+    #     tsne = TSNE(n_components=2, perplexity=perplexity, n_iter=unit_loop)
+    #     Y0 = tsne.fit_transform(X)
+    # else:
+    #     print("暂不支持该方法： ", method)
+    #     return
+    # np.savetxt(path+method+"Y0.csv", Y0, fmt='%.18e', delimiter=",")
+    # plt.figure(figsize=(16, 16))
+    # if label is None:
+    #     plt.scatter(Y0[:, 0], Y0[:, 1])
+    # else:
+    #     plt.scatter(Y0[:, 0], Y0[:, 1], c=label)
+    # plt.title(method+"Y0")
+    # ax = plt.gca()
+    # ax.set_aspect(1)
+    # plt.savefig(path+method+"Y0.png")
+    # plt.close()
+    # time1 = time.time()
+    # print("初次降维花费时间为 ", time1-time0)
 
-    for loop in range(1, n_steps):
+    for loop in range(2, n_steps):
         print(loop)
         time0 = time.time()
         Y0 = np.loadtxt(path+method+"Y"+str(loop-1)+".csv", dtype=np.float, delimiter=",")
