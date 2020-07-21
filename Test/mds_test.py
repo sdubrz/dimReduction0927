@@ -89,6 +89,39 @@ def run3():
     plt.show()
 
 
+def run4():
+    """
+    测试用不同方法计算的导数是否相同
+    :return:
+    """
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\testrun\\datasets\\Iris3\\"
+    X = np.loadtxt(path+"data.csv", dtype=np.float, delimiter=",")
+    X = Preprocess.normalize(X, -1, 1)
+    mds = MDS(n_components=2, eps=-1.0, max_iter=10000)
+    Y = mds.fit_transform(X)
+    print(" dr finished")
+
+    from Derivatives.MDS_DerivativePlus import MDS_Derivative_Plus
+    import time
+    der = MDS_Derivative_Plus()
+    print("--------------------------------------")
+    time1 = time.time()
+    P1 = der.getP(X, Y)
+    time2 = time.time()
+    print("第一种方法的时间 ", time2 - time1)
+    print("--------------------------------------")
+    time3 = time.time()
+    P2 = der.getP(X, Y)
+    time4 = time.time()
+    print("第二种方法的时间 ", time4-time3)
+
+    dP = P2 - P1
+    print("两种方法的差别为 ", np.sum(dP))
+    np.savetxt(path+"P1.csv", P1, fmt='%.18e', delimiter=",")
+    np.savetxt(path+"P2.csv", P2, fmt='%.18e', delimiter=",")
+    np.savetxt(path+"dP.csv", dP, fmt='%.18e', delimiter=",")
+
+
 if __name__ == '__main__':
-    run3()
+    run4()
 

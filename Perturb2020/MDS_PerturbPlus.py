@@ -90,7 +90,8 @@ class MDSPerturbPlus:
         """
         time1 = time.time()
         derivative = MDS_Derivative_Plus()
-        self.P = derivative.getP(self.X, self.Y)
+        self.P = derivative.getP_memory(self.X, self.Y)  # 更节省内存的方式
+        # self.P = derivative.getP(self.X, self.Y)  # 更快的方式
         time2 = time.time()
         print("导数矩阵已经计算完成，用时为 ", time2 - time1)
         vector_perturb = VectorPerturbPlus(self.Y, self.P)

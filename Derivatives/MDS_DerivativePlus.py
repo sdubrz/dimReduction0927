@@ -81,6 +81,47 @@ def derivative_X_matrix_fast(Dx, Dy, X, Y):
     return J
 
 
+def Jyx_Plus_memory(Dx, Dy, X, Y, H):
+    """
+    计算Y对X的导数，本实现方式对空间的要求更低，有利于较大数据的计算
+    理论上16GB的内存可以支持约 20000个点的数据
+    :param Dx: 高维数据的欧氏距离矩阵
+    :param Dy: MDS降维结果的欧氏距离矩阵
+    :param X: 高维数据矩阵
+    :param Y: 降维结果矩阵
+    :param H: 目标函数对Y的二阶导矩阵
+    :return:
+    """
+    begin_time = time.time()
+    (n, d) = X.shape
+    (n2, m) = Y.shape
+    P = np.zeros((n*2, d))  # 最终的导数矩阵
+    H = np.linalg.pinv(H)
+    Dx2 = Dx.copy()
+    Dy2 = Dy.copy()
+    Dx2[range(n), range(n)] = 1.0
+    Dy2[range(n), range(n)] = 1.0
+
+    print("节省内存的版本，需要更多的时间")
+    for b in range(0, n):
+        Jb = np.zeros((m*n, d))
+        for a in range(0, n):
+            Wy = np.tile(1.0 / Dy2[a, :], (m, 1)).T
+            Wx = np.tile(1.0 / Dx2[a, :], (d, 1)).T
+            dY = np.tile(Y[a, :], (n, 1)) - Y
+            dX = np.tile(X[a, :], (n, 1)) - X
+            if a == b:
+                H_sub = -2 * np.matmul((Wy * dY).T, Wx * dX)
+            else:
+                H_sub = 2 * Wy[b, 0] * Wx[b, 0] * np.outer(dY[b, :], dX[b, :])
+            Jb[a * m:a * m + m, :] = H_sub[:, :]
+        P[b*m:b*m+m, :] = np.matmul(H[b*m:b*m+m, :], Jb)
+    P = -1 * P
+    finish_time = time.time()
+    print("求导时间", finish_time-begin_time)
+    return P
+
+
 def Jyx_Plus(H, J):
     H = np.linalg.pinv(H)
     (Jn, Jm) = J.shape
@@ -106,8 +147,6 @@ class MDS_Derivative_Plus:
     def getP(self, X, Y):
         """
         计算Y关于X的导数
-        :param Dx: 高维数据的距离矩阵
-        :param Dy: 低维数据的距离矩阵
         :param X: 高维数据矩阵，每一行是一个数据
         :param Y: 低维数据矩阵，每一行是一个数据
         :return:
@@ -117,5 +156,19 @@ class MDS_Derivative_Plus:
         H = hessian_y_matrix_fast(Dx, Dy, Y)
         J_yx = derivative_X_matrix_fast(Dx, Dy, X, Y)
         self.P = Jyx_Plus(H, J_yx)
+
+        return self.P
+
+    def getP_memory(self, X, Y):
+        """
+        计算Y关于X的导数，节省内存版，需要更多的时间
+        :param X:
+        :param Y:
+        :return:
+        """
+        Dx = euclidean_distances(X)
+        Dy = euclidean_distances(Y)
+        H = hessian_y_matrix_fast(Dx, Dy, Y)
+        self.P = Jyx_Plus_memory(Dx, Dy, X, Y, H)
 
         return self.P
