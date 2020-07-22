@@ -232,6 +232,16 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
                                                                        weighted=weighted,
                                                                        label=label, y_precomputed=y_precomputed, local_struct=local_structure)
         np.savetxt(data_path0+"y.csv", y, fmt='%.18e', delimiter=",")
+    elif method == "cTSNEPlus":
+        from Perturb2020 import TSNE_PerturbPlus
+        y, y_list_add, y_list_sub = TSNE_PerturbPlus.perturb_tsne_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random,
+                                                                       method_k=method_k,
+                                                                       MAX_EIGEN_COUNT=max_eigen_numbers,
+                                                                       method_name=method,
+                                                                       yita=yita, save_path=save_path,
+                                                                       weighted=weighted,
+                                                                       label=label, y_precomputed=y_precomputed, local_struct=local_structure)
+        np.savetxt(data_path0+"y.csv", y, fmt='%.18e', delimiter=",")
     elif method == "PCA2":
         y, y_list_add, y_list_sub = Preturb.perturb_pca_one_by_one(x, nbrs_k=nbrs_k, y_init=y_random, method_k=method_k,
                                                                MAX_EIGEN_COUNT=max_eigen_numbers, method_name=method,
@@ -670,30 +680,30 @@ def run_test(data_name0=None):
             digits5_8
         """
     start_time = time()
-    main_path_without_normalize = "E:\\project\\result2020\\result0104without_normalize\\"  # 华硕
-    main_path_without_straighten = "E:\\Project\\result2020\\result0103\\"  # 华硕
-    # main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
+    # main_path_without_normalize = "E:\\project\\result2020\\result0104without_normalize\\"  # 华硕
+    # main_path_without_straighten = "E:\\Project\\result2020\\result0103\\"  # 华硕
+    main_path_without_straighten = "E:\\文件\\IRC\\特征向量散点图项目\\result2019\\result1219without_straighten\\"  # XPS
     # main_path = "F:\\result2019\\result0927\\"  # HP
-    main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
-    # main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
+    # main_path = "E:\\Project\\result2020\\result0103\\"  # 华硕
+    main_path = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\'  # XPS
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
-    # main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
+    main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "pendigits"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDSPlus"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
+    method = "cTSNEPlus"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
                      # "MDS_random"  cTSNE_random  "MDSPlus"
     yita = 0.50200715
-    nbrs_k = 50
+    nbrs_k = 21
     method_k = 70  # if cTSNE perplexity=method_k/3
-    eigen_numbers = 5  # 无用
+    eigen_numbers = 3  # 无用
     draw_kind = "b-spline"
     local_structure = "pca"
-    normalize = False  # 是否进行normalize
+    normalize = True  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好
@@ -705,7 +715,7 @@ def run_test(data_name0=None):
     if data_name0 is None:
         show_result = True
 
-    show_result = False  # 是否显示最终结果
+    show_result = True  # 是否显示最终结果
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize
@@ -797,7 +807,7 @@ def run_test(data_name0=None):
     # 画KNN关系图
     # VisualizationKNN.draw_knn(last_path)  # 太浪费空间，暂时注释掉，默认不运行
     # 计算KNN相似性
-    VisualizationKNN.KNN_similar(last_path)
+    # VisualizationKNN.KNN_similar(last_path)  # 太浪费时间，暂时注释掉
 
     return last_path, data_name, main_path, method
 

@@ -1,12 +1,13 @@
-# 用求导的方式实现local PCA在MDS结果中的投影
-# 针对较大数据的版本 2020.07.21
+# 用求导的方式计算 local PCA 在t-SNE的投影
+# 节省内存的版本 2020.07.22
 import numpy as np
-from sklearn.manifold import MDS
+# from sklearn.manifold import MDS
 import matplotlib.pyplot as plt
+from MyDR import cTSNE
 from Main import Preprocess
 from Main import LocalPCA
 from Main import processData as pD
-from Derivatives.MDS_DerivativePlus import MDS_Derivative_Plus
+from Derivatives.TSNE_DerivativePlus import TSNE_DerivativePlus
 from Derivatives.VectorPerturbPlus import VectorPerturbPlus
 from sklearn.metrics import euclidean_distances
 import time
@@ -15,69 +16,68 @@ from Main import LocalLDA
 from Main import LocalLPP
 
 
-class MDSPerturbPlus:
-    def __init__(self, X, Y0=None):
-        """
-
-        :param X:
-        :param Y0: 事先计算好的降维结果
-        """
+class TSNEPerturbPlus:
+    def __init__(self, X, n_nbrs, Y0=None):
         self.X = X
         self.n_samples = X.shape[0]
+        self.n_nbrs = n_nbrs
         self.Y = None
         self.y_add_list = []
         self.y_sub_list = []
         self.P = None
-        self.gradient = None
+        self.Px0 = None  # 没有对称化的高维概率矩阵
+        self.Px = None  # 对称化后的高维概率矩阵
+        self.Q = None  # 低维概率矩阵
+        self.beta = None  # 计算高维概率矩阵时用的方差
         self.init_y(Y0)
-        # self.first_derivative()
 
     def init_y(self, Y0):
         time1 = time.time()
         if Y0 is None:
-            mds = MDS(n_components=2, max_iter=10000, eps=-1.0)  # 这样应该可以限制死执行次数
-            Y = mds.fit_transform(self.X)
+            t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
+            Y = t_sne.fit_transform(self.X, max_iter=30000)
         else:
-            mds = MDS(n_components=2, n_init=1, max_iter=500, eps=-1.0)
-            Y = mds.fit_transform(self.X, init=Y0)
+            t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
+            Y = t_sne.fit_transform(self.X, max_iter=1000, early_exaggerate=False, y_random=Y0, follow_gradient=False)
         self.Y = Y
+        self.beta = t_sne.beta
+        self.Px0 = t_sne.P0
+        self.Px = t_sne.P
+        self.Q = t_sne.Q
         time2 = time.time()
         print("初始降维用时为, ", time2-time1)
-        print("总共迭代的次数为 ", mds.n_iter_)
 
     def first_derivative(self):
         """
-        计算所求结果处的一阶导数
+        计算目标函数对Y的一阶导数
         :return:
         """
-        (n, m) = self.X.shape
-        Dx = euclidean_distances(self.X) + np.eye(n)
-        Dy = euclidean_distances(self.Y) + np.eye(n)
-        # np.savetxt("F:\\Dy.csv", Dy, fmt='%.18e', delimiter=",")
+        X = self.X
+        Y = self.Y
+        P = self.Px
+        Q = self.Q
+        (n, m) = X.shape
+        first_derivative = np.zeros((n, 2))
 
-        # 计算每个点产生的误差
-        dD = (Dx - Dy)**2
-        dD = 0.5*dD
-        error = np.sum(dD, axis=1)
+        Dy = euclidean_distances(Y)
+        D = 1 / (1+Dy**2)
+        PQ = P - Q
 
-        first = np.zeros((n, 2))  # 每个点处的一阶导
         for i in range(0, n):
-            dY = np.tile(self.Y[i, :], (n, 1)) - self.Y
-            w = 1 - Dx[i, :] / Dy[i, :]
+            dY = np.tile(Y[i, :], (n, 1)) - Y
+            w = PQ[i, :] * D[i, :]
             W = np.tile(w, (2, 1)).T
-            first[i, :] = np.sum(W*dY, axis=0)
+            first_derivative[i, :] = np.sum(W*dY, axis=0)
 
-        self.gradient = first
-        plt.subplot(131)
-        plt.plot(error)
-        plt.title("error of each point")
+        first_derivative = first_derivative * 4
+        self.gradient = first_derivative
 
-        plt.subplot(132)
-        plt.plot(first[:, 0])
+        plt.subplot(121)
+        plt.plot(first_derivative[:, 0])
         plt.title("first derivative 1")
 
-        plt.subplot(133)
-        plt.plot(first[:, 1])
+        plt.subplot(122)
+        plt.plot(first_derivative[:, 1])
         plt.title("first derivative 2")
 
         plt.show()
@@ -90,25 +90,24 @@ class MDSPerturbPlus:
         :return:
         """
         time1 = time.time()
-        derivative = MDS_Derivative_Plus()
-        # self.P = derivative.getP_memory(self.X, self.Y)  # 更节省内存的方式
-        self.P = derivative.getP(self.X, self.Y)  # 更快的方式
+        derivative = TSNE_DerivativePlus()
+        # self.P = derivative.getP(self.X, self.Y, self.Px, self.Q, self.Px0, self.beta)  # 较快的版本
+        self.P = derivative.getP_memory(self.X, self.Y, self.Px, self.Q, self.Px0, self.beta)  # 节省内存的版本
         time2 = time.time()
         print("导数矩阵已经计算完成，用时为 ", time2 - time1)
         vector_perturb = VectorPerturbPlus(self.Y, self.P)
         self.y_add_list, self.y_sub_list = vector_perturb.perturb_all(vectors_list, weights)
         time3 = time.time()
         print("扰动已经计算完成，用时 ", time3 - time2)
-        print("我们的方法总时间: ", time3-time1)
 
         return self.y_add_list, self.y_sub_list
 
 
-def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="MDS",
-                 yita=0.1, save_path="", weighted=True, label=None, y_precomputed=False, local_struct="pca"):
+def perturb_tsne_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5, method_name="cTSNE",
+                 yita=0.1, save_path="", weighted=True, label=None, y_precomputed=False, local_struct='pca'):
     """
         一个点一个点地添加扰动，不同的特征向量需要根据它们的特征值分配权重。该方法只适用于某些非线性降维方法。
-        该方法目前只支持新的MDS方法，即 method=="MDS"
+        该方法目前只支持新的MDS方法，即 method=="cTSNE"
         :param data:经过normalize之后的原始数据矩阵，每一行是一个样本
         :param nbrs_k:计算 local PCA的 k 值
         :param y_init:某些降维方法所需的初始随机矩阵
@@ -120,10 +119,10 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
         :param weighted:特征向量作为扰动时是否按照其所对应的特征值分配权重
         :param label:数据的分类标签
         :param y_precomputed: y是否已经提前计算好，如果是，则直接从文件中读取
-        :param local_struct: 要投影的local structure
+        :param local_struct:要投影的local structure
         :return:
         """
-    print("MDSPlus one by one")
+    print("cTSNE one by one")
     data_shape = data.shape
     n = data_shape[0]
     dim = data_shape[1]
@@ -154,12 +153,13 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
         local_data = np.zeros((nbrs_k, dim))
         for j in range(0, nbrs_k):
             local_data[j, :] = data[knn[i, j], :]
-        if local_struct == "pca":
+        if local_struct == 'pca':
             temp_vectors, eigen_values[i, :] = LocalPCA.local_pca_dn(local_data)
-        elif local_struct == "lpp":
+        elif local_struct == 'lpp':
             temp_vectors, eigen_values[i, :] = LocalLPP.local_lpp(local_data)
         else:
-            print("暂不支持该local structure")
+            print("暂不支持该local structure的投影")
+            return
 
         for j in range(0, MAX_EIGEN_COUNT):
             eigenvectors = eigen_vectors_list[j]
@@ -175,28 +175,28 @@ def perturb_mds_one_by_one(data, nbrs_k, y_init, method_k=30, MAX_EIGEN_COUNT=5,
 
     np.savetxt(save_path + "eigenvalues.csv", eigen_values, fmt="%f", delimiter=",")
     np.savetxt(save_path + "eigenweights.csv", eigen_weights, fmt="%f", delimiter=",")
-    np.savetxt(save_path0 + "eigenvectors1.csv", eigen_vectors_list[0], fmt='%f', delimiter=",")
 
     mean_weight = np.mean(eigen_weights[:, 0])
     print("平均的扰动权重是 ", mean_weight * yita)
 
-    if not (method_name == "MDS" or method_name == "MDSPlus"):
-        print("该方法只支持 MDS 或 MDSPlus 降维方法")
+    if not (method_name == "cTSNE" or method_name == "cTSNEPlus"):
+        print("该方法只支持 cTSNE 降维方法")
 
     Y0 = None
     if y_precomputed:
         Y0 = np.loadtxt(save_path0+"Y.csv", dtype=np.float, delimiter=",")
-    mds_perturb = MDSPerturbPlus(data, Y0)
-    y = mds_perturb.Y
+    tsne_perturb = TSNEPerturbPlus(data, method_k, Y0)
+    y = tsne_perturb.Y
     print("初次降维已经计算完毕")
-    y_add_list, y_sub_list = mds_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
+    y_add_list, y_sub_list = tsne_perturb.perturb(eigen_vectors_list, yita*eigen_weights)
 
-    points_error = PointsError.mds_stress(data, y)
+    points_error = PointsError.tsne_kl(tsne_perturb.Px, tsne_perturb.Q)
 
-    # np.savetxt(save_path0+"gradient.csv", mds_perturb.gradient, fmt='%.18e', delimiter=",")
+    # np.savetxt(save_path0+"gradient.csv", tsne_perturb.gradient, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"Px.csv", tsne_perturb.Px, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"Q.csv", tsne_perturb.Q, fmt='%.18e', delimiter=",")
     np.savetxt(save_path0+"error.csv", points_error, fmt='%.18e', delimiter=",")
-    np.savetxt(save_path0+"MDS_Pxy.csv", mds_perturb.P, fmt='%.18e', delimiter=",")
+    np.savetxt(save_path0+"cTSNE_Pxy.csv", tsne_perturb.P, fmt='%.18e', delimiter=",")
 
     return y, y_add_list, y_sub_list
-
 
