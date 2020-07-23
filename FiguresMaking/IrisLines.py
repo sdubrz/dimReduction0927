@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.0715)nbrs_k(20)method_k(70)numbers(3)_b-spline_weighted\\"
+# path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.0715)nbrs_k(20)method_k(70)numbers(3)_b-spline_weighted\\"
+path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.20200306222)nbrs_k(20)method_k(60)numbers(4)_b-spline_weighted\\"
 
 
 def scatter_plot2():
@@ -37,7 +38,7 @@ def scatter_plot2():
     # dY4 = temp_y4 - Y
 
     dy_list = [dY1, dY2, dY3]
-    eta = 1.5  # 控制线的长度
+    eta = 0.75  # 控制线的长度
     for dY in dy_list:
         y_add = Y + eta * dY
         y_sub = Y - eta * dY

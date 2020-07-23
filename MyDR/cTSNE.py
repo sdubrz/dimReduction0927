@@ -232,14 +232,13 @@ class cTSNE:
                 P = P / 4.
 
         # 最后更新低维空间中的概率矩阵
-        if follow_gradient:
-            sum_Y = np.sum(np.square(Y), 1)
-            num = -2. * np.dot(Y, Y.T)
-            num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
-            num[range(n), range(n)] = 0.  # 把对角线设置为0
-            Q = num / np.sum(num)
-            Q = np.maximum(Q, 1e-120)
-            self.Q = Q
+        sum_Y = np.sum(np.square(Y), 1)
+        num = -2. * np.dot(Y, Y.T)
+        num = 1. / (1. + np.add(np.add(num, sum_Y).T, sum_Y))
+        num[range(n), range(n)] = 0.  # 把对角线设置为0
+        Q = num / np.sum(num)
+        Q = np.maximum(Q, 1e-120)
+        self.Q = Q
 
         self.final_iter = iter
         if show_progress:
