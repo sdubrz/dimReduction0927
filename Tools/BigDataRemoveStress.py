@@ -19,6 +19,7 @@ def remove_stress(path):
     index = 0
     for item in old_data:
         item["stress"] = []
+        item["test_attr"] = item["test_attr"][0]
         error_file.write(str(item).replace('\'', '\"'))
         if index < n - 1:
             error_file.write(",\n")
@@ -30,8 +31,9 @@ def remove_stress(path):
 
 
 def test():
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\PCA\\Iris3\\yita(0.20200303)nbrs_k(20)method_k(90)numbers(4)_b-spline_weighted\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.0715)nbrs_k(20)method_k(70)numbers(3)_b-spline_weighted\\"
     remove_stress(path)
 
 
