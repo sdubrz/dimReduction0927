@@ -447,7 +447,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
             convex_hull_list.append(temp_convex0)  # 存储这个凸包顶点信息
             temp_convex = np.array(temp_convex0)
 
-            if draw_kind == "convex_hull" and show_result:
+            if (draw_kind == "convex_hull" and show_result) or True:
                 for j in range(0, len(temp_convex)-1):
                     plt.plot([temp_convex[j, 0], temp_convex[j+1, 0]], [temp_convex[j, 1], temp_convex[j+1, 1]], linewidth=0.6, c='deepskyblue', alpha=0.7)
                 plt.plot([temp_convex[len(temp_convex)-1, 0], temp_convex[0, 0]], [temp_convex[len(temp_convex)-1, 1], temp_convex[0, 1]],
@@ -689,21 +689,21 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "Iris3"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "plane"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "cTSNEPlus"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
+    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
                      # "MDS_random"  cTSNE_random  "MDSPlus"
-    yita = 0.50200715
-    nbrs_k = 21
+    yita = 0.20200727
+    nbrs_k = 9
     method_k = 70  # if cTSNE perplexity=method_k/3
     eigen_numbers = 3  # 无用
     draw_kind = "b-spline"
     local_structure = "pca"
-    normalize = True  # 是否进行normalize
+    normalize = False  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
     y_precomputed = False  # y是否已经提前计算好

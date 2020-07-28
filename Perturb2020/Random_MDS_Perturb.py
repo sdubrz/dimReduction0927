@@ -28,7 +28,7 @@ class MDSPerturb:
     def init_y(self):
         time1 = time.time()
         if self.y_random is None:
-            mds = MDS(n_components=2, max_iter=10000, eps=-1.0)  # 这样应该可以限制死执行次数
+            mds = MDS(n_components=2, max_iter=1000, eps=-1.0)  # 这样应该可以限制死执行次数
             Y = mds.fit_transform(self.X)
         else:
             mds = MDS(n_components=2, max_iter=10000, eps=-1.0, n_init=1)

@@ -25,8 +25,8 @@ def trust_worth_test(path, k):
         for j in range(0, k):
             if not (Knn_y[i, j] in Knn_x[i, :]):
                 rank = rank + j - k
-                trust[i] = rank
-    trust = np.ones((n, 1)) - trust * 2 / (k*(2*m-2*k-1))
+        trust[i] = rank
+    trust = np.ones((n, 1)) - trust * 2 / (k*(2*m-3*k-1))
     np.savetxt(path+"trust.csv", trust, fmt='%f', delimiter=",")
     return trust
 
@@ -61,8 +61,13 @@ def Trusworth_test_json(path, k):
 def test():
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
     # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.20200306222)nbrs_k(20)method_k(60)numbers(4)_b-spline_weighted\\"
-    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.20200306222)nbrs_k(20)method_k(60)numbers(4)_b-spline_weighted\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.20200306222)nbrs_k(20)method_k(60)numbers(4)_b-spline_weighted\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\PCA\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
     # trust_worth_test(path, 20)
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\cTSNE\\IsomapFace\\yita(0.20200225)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
+    # path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\MDS\\IsomapFace\\yita(0.20200219)nbrs_k(65)method_k(90)numbers(4)_b-spline_weighted\\"
+    path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119\\MDS\\Iris3\\yita(0.20200306222)nbrs_k(20)method_k(60)numbers(4)_b-spline_weighted\\"
+
     Trusworth_test_json(path, 20)
 
 
