@@ -697,7 +697,7 @@ def run_test(data_name0=None):
         data_name = data_name0
 
     method = "cTSNEPlus"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
-                     # "MDS_random"  cTSNE_random  "MDSPlus"
+                     # "MDS_random"  cTSNE_random  "MDSPlus"  "cTSNEPlus"
     yita = 200.20200727
     nbrs_k = 50
     method_k = 90  # if cTSNE perplexity=method_k/3
