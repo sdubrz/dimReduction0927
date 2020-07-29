@@ -16,7 +16,7 @@ from Main import LocalLPP
 
 
 class TSNEPerturb:
-    def __init__(self, X, n_nbrs):
+    def __init__(self, X, n_nbrs, Y0=None):
         self.X = X
         self.n_samples = X.shape[0]
         self.n_nbrs = n_nbrs
@@ -31,13 +31,16 @@ class TSNEPerturb:
         self.Hessian = None
         self.Jacobi = None
         self.gradient = None
-        self.init_y()
+        self.init_y(Y0)
         self.first_derivative()
 
-    def init_y(self):
+    def init_y(self, Y0):
         time1 = time.time()
-        t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs/3.0)
-        Y = t_sne.fit_transform(self.X, max_iter=30000)
+        t_sne = cTSNE.cTSNE(n_component=2, perplexity=self.n_nbrs / 3.0)
+        if Y0 is None:
+            Y = t_sne.fit_transform(self.X, max_iter=30000)
+        else:
+            Y = t_sne.fit_transform(self.X, max_iter=1000, early_exaggerate=False, y_random=Y0, follow_gradient=False)
         self.Y = Y
         self.beta = t_sne.beta
         self.Px0 = t_sne.P0

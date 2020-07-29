@@ -36,10 +36,14 @@ class MDSPerturb:
             self.Y = Y0
         self.first_derivative()
 
-    def init_y(self):
+    def init_y(self, Y0):
         time1 = time.time()
-        mds = MDS(n_components=2, max_iter=1000, eps=-1.0)  # 这样应该可以限制死执行次数
-        Y = mds.fit_transform(self.X)
+        if Y0 is None:
+            mds = MDS(n_components=2, max_iter=10000, eps=-1.0)  # 这样应该可以限制死执行次数
+            Y = mds.fit_transform(self.X)
+        else:
+            mds = MDS(n_components=2, n_init=1, max_iter=500, eps=-1.0)
+            Y = mds.fit_transform(self.X, init=Y0)
         self.Y = Y
         time2 = time.time()
         print("初始降维用时为, ", time2-time1)

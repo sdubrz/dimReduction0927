@@ -165,9 +165,9 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         label_reader = np.loadtxt(label_path, dtype=np.str, delimiter=",")
         label = label_reader.astype(np.int)
 
-    if CheckRepeat.has_repeat(data, label, main_path + "datasets\\" + data_name +"\\"):
-        print("有重复的点")
-        return
+    # if CheckRepeat.has_repeat(data, label, main_path + "datasets\\" + data_name +"\\"):
+    #     print("有重复的点")
+    #     return
 
     if not os.path.exists(y_random_path):
         print("还没有随机初始结果，现在生成")
@@ -204,6 +204,7 @@ def main_run(main_path, data_name, nbrs_k=30, yita=0.1, method_k=30, max_eigen_n
         max_eigen_numbers = dim
         print("所要求的的特征值数目过多")
 
+    print("开始主方法运行")
     perturb_start = time()
     if method == "newMDS":  # 采用合并的降维方式
         # y, y_list_add, y_list_sub = perturb_together(x, prefect_k, eigen_numbers, y_random, MAX_K,
@@ -689,24 +690,24 @@ def run_test(data_name0=None):
     lpp_path = "E:\\文件\\IRC\\特征向量散点图项目\\result2020\\locallpp\\"  # local LPP
     main_path_without_normalize = 'E:\\文件\\IRC\\特征向量散点图项目\\result2020\\result0119_withoutnormalize\\'  # XPS
 
-    data_name = "plane"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
+    data_name = "pendigits"  # coil20obj_16_3class  MNIST50mclass1_985  fashion50mclass568
     if data_name0 is None:
         pass
     else:
         data_name = data_name0
 
-    method = "MDS"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
+    method = "cTSNEPlus"  # "PCA" "MDS" "P_matrix" "Isomap" "LDA" "LTSA" "cTSNE"  "MDS2nd" "cTSNE_Newton"  "cTSNE_Normal"
                      # "MDS_random"  cTSNE_random  "MDSPlus"
-    yita = 0.20200727
-    nbrs_k = 9
-    method_k = 70  # if cTSNE perplexity=method_k/3
-    eigen_numbers = 3  # 无用
+    yita = 200.20200727
+    nbrs_k = 50
+    method_k = 90  # if cTSNE perplexity=method_k/3
+    eigen_numbers = 5  # 无用
     draw_kind = "b-spline"
     local_structure = "pca"
     normalize = False  # 是否进行normalize
     min_proportion = 0.9
     min_good_points = 0.9
-    y_precomputed = False  # y是否已经提前计算好
+    y_precomputed = True  # y是否已经提前计算好
 
     straighten = False  # 是否进行校直操作
     weighted = True  # 当使用特征向量作为扰动的时候是否添加权重
@@ -715,7 +716,7 @@ def run_test(data_name0=None):
     if data_name0 is None:
         show_result = True
 
-    show_result = True  # 是否显示最终结果
+    show_result = False  # 是否显示最终结果
 
     # 默认是需要进行normalize的，如果不进行normalize需要更换主文件目录
     # 这里的应该不用改。是否要是用normalize是有原因的。高维真实数据中，因为存在量纲的差异，故而只能进行normalize

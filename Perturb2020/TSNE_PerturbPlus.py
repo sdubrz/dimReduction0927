@@ -37,7 +37,7 @@ class TSNEPerturbPlus:
         if Y0 is None:
             Y = t_sne.fit_transform(self.X, max_iter=30000)
         else:
-            Y = t_sne.fit_transform(self.X, max_iter=1000, early_exaggerate=False, y_random=Y0, follow_gradient=False)
+            Y = t_sne.fit_transform(self.X, max_iter=600, early_exaggerate=False, y_random=Y0, follow_gradient=False)
         self.Y = Y
         self.beta = t_sne.beta
         self.Px0 = t_sne.P0
@@ -90,8 +90,8 @@ class TSNEPerturbPlus:
         """
         time1 = time.time()
         derivative = TSNE_DerivativePlus()
-        # self.P = derivative.getP(self.X, self.Y, self.Px, self.Q, self.Px0, self.beta)  # 较快的版本
-        self.P = derivative.getP_memory(self.X, self.Y, self.Px, self.Q, self.Px0, self.beta)  # 节省内存的版本
+        self.P = derivative.getP(self.X, self.Y, self.Px, self.Q, self.Px0, self.beta)  # 较快的版本
+        # self.P = derivative.getP_memory(self.X, self.Y, self.Px, self.Q, self.Px0, self.beta)  # 节省内存的版本
         time2 = time.time()
         print("导数矩阵已经计算完成，用时为 ", time2 - time1)
         vector_perturb = VectorPerturbPlus(self.Y, self.P)
